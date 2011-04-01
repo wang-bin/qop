@@ -1,0 +1,44 @@
+
+
+=====================================2010=======================================
+
+11-27:
+auto detect tar output message format and determin the right unit in single thread mode.
+
+10-02:
+new classes: QArchive, QTar
+support extract tar archive using: qop -d -x test.tar or qop -dtest.tar or qop --diy=test.dir
+TODO: complete tar functions
+	pause and continue
+	read from stdin and write to stdout
+
+
+10-01:
+long options support
+
+09-26:
+ezprogressdialog print labelText() to stdout without return when hidden;
+
+
+09-23:
+detect format by reading header
+add [-x archive] option.
+add QArcReader  as alternative
+add lha detect
+
+
+09-22:
+add class ArcReader to get uncompressed size by reading the archieve. Using std c++;
+-x x_file option
+
+09-17:
+version 0.0.4
+show dialog with text "Calculating..." while counting without multi-thread support.
+change dialog title
+add class QUntarOutParser to indicate extraction progress exactly when extracting a .tar and .tar.xxx file. need -tuntar option.
+
+09-15:
+version 0.0.2
+7z support
+in number mode displaying speed, remaining time
+and other 

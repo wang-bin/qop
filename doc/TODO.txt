@@ -1,0 +1,31 @@
+function ptr replace signal/slot, use macros
+
+Change macros to typedef!
+
+ISO Edit (ISOMaster)
+Archieve Mounter
+Pause
+
+Endian: busybox/include/platform.h
+kill 7z in Windows
+read archieve header
+built-in untar
+check password by reading file header
+Testing scripts
+build shared library qopCui.so
+operate on stream
+
+support both STL and Qt
+Finish message
+
+program options: -stdin -stdout - --verbose
+
+template QOutParser
+pthread instead of QThread
+
+
+GUI:
+1.mark items to remove/extract
+2.7z Gui. Use 7z lib directly!
+
+

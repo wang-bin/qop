@@ -1,0 +1,148 @@
+/******************************************************************************
+	Macros for compatibility
+    Copyright (C) 2010 Wangbin <wbsecg1@gmail.com>
+ 	(aka. nukin in ccmove & novesky in http://forum.motorolafans.com)
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+******************************************************************************/
+#ifndef GLOBAL_H
+#define GLOBAL_H
+#ifndef __cplusplus
+#error "Use C++ Compiler Please..."
+#endif
+#include <qglobal.h>
+
+#if defined(linux) || defined(__linux) || defined(__linux__)
+#define _OS_LINUX_
+#elif defined(__CYGWIN__)
+#define _OS_CYGWIN_
+#elif defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+#define _OS_WIN32_
+#elif defined(MSDOS) || defined(_MSDOS) || defined(__MSDOS__)
+#define _OS_MSDOS_
+#endif
+
+
+#if (__GNUC__ < 4)
+#   if QT_VERSION >= 0x040000
+#   define EZXT_QT4
+#   define NO_EZX
+#   endif
+#else
+#   define EZXT_QT4 (QT_VERSION >= 0x040000)
+#   define NO_EZX (QT_VERSION >= 0x040000)
+#endif
+
+#ifdef EZXT_QT4
+#include <Qt>
+#include <QtGui/QApplication>
+#include <QColorGroup>
+#include <QDebug>
+#include <QtGui/QProgressDialog>
+#include <QtGui/QMessageBox>
+#include <QDesktopWidget> //QApplication::desktop()
+#include <QMouseEvent>
+using Qt::WindowFlags;
+using Qt::Alignment;
+#define Q_EXPORT
+#   define ezDebug(s) qDebug()<<s
+#define EZ_ProgressDialog(labeltext,cancelbutton,min,max,parent,name,modal,flag) UTIL_ProgressDialog(labeltext,cancelbutton,min,max,parent,flag)
+#define ZMessageBox QMessageBox
+#define timerInformation(parent,pix_title,text,time,ok) information(parent,"",text)
+#else
+#include <qlist.h>
+//#define WindowFlags WFlags
+#include <qapplication.h>
+#define ezDebug(s) qDebug(s)
+#define qMax(a,b) QMAX(a,b)
+#define qMin(a,b) QMIN(a,b)
+# ifdef NO_EZX
+#	include <qprogressdialog.h>
+#define timerInformation(parent,pix_title,text,time,ok) information(parent,"",text)
+# else
+#	include <UTIL_ProgressDialog.h>
+#	include <ZApplication.h>
+#	include <ZMessageBox.h>
+# endif //NO_EZX
+#define EZ_ProgressDialog(labeltext,cancelbutton,min,max,parent,name,modal,flag) UTIL_ProgressDialog(labeltext,cancelbutton,max,parent,name,modal,flag)
+//#define setValue(v) setProgress(v)
+typedef int Alignment;
+#endif //EZXT_QT4
+
+
+#ifndef NO_EZX
+#   define EZ_BaseDialog(parent,name,modal,flag) ZBaseDialog(parent,name,modal,flag)
+#   define EZ_Dialog(dt,hastitle,parent,name,modal,flag) UTIL_Dialog(dt,hastitle,parent,name,modal,flag)
+#   define EZ_ListView(parent,args...) QListView(parent,##args)
+//#   define EZ_ListViewItem(parent,x) Q3ListViewItem(parent,x)
+#   define EZ_ListViewItem(parent,afterOrLabel,x,labels...) Q3ListViewItem(parent,afterOrLabel,x,## labels)
+#   define EZ_UPushButton(act_pix,nor_pix,text,parent,flag,w,h) UTIL_PushButton(act_pix,nor_pix,text,parent,flag,w,h)
+#   define EZ_PushButton(sid_icon,text,parent,flw...) ZPushButton(sid_icon,text,parent,## flw)
+//#define addWidget(item,fr,fc,rspan,cspan,align) addMultiCellWidget(item,fr,fc,fr+rspan-1,fc+cspan-1,align)
+//confilct
+//#   define addItem(item,fr,fc,rspan,cspan,align...) addMultiCell(item,fr,fr+rspan-1,fc,fc+cspan-1,## align)
+//#   define addLayout(layout,fr,fc,rspan,cspan,align...) addMultiCellLayout(layout,fr,fr+rspan-1,fc,fc+cspan-1,## align)
+#else
+#   define ZApplication QApplication
+#   define ZBaseDialog QWidget
+#   define UTIL_Dialog QDialog
+#   define MyQListViewItem Q3ListViewItem
+#   define UTIL_ProgressBar QProgressBar
+#   define UTIL_ProgressDialog QProgressDialog
+#   define UTIL_PushButton QToolButton
+#	define ZMessageBox QMessageBox
+#   define ZPushButton QPushButton
+#   define EZ_BaseDialog(parent,name,modal,flag) ZBaseDialog(parent,flag)
+#   define EZ_Dialog(dt,hastitle,parent,name,modal,flag) UTIL_Dialog(parent,flag)
+#   define EZ_ListView(parent,...) Q3ListView(parent)
+//#   define EZ_ListViewItem(parent,x) Q3ListViewItem(parent)
+#   define EZ_ListViewItem(parent,afterOrLabel,x,labels...) Q3ListViewItem(parent,afterOrLabel,## labels)
+#   define EZ_UPushButton(act_pix,nor_pix,text,parent,name,w,h) UTIL_PushButton(parent)
+#   define EZ_PushButton(sid_icon,text,parent,...) ZPushButton(text,parent)
+#ifndef QT3_SUPPORT
+#   define insertStringList(strList) addItems(strList)
+#   define setMaxValue(max) setMaximum(max)
+#   define addMultiCellWidget(widget,fr,tor,fc,toc,align...) addWidget(widget,fr,fc,tor-fr+1,toc-fc+1,## align)
+#   define addMultiCell(item,fr,tor,fc,toc,align...) addItem(item,fr,fc,tor-fr+1,toc-fc+1,## align)
+#endif //QT3_SUPPORT
+#endif //NO_EZX
+
+#include <qfileinfo.h>
+#include <string.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <assert.h>
+
+#define SIZE 1
+#define MAX 1024
+#define ZDEBUG(fmt,args...) printf("line: %d, function: %s, file: %s...\t"fmt"\n",__LINE__,__PRETTY_FUNCTION__,__FILE__,## args); \
+	fflush(stdout)
+
+#ifndef EZXT_QT4
+template <typename ForwardIterator> void qDeleteAll(ForwardIterator begin, ForwardIterator end)
+{
+	while (begin != end) {
+		delete *begin;
+		++begin;
+	}
+}
+
+template <typename Container> inline void qDeleteAll(const Container &c)
+{
+	qDeleteAll(c.begin(), c.end());
+}
+#endif
+
+#endif // GLOBAL_H

@@ -1,0 +1,151 @@
+/******************************************************************************
+	EZProgressDialog
+    Copyright (C) 2010 Wangbin <wbsecg1@gmail.com>
+ 	(aka. nukin in ccmove & novesky in http://forum.motorolafans.com)
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+******************************************************************************/
+#ifndef EZPROGRESSDIALOG_P_H
+#define EZPROGRESSDIALOG_P_H
+#include "../global.h"
+#define INHERIT_PRIVATE 0
+
+#include <qdatetime.h>
+#ifdef EZXT_QT4
+#include <QLabel>
+#include <QPushButton>
+#	if INHERIT_PRIVATE
+#include <private/qdialog_p.h>
+#	endif
+#else
+#define INHERIT_PRIVATE 0
+class QLabel;
+#endif
+#ifndef NO_EZX
+#include <UTIL_ProgressBar.h>
+#else
+#include <qprogressbar.h>
+#endif
+#include <qlayout.h>
+
+class EZProgressDialog;
+class QString;
+//class QHBoxLayout;
+//class QVBoxLayout;
+//class UTIL_ProgressBar;
+
+#ifdef EZXT_QT4
+typedef QListIterator<ZPushButton*> ButtonIterator;
+typedef QListIterator<QLabel*> LabelIterator;
+#else
+typedef QListIterator<ZPushButton> ButtonIterator;
+typedef QListIterator<QLabel> LabelIterator;
+#endif
+
+#if QT_VERSION < 0x040000
+template <typename T> static inline T *qGetPtrHelper(T *ptr) { return ptr; }
+#define Q_DECLARE_PRIVATE(Class) \
+    inline Class##Private* d_func() { return reinterpret_cast<Class##Private *>(qGetPtrHelper(d_ptr)); } \
+    inline const Class##Private* d_func() const { return reinterpret_cast<const Class##Private *>(qGetPtrHelper(d_ptr)); } \
+    friend class Class##Private;
+
+#define Q_DECLARE_PRIVATE_D(Dptr, Class) \
+    inline Class##Private* d_func() { return reinterpret_cast<Class##Private *>(Dptr); } \
+    inline const Class##Private* d_func() const { return reinterpret_cast<const Class##Private *>(Dptr); } \
+    friend class Class##Private;
+
+#define Q_DECLARE_PUBLIC(Class)                                    \
+    inline Class* q_func() { return static_cast<Class *>(q_ptr); } \
+    inline const Class* q_func() const { return static_cast<const Class *>(q_ptr); } \
+    friend class Class;
+
+#define Q_D(Class) Class##Private * const d = d_func()
+#define Q_Q(Class) Class * const q = q_func()
+#endif
+
+
+class EZProgressDialogPrivate
+#if (QT_VERSION >= 0x040000) && INHERIT_PRIVATE
+	:public QDialogPrivate
+#endif
+{
+	Q_DECLARE_PUBLIC(EZProgressDialog)
+public:
+	EZProgressDialogPrivate():labelLayout(0),content(0),bar(0)
+			,buttonLayout(0),autoReset(true),autoClose(false)
+	{
+#ifndef NO_EZX
+		value=0;
+#endif
+	}
+
+	~EZProgressDialogPrivate() {
+		//ButtonIterator it(buttons);
+	#ifdef EZXT_QT4
+		//for(it.toFront();it.hasNext();) {
+			//delete it.next(); //
+		qDeleteAll(buttons.begin(),buttons.end());
+	#else
+		ButtonIterator it(buttons);
+		for(it.toFirst();it.current();++it) //{
+			delete *it; //
+	#endif
+		//}
+		//LabelIterator it_l(labels);
+	#ifdef EZXT_QT4
+		//for(it_l.toFront();it_l.hasNext();) {
+		//	delete it_l.next(); //
+		qDeleteAll(labels.begin(),labels.end());
+	#else
+		LabelIterator it_l(labels);
+		for(it_l.toFirst();it_l.current();++it_l) //{
+			delete *it_l; //
+	#endif
+		//}
+		buttons.clear();
+		labels.clear();
+		delete labelLayout;
+		delete buttonLayout;
+		delete bar;
+		delete q_ptr;
+	}
+
+
+	void setupUi(EZProgressDialog* dialog);
+	void init(const QString &labelText, int value, int max);
+
+	QVBoxLayout *labelLayout;
+	QLabel *content;
+	UTIL_ProgressBar *bar;
+	QHBoxLayout *buttonLayout;
+#if QT_VERSION >= 0x040000
+	QList<QLabel*> labels;
+	QList<ZPushButton*> buttons;
+#else
+	QList<QLabel> labels;
+	QList<ZPushButton> buttons;
+#endif //EZXT_QT4
+	QTime time;
+
+#if !INHERIT_PRIVATE || (QT_VERSION < 0x040000)
+	EZProgressDialog *q_ptr;
+#endif
+	bool autoReset, autoClose;
+#ifndef NO_EZX
+	int value;
+#endif
+};
+
+#endif // EZPROGRESSDIALOG_P_H
