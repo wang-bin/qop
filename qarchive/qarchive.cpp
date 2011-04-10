@@ -190,7 +190,7 @@ void QArchive::forceShowMessage(int interval)
 void QArchive::checkTryPause()
 {
 	while(_pause) {
-		UTIL::qWait(1000);
+		UTIL::qWait(100);
 	}
 }
 

@@ -34,7 +34,7 @@
 #define _OS_MSDOS_
 #endif
 
-
+/*
 #if (__GNUC__ < 4)
 #   if QT_VERSION >= 0x040000
 #   define EZXT_QT4
@@ -44,8 +44,27 @@
 #   define EZXT_QT4 (QT_VERSION >= 0x040000)
 #   define NO_EZX (QT_VERSION >= 0x040000)
 #endif
+*/
+#define APP_NAME "qop"
+//#define APP_VERSION 0.1.4
+#define APP_VERSION_STR "0.1.4"
 
-#ifdef EZXT_QT4
+#include <qglobal.h>
+#if QT_VERSION >= 0x040000
+#	define CONFIG_QT4 1
+#	if CONFIG_EZX
+#		define CONFIG_EZX 0
+#	endif
+#	define EZQT 1
+#elif QT_VERSION >= 0x030000
+#	define CONFIG_QT3 1
+#elif QT_VERSION >= 235
+#	define CONFIG_QT2 1
+#else
+#	error Qt 2, Qt 3 or Qt 4 is required!
+#endif
+
+#if CONFIG_QT4
 #include <Qt>
 #include <QtGui/QApplication>
 #include <QColorGroup>
@@ -68,21 +87,21 @@ using Qt::Alignment;
 #define ezDebug(s) qDebug(s)
 #define qMax(a,b) QMAX(a,b)
 #define qMin(a,b) QMIN(a,b)
-# ifdef NO_EZX
+# if !CONFIG_EZX
 #	include <qprogressdialog.h>
 #define timerInformation(parent,pix_title,text,time,ok) information(parent,"",text)
 # else
 #	include <UTIL_ProgressDialog.h>
 #	include <ZApplication.h>
 #	include <ZMessageBox.h>
-# endif //NO_EZX
+# endif //CONFIG_EZX
 #define EZ_ProgressDialog(labeltext,cancelbutton,min,max,parent,name,modal,flag) UTIL_ProgressDialog(labeltext,cancelbutton,max,parent,name,modal,flag)
 //#define setValue(v) setProgress(v)
 typedef int Alignment;
 #endif //EZXT_QT4
 
 
-#ifndef NO_EZX
+#if CONFIG_EZX
 #   define EZ_BaseDialog(parent,name,modal,flag) ZBaseDialog(parent,name,modal,flag)
 #   define EZ_Dialog(dt,hastitle,parent,name,modal,flag) UTIL_Dialog(dt,hastitle,parent,name,modal,flag)
 #   define EZ_ListView(parent,args...) QListView(parent,##args)
@@ -130,7 +149,7 @@ typedef int Alignment;
 #define ZDEBUG(fmt,args...) printf("line: %d, function: %s, file: %s...\t"fmt"\n",__LINE__,__PRETTY_FUNCTION__,__FILE__,## args); \
 	fflush(stdout)
 
-#ifndef EZXT_QT4
+#if !CONFIG_QT4
 template <typename ForwardIterator> void qDeleteAll(ForwardIterator begin, ForwardIterator end)
 {
 	while (begin != end) {

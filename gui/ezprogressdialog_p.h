@@ -23,7 +23,7 @@
 #define INHERIT_PRIVATE 0
 
 #include <qdatetime.h>
-#ifdef EZXT_QT4
+#if CONFIG_QT4
 #include <QLabel>
 #include <QPushButton>
 #	if INHERIT_PRIVATE
@@ -33,7 +33,7 @@
 #define INHERIT_PRIVATE 0
 class QLabel;
 #endif
-#ifndef NO_EZX
+#if CONFIG_EZX
 #include <UTIL_ProgressBar.h>
 #else
 #include <qprogressbar.h>
@@ -46,7 +46,7 @@ class QString;
 //class QVBoxLayout;
 //class UTIL_ProgressBar;
 
-#ifdef EZXT_QT4
+#if CONFIG_QT4
 typedef QListIterator<ZPushButton*> ButtonIterator;
 typedef QListIterator<QLabel*> LabelIterator;
 #else
@@ -86,34 +86,28 @@ public:
 	EZProgressDialogPrivate():labelLayout(0),content(0),bar(0)
 			,buttonLayout(0),autoReset(true),autoClose(false)
 	{
-#ifndef NO_EZX
+#if CONFIG_EZX
 		value=0;
 #endif
 	}
 
 	~EZProgressDialogPrivate() {
 		//ButtonIterator it(buttons);
-	#ifdef EZXT_QT4
+	#if CONFIG_QT4
 		//for(it.toFront();it.hasNext();) {
 			//delete it.next(); //
 		qDeleteAll(buttons.begin(),buttons.end());
-	#else
-		ButtonIterator it(buttons);
-		for(it.toFirst();it.current();++it) //{
-			delete *it; //
-	#endif
-		//}
-		//LabelIterator it_l(labels);
-	#ifdef EZXT_QT4
 		//for(it_l.toFront();it_l.hasNext();) {
 		//	delete it_l.next(); //
 		qDeleteAll(labels.begin(),labels.end());
 	#else
+		ButtonIterator it(buttons);
+		for(it.toFirst();it.current();++it) //{
+			delete *it; //
 		LabelIterator it_l(labels);
 		for(it_l.toFirst();it_l.current();++it_l) //{
 			delete *it_l; //
 	#endif
-		//}
 		buttons.clear();
 		labels.clear();
 		delete labelLayout;
@@ -143,7 +137,7 @@ public:
 	EZProgressDialog *q_ptr;
 #endif
 	bool autoReset, autoClose;
-#ifndef NO_EZX
+#if CONFIG_EZX
 	int value;
 #endif
 };

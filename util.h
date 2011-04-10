@@ -63,13 +63,11 @@ template<typename T> T* reverse(T* src,int len)
 	T* ret = tmp;
 	T* p = tmp + len - 1;
 	while (p > tmp) {
-		*p ^= *tmp;
-		*tmp ^= *p;
-		*p ^= *tmp;
+		*p ^= *tmp ^= *p ^= *tmp;
 		/*!
-		*p = *p + *tmp;
+		*p += *tmp;
 		*tmp = *p - *tmp;
-		*p = *p - *tmp;
+		*p -= *tmp;
 		*/
 		--p; ++tmp;
 	}

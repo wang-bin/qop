@@ -1,4 +1,37 @@
+文档，使用说明
+
+wrapper of QOutParser, QArchive and EZProgressDialog
+class QOP {
+public:
+
+
+public:
+	QOutputParser* parser;
+	QArchive *archive;
+	EZProgressDialog *progressDialog;
+}
+
+libqop.so
+
+Using QProcess:
+use class QOutputParser and EZProgressDialog, not executable qop;
+
+	connect(qprocess, SIGNAL( readyReadStandardOutput() ), manager, SLOT( progress() ) );
+	connect(qprocess, SIGNAL(finished(int,QProcess::ExitStatus)), qop, SIGNAL(finished(int,QProcess::ExitStatus)) );
+
+	QByteArray data = qprocess->readAllStandardOutput();
+	QString line = data.constData();
+
+	qop->parseLine(line);
+
+	QProcess::terminate() in filemanager
+
+
+//////////////////////////////////////////////////////////////////
+
 function ptr replace signal/slot, use macros
+
+qt2.x 3.x线程间无法进行signal-slot消息传递，导致各消息循环相独立的loop, 通讯的唯一方式global state+ mutex lock
 
 Change macros to typedef!
 

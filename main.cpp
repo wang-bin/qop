@@ -17,25 +17,12 @@
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 ******************************************************************************/
-#include "QOutParser.h"
-#include "qarchive/arcreader.h"
-#include "option.h"
-#include "util.h"
-#include "qarchive/qarchive.h"
-#include "qarchive/tar/qtar.h"
-#ifndef EZPROGRESS
-#define EZPROGRESS
-#endif
-#ifdef EZPROGRESS
-#include "gui/ezprogressdialog.h"
-#endif
+#include "qop.h"
 #ifdef _OS_LINUX_
 #include <sys/types.h>
 #include <signal.h>
 #endif
-#include <qtimer.h>
-#include <qlabel.h>
-#ifndef NO_EZX
+#if CONFIG_EZX
 #include <ZApplication.h>
 #include <ZLanguage.h>
 #endif
@@ -46,7 +33,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#define VERSION "0.1.3"
+#define VERSION "0.1.4"
 static const char *appName=(char*)malloc(64);
 //static char appName[64]={};
 const QString program="qop";
@@ -81,7 +68,7 @@ int main(int argc, char *argv[])
 	printf("%s %s (%s, %s)\n",appName,VERSION,__DATE__,__TIME__);
 	opts_t options=opts_parse(argc,argv);
 
-#ifdef EZXT_QT4
+#if CONFIG_QT4
 #define FLAG Qt::WindowStaysOnTopHint
 #else
 #define FLAG Qt::WStyle_StaysOnTop
@@ -99,57 +86,44 @@ int main(int argc, char *argv[])
 	//QDir::setCurrent(dirname); //bad in windows cygwin
 
 	QTranslator appTranslator(0);
-#ifndef NO_EZX
+#if CONFIG_EZX
 	appTranslator.load(program+"_"+ZLanguage::getSystemLanguageCode(),dirname+"/i18n");
 	//QString(dirname)+"/i18n" will load fail, 乱码
 #else
 	QString sysLang=QLocale::system().name();
 	qDebug()<<sysLang;
 	appTranslator.load(program+"-"+sysLang,dirname+"/i18n");
-#endif //NO_EZX
+#endif //CONFIG_EZX
 	a.installTranslator(&appTranslator);
-#ifndef EZPROGRESS
-	UTIL_ProgressDialog *msg=new EZ_ProgressDialog(QObject::tr("Calculating..."),QObject::tr("Cancel"),0,options->steps,0,"UTIL_ProgressDialog",false,FLAG);
-#else
-	EZProgressDialog *msg=new EZProgressDialog(QObject::tr("Calculating..."),QObject::tr("Cancel"),0,options->steps,0,FLAG);
-#endif //EZPROGRESS
-	msg->addButton(QObject::tr("Hide"),0,1,Qt::AlignRight);
-	QObject::connect(msg->button(0),SIGNAL(clicked()),msg,SLOT(hide())); //Hide the widget will be faster. not showMinimum
-	msg->setAutoClose(false);
-	msg->setAutoReset(false);  //true: 最大值时变为最小
-#ifndef NO_EZX
-	QFont f;
-	f.setPointSize(14);
-	msg->setLabelFont(0,f);
-	msg->bar()->setCenterIndicator(true);
-	msg->bar()->setIndicatorFollowsStyle(false);
-#endif //NO_EZX
-#ifdef EZXT_QT4
-	msg->setWindowTitle("qop "+QObject::tr("Compression/Extraction progress dialog"));
-	msg->setObjectName("QProgressDialog");
-#else
-	msg->setCaption("qop "+QObject::tr("Compression/Extraction progress dialog"));
-	a.setMainWidget(msg);
-#endif //EZXT_QT4
-	if(!options->hide) msg->show();
+
+	Qop *qop=new Qop;
+#if !CONFIG_QT4
+	a.setMainWidget(qop->progress);
+#endif //CONFIG_QT4
+	if(!options->hide) qop->progress->show();
 
 	if(options->diy || argc<2) {
+	    qop->setBuildinMethod(true);
+	    qop->setArchive(options->x_file);
+	    qop->initArchive();
+	    /*
 		Archive::QArchive* qarc=new Archive::Tar::QTar(options->x_file);
 		printf("archive: %s\n",options->x_file);
-		msg->setMaximum(qarc->unpackedSize());
-		msg->addButton(QObject::tr("Pause"),1);
-		QObject::connect(msg->button(1),SIGNAL(clicked()),qarc,SLOT(pauseOrContinue()));
-		QObject::connect(qarc,SIGNAL(byteProcessed(int)),msg,SLOT(setValue(int)));
-		QObject::connect(qarc,SIGNAL(textChanged(const QString&)),msg,SLOT(setLabelText(const QString&)));
-		QObject::connect(msg,SIGNAL(canceled()),qarc,SLOT(terminate()));
-		QObject::connect(qarc,SIGNAL(finished()),msg,SLOT(showNormal()));
-#ifndef NO_EZX
-	//msg->exec(); //NO_MODAL
+		qop->progress->setMaximum(qarc->unpackedSize());
+		qop->progress->addButton(QObject::tr("Pause"),1);
+		QObject::connect(qop->progress->button(1),SIGNAL(clicked()),qarc,SLOT(pauseOrContinue()));
+		QObject::connect(qarc,SIGNAL(byteProcessed(int)),qop->progress,SLOT(setValue(int)));
+		QObject::connect(qarc,SIGNAL(textChanged(const QString&)),qop->progress,SLOT(setLabelText(const QString&)));
+		QObject::connect(qop->progress,SIGNAL(canceled()),qarc,SLOT(terminate()));
+		QObject::connect(qarc,SIGNAL(finished()),qop->progress,SLOT(showNormal()));
+		*/
+#if CONFIG_EZX
+	//progress->exec(); //NO_MODAL
 		a.processEvents();
 //#else
-	//msg->show();
+	//progress->show();
 #endif
-		qarc->extract();
+		qop->archive->extract();
 	} else {
 		if(options->x_file!=NULL) {
 			if(!QFile(options->x_file).exists()) {
@@ -172,26 +146,26 @@ int main(int argc, char *argv[])
 #else
 		QOutParser *parser=getParser(options->parser_type);
 #endif //OP_TEMPLATE
-#ifdef EZXT_QT4
-	//msg->setWindowTitle("qop "+QObject::tr("Compression/Extraction progress dialog"));
-	//msg->setObjectName("QProgressDialog");
-		QObject::connect(parser,SIGNAL(valueChanged(int)),msg,SLOT(setValue(int)));
-	//QObject::connect(msg,SIGNAL(canceled()),qApp,SLOT(quit())); //does not work. Will send sig aboutToQuit()
-		QObject::connect(msg,SIGNAL(canceled()),parser,SLOT(terminate()));
+#if CONFIG_QT4
+	//progress->setWindowTitle("qop "+QObject::tr("Compression/Extraction progress dialog"));
+	//progress->setObjectName("QProgressDialog");
+		QObject::connect(parser,SIGNAL(valueChanged(int)),qop->progress,SLOT(setValue(int)));
+	//QObject::connect(progress,SIGNAL(canceled()),qApp,SLOT(quit())); //does not work. Will send sig aboutToQuit()
+		QObject::connect(qop->progress,SIGNAL(canceled()),parser,SLOT(terminate()));
 #else
-	//msg->setCaption("qop "+QObject::tr("Compression/Extraction progress dialog"));
-	//a.setMainWidget(msg);
-		QObject::connect(parser,SIGNAL(valueChanged(int)),msg,SLOT(setProgress(int)));
-		QObject::connect(msg,SIGNAL(cancelled()),parser,SLOT(terminate())); //to canceled
-#endif //NO_EZX
-		QObject::connect(parser,SIGNAL(textChanged(const QString&)),msg,SLOT(setLabelText(const QString&)));
-		QObject::connect(parser,SIGNAL(maximumChanged(int)),msg,SLOT(setMaximum(int)));
-		QObject::connect(parser,SIGNAL(finished()),msg,SLOT(showNormal()));
-#ifndef NO_EZX
-	//msg->exec(); //NO_MODAL
+	//progress->setCaption("qop "+QObject::tr("Compression/Extraction progress dialog"));
+	//a.setMainWidget(progress);
+		QObject::connect(parser,SIGNAL(valueChanged(int)),progress,SLOT(setProgress(int)));
+		QObject::connect(progress,SIGNAL(cancelled()),parser,SLOT(terminate())); //to canceled
+#endif //CONFIG_EZX
+		QObject::connect(parser,SIGNAL(textChanged(const QString&)),qop->progress,SLOT(setLabelText(const QString&)));
+		QObject::connect(parser,SIGNAL(maximumChanged(int)),qop->progress,SLOT(setMaximum(int)));
+		QObject::connect(parser,SIGNAL(finished()),qop->progress,SLOT(showNormal()));
+#if CONFIG_EZX
+	//progress->exec(); //NO_MODAL
 		a.processEvents();
 //#else
-	//msg->show();
+	//progress->show();
 #endif
 		if(options->unit) parser->setCountType(Num);
 		if(options->steps>0) {
@@ -206,10 +180,10 @@ int main(int argc, char *argv[])
 		}
 		parser->start();
 	}
-#ifndef NO_EZX
+#if CONFIG_EZX
 	a.processEvents();
 #endif
-	//msg->exec();
+	//progress->exec();
 	if(options->auto_close) exit(0);
 
 	return a.exec();

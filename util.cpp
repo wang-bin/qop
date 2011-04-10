@@ -211,37 +211,71 @@ int parseOct(const char *p, size_t n)
 	return (i);
 }
 
+
+
+
+#define SLEEP_QTIME 0
+#define SLEEP_WAITCONDITION 1
+
 #include "global.h"
-#if EZXT_QT4
+#if CONFIG_QT4
 #include <QtCore/QElapsedTimer>
 #else
 #include <qtimer.h>
 typedef QTimer QElapsedTimer;
 #endif
+
+#if SLEEP_QTIME
+#include <QTime>
+#elif SLEEP_WAITCONDITION
+#include <QWaitCondition>
+#include <QMutex>
+static QMutex mutex;
+#else
 #ifdef Q_OS_WIN
-//#include <windows.h>
-#include <QtTest/QTest>
-#endif
+#include <windows.h>  //compile error in mingw
+#endif //Q_OS_WIN
+#endif //SLEEP_QTIME
+
 namespace UTIL {
+
 //sleep和usleep都已经obsolete，建议使用nanosleep代替
 void qSleep(int ms)
 {
+#if SLEEP_QTIME
+	QTime dieTime = QTime::currentTime().addMSecs(ms);
+	while( QTime::currentTime() < dieTime )
+		QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+#elif SLEEP_WAITCONDITION
+	mutex.lock();
+	QWaitCondition wait;
+	wait.wait(&mutex,ms);
+	mutex.unlock();
+#else
 #ifdef Q_OS_WIN
-	QTest::qSleep(ms);
-	//Sleep(uint(ms));
+	Sleep(uint(ms));
 #else
 	struct timespec ts = { ms / 1000, (ms % 1000) * 1000 * 1000 };
 	nanosleep(&ts, NULL);
-#endif
+#endif //Q_OS_WIN
+#endif //SLEEP_QTIME
+
 }
+
 //inline static
 void qWait(int ms)
 {
 	QElapsedTimer timer;
 	timer.start();
 	do {
-		QApplication::processEvents(QEventLoop::AllEvents, ms);
-		qSleep(10);
+#if CONFIG_QT4
+		//解决界面无法刷新的问题
+		QCoreApplication::processEvents(QEventLoop::AllEvents, ms);
+#else
+		QApplication::processEvents(ms);
+#endif
+		qSleep(10); //解决程序CPU占用率过高的问题
 	} while (timer.elapsed() < ms);
 }
+
 } //nameespace UTIL

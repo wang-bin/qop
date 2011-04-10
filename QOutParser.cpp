@@ -128,11 +128,11 @@
 #include "util.h"
 QOutParser* getParser(const QString& type)
 {
-#ifdef EZXT_QT4
+#if CONFIG_QT4
 	QString t=type.toLower();
 #else
 	QString t=type.lower();
-#endif // EZXT_QT4
+#endif // CONFIG_QT4
 	if(t=="tar") {
 		return new QTarOutParser;
 	} else if(t=="zip") {
@@ -346,7 +346,7 @@ void QOutParser::setTotalSize(uint s)
 void QOutParser::terminate()
 {
     qDebug("signal sender: %s",
-#ifdef EZXT_QT4
+#if CONFIG_QT4
 	    sender()->objectName().toLocal8Bit().data()
 #else
 	    sender()->name()
@@ -360,7 +360,7 @@ void QOutParser::terminate()
     int pid, ppid, pgrp;
 	//QDir *procdir = new QDir("/proc", 0, QDir::Name, QDir::Dirs);
 	QDir procdir("/proc", 0, QDir::Name, QDir::Dirs);
-#ifdef EZXT_QT4
+#if CONFIG_QT4
 	const QFileInfoList proclist =procdir.entryInfoList();
 	//QFileInfoList *proclist = new QFileInfoList(procdir->entryInfoList());
 	QListIterator<QFileInfo> it( proclist );
@@ -372,9 +372,9 @@ void QOutParser::terminate()
 	//QFileInfoList *proclist = new QFileInfoList(*(procdir->entryInfoList()));
 	QFileInfo *f;
 	if ( !proclist->isEmpty() ) {
-#endif //EZXT_QT4
+#endif //CONFIG_QT4
 
-#ifdef EZXT_QT4
+#if CONFIG_QT4
 		while(it.hasNext()) {
 			f=it.next();
 			QString pidNow=f.fileName();
@@ -382,13 +382,13 @@ void QOutParser::terminate()
 		while ( ( f = it.current() ) != 0 ) {
 		    ++it;
 			QString pidNow=f->fileName();
-#endif //EZXT_QT4
+#endif //CONFIG_QT4
 		    if ( pidNow >= "0" && pidNow <= "99999" ) {
-#ifdef EZXT_QT4
+#if CONFIG_QT4
 				FILE *procfile = fopen( QString("/proc/" + pidNow + "/stat").toLocal8Bit().constData(), "r");
 #else
 				FILE *procfile = fopen( ( QString ) ( "/proc/" + pidNow + "/stat"), "r");
-#endif //EZXT_QT4
+#endif //CONFIG_QT4
 				if ( procfile ) {
 					fscanf( procfile,"%d %s %*c %d %d",&pid, cmd, &ppid, &pgrp);
 					fclose( procfile );
@@ -419,7 +419,7 @@ void QOutParser::terminate()
 	kill(getpid(),SIGTERM);
 #endif
 #if defined(QT_THREAD_SUPPORT)
-#	if defined(EZXT_QT4)
+#	if CONFIG_QT4
 	QThread::currentThread()->exit();
 #else
     QThread::exit();
@@ -432,11 +432,11 @@ void QOutParser::terminate()
 #if OP_TEMPLATE
 void QOutParser::setLineFormat(const QString &type)
 {ZDEBUG();
-#ifdef EZXT_QT4
+#if CONFIG_QT4
 	QString t=type.toLower();
 #else
 	QString t=type.lower();
-#endif // EZXT_QT4
+#endif // CONFIG_QT4
 	if(t.contains("tar")) {
 		ZDEBUG();
 		lineFmt=new LineFormatArc<int*,char*,void*>();

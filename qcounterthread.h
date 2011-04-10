@@ -32,7 +32,6 @@ enum CountType {
 		Size=0x0, Num=0x1, NumNoDir=0x3
 };
 //if no thread support, inherits qobject
-#define EZXT_QT
 class QCounterThread :
 #if !(QT_VERSION >= 0x040000)
 		public QObject,

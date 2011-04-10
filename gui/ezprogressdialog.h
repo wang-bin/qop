@@ -29,7 +29,7 @@
 #include <qdialog.h>
 #include "../global.h"
 
-#ifdef NO_EZX
+#if !CONFIG_EZX
 #define ZApplication QApplication
 #include <qapplication.h>
 #include <qpushbutton.h> //include it so that we can use it's apis directly.
@@ -37,7 +37,7 @@
 #include <ZApplication.h>
 #include <ZBaseDialog.h>
 #include <ZPushButton.h>
-#endif //NO_EZX
+#endif //CONFIG_EZX
 #include <qlabel.h>
 
 //class QLabel;
@@ -66,7 +66,7 @@ public:
 	//#include <ZPushButton.h> first. connecting signals to slots etc. index<0, return the last index of abs(index)
 	//Don't only write ZPushButton* button(...); Thus the ZPushButton can't convert to QPushButton in connections
 	//just addButton() and connect(button(0)...) one by one. connection is not dynamic. why?
-#ifndef NO_EZX
+#if CONFIG_EZX
 	ZPushButton *button(int index=0) const;
 #else
 	QPushButton *button(int index=0) const;
