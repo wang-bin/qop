@@ -1,9 +1,29 @@
+/******************************************************************************
+	QOP: Qt Output Parser for tar, zip etc with a compression/extraction progress indicator
+	Copyright (C) 2011 Wangbin <wbsecg1@gmail.com>
+	(aka. nukin in ccmove & novesky in http://forum.motorolafans.com)
+
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License along
+	with this program; if not, write to the Free Software Foundation, Inc.,
+	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+******************************************************************************/
+
 #ifndef QOP_H
 #define QOP_H
 
+#include <qprocess.h>
 #include "QOutParser.h"
 #include "qarchive/arcreader.h"
-#include "option.h"
 #include "util.h"
 #include "qarchive/qarchive.h"
 #include "qarchive/tar/qtar.h"
@@ -14,14 +34,18 @@
 #include "gui/ezprogressdialog.h"
 #endif
 
-class QProcess;
-class Qop
+class Qop :public QObject
 {
+	Q_OBJECT
 public:
     Qop();
 
-    void setBuildinMethod(bool);
-    void setArchive(const QString& archive_path);
+	void extract(const QString& archive,const QString& outDir);
+	void execute(const QString& cmd);
+	//void parseOutput();
+
+	void setInternal(bool);
+	void setArchive(const QString& archive_path);
 
 //union!!
 /*!
@@ -43,13 +67,22 @@ public:
 #else
 	EZProgressDialog *progress;
 #endif //EZPROGRESS
+	int steps;
+	const char* parser_type;
 
 	void initArchive();
+	void initParser();
+	void initProcess();
+
+private slots:
+	void readStdOut();
+	void readStdErr();
+
 private:
     void initGui();
 
-    bool buildin;
-    QString arc_path;
+	bool internal;
+	QString arc_path;
 };
 
 #endif // QOP_H

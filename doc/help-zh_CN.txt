@@ -1,0 +1,50 @@
+Auther: Wangbin (aka nukin in ccomve & novesky in motorolafans)
+Shanghai university, China
+2010-09-09
+wbsecg1@gmail.com
+
+软件名：qop. Qt Output Parser for tar, zip, unzip, unrar,7z with compressing/extracting progress indicator.
+用于显示tar,zip,unzip,unrar,7z这些工具进行压缩解压时的进度，与tar结合使用的工具如gzip,xz等也可以处理。
+平台支持：windows(Qt4), Linux(Qt4, tested on ubuntu 10.04), motorola ezx(Qt2, tested on ROKR E6)
+
+Project: http://sourceforge.net/projects/qop/files"
+		 http://qt-apps.org/content/show.php/qop?content=132430
+
+原理：其实就是分析压缩解压工具的终端输出来计算进度并对其他量进行估计。暂时没有想到更好的办法。
+缺点：当前显示的是之前一个文件处理完毕时的信息，而不是正在处理的文件的信息。没办法，因为是读取一行输出后才进行显示。无法与终端进行交互
+bug: windows 下取消后7z进程无法结束
+
+usage: qop [-t parserFor] [-n|s] [-chm] [-x archieve|-T totalSteps] [files...]
+-m, --multi-thread: 另开一个进程来计算进度条总步长.
+-h, --help: help
+-n, --number: 设置总步长为文件数.
+-s, --size: 设置总步长为文件大小（默认）. 
+-T, --steps=STEPS: 设置总步长值.
+-t,  --parser[=TYPE]: 通常为压缩解压工具的名字, 如tar, zip, unzip, unrar. 如果xz, lzop等结合tar使用, parser为tar. 缺省值 -t tar
+若要解压tar或tar.xxx文件, 建议使用-tuntar.
+-x, --exteact=ARCHIVE: 解压缩. 忽略-T选项, 自动分析parser和总步长, 即无需-t选项.
+-c, --auto-close: 处理完毕自动关闭窗口
+-d, --diy[=TARFILE]: 使用自带的方法解压
+
+
+例子:
+	tar zcvvf test.tgz test |qop test -m
+	tar zxvvf test.tgz |qop -T `gzip -l test.tgz |sed -n '$s/\(.*\) \(.*\)  .*/\2/p'` -tuntar -c
+	tar zxvf test.tgz |qop -T `tar -zt <test.tgz |wc -l` -n  ##slower than former
+
+	tar --use=xz -cvvf test.txz test |qop test -m -t tar
+	tar --use=xz test.tar.xz |qop -T `tar --use=xz -t<test.tar.xz |wc -l` -n
+
+	zip -ryv -9 -FS test.zip test |qop test -m -t zip
+	unzip -o test.zip -d . |qop -T `unzip -Z -t test.zip |sed 's/\(.*\) files.*/\1/'` -t unzip
+	unrar -o+ -y test.rar . |qop -t unrar
+	7z x -y test.7z |qop -t7z -T $((`7z l test.7z |sed -n '$s/\(.*\), \(.*\)folders/\2/p'`+`7z l test.7z |sed -n '$s/\(.*\) \(.*\)files.*/\2/p'`))
+
+#7z的那个计算文件和文件夹总数的谁来写的更简洁些？输出为                                2833677      1029657  75 files, 7 folders
+	
+新版(版本>=0.1.0)的解压tar.gz文件例子：
+	tar zxvvf test.tgz test |qop -x test.tgz
+
+
+
+大家觉得好用的话给我的qt-apps project点下good! thx!

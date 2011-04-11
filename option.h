@@ -4,6 +4,8 @@
 #include <getopt.h>
 #include "qany.h"
 #include <qlist.h>
+#include <qstring.h>
+#include <string>
 
 struct opts_s;
 typedef struct opts_s *opts_t;
@@ -13,6 +15,7 @@ const struct option long_options[] = {
 		{"size",0,0,'s'},
 		{"number",0,0,'n'},
 		{"auto-close",0,0,'c'},
+		{"cmd",0,0,'C'},
 		{"multi-thread",0,0,'m'},
 		{"extract",1,0,'x'},
 		{"steps",1,0,'T'},
@@ -28,6 +31,8 @@ struct opts_s {
 	int argc;                      /* number of non-option arguments */
 	char **argv;
 	char* program_name;
+
+	char* cmd;
 
 	const char* parser_type;
 	int unit;

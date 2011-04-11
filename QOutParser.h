@@ -63,6 +63,7 @@ public:
 	~QOutParser();
 
 	void start(); //start to parse output
+	void parseLine(const char* line);
 	void setMultiThread(bool);
 	void startCounterThread(); //start a QCounterThread thread
 
@@ -72,7 +73,8 @@ public:
 	void setLineFormat(const QString& type);
 #endif //OP_TEMPLATE
 public slots:
-    void setTotalSize(uint);
+	void initTimer();
+	void setTotalSize(uint);
     void estimate();
     void terminate();
 
@@ -102,7 +104,8 @@ protected:
     double  _left;
     volatile uint max_value;
 	QString max_str;
-	Format res;
+	Format res, res_tmp;
+	bool first;
     int tid;
 
 	QCounterThread counter;

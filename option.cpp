@@ -20,7 +20,7 @@ void opts_free(opts_t opts)
 opts_t opts_parse(int argc, char **argv)
 {
 	int option_index = 0;
-	const char *short_options = "t:mnshHT:x:cd::";
+	const char *short_options = "t:mnshHT:x:cd::C:";
 	int c;
 	opts_t opts;
 
@@ -32,6 +32,7 @@ opts_t opts_parse(int argc, char **argv)
 	}
 
 	opts->program_name = argv[0];
+	opts->cmd=0;
 	opts->parser_type="tar";
 	opts->x_file=NULL;
 	opts->auto_close=0;
@@ -62,6 +63,20 @@ opts_t opts_parse(int argc, char **argv)
 			case 'h': printHelp(); exit(0);//opts->help=1;break;//
 			case 'H': opts->hide=1; break;
 			case 'c': opts->auto_close=1; break;
+			case 'C': {
+				opts->x_file=0;
+				opts->optind=optind;
+				//std::string s;
+				opts->cmd=new char[256];
+				opts->cmd[0]=0;
+				for(int i=optind-1;i<argc;++i) {
+					strcat(strcat(opts->cmd,argv[i])," ");
+					//s.append(argv[i]).append(" ");
+				}
+				//opts->cmd=const_cast<char*>(s.c_str());
+				ZDEBUG("cmd: %s",opts->cmd);
+				return opts;
+			}
 			case 'x': opts->x_file=optarg; break;
 			case 'd': opts->diy=1; if(optarg!=NULL) opts->x_file=optarg; break;
 			case 'I': opts->Stdin=1; break;

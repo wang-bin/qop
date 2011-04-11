@@ -1,6 +1,9 @@
 文档，使用说明
 
-wrapper of QOutParser, QArchive and EZProgressDialog
+
+QSocket 对qop与qprocess间进行通信。
+
+
 class QOP {
 public:
 

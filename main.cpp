@@ -18,6 +18,7 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 ******************************************************************************/
 #include "qop.h"
+#include "option.h"
 #ifdef _OS_LINUX_
 #include <sys/types.h>
 #include <signal.h>
@@ -26,14 +27,13 @@
 #include <ZApplication.h>
 #include <ZLanguage.h>
 #endif
-//#include <qdir.h>
+#include <qdir.h>
 //#include <qfileinfo.h>
 #include <qtranslator.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
 
-#define VERSION "0.1.4"
 static const char *appName=(char*)malloc(64);
 //static char appName[64]={};
 const QString program="qop";
@@ -59,21 +59,16 @@ void printHelp()
 					"Project:\n"
 					"    http://sourceforge.net/projects/qop/files\n"
 					"    http://qt-apps.org/content/show.php/qop?content=132430\n"
-					"Send bugreports to <wbsecg1@gmail.com>\n\n",appName,VERSION,__DATE__,__TIME__,appName);
+					"Send bugreports to <wbsecg1@gmail.com>\n\n",appName,APP_VERSION_STR,__DATE__,__TIME__,appName);
 }
 
 int main(int argc, char *argv[])
 {
 	appName=getFileName(argv[0]);
-	printf("%s %s (%s, %s)\n",appName,VERSION,__DATE__,__TIME__);
+	printf("%s %s (%s, %s)\n",APP_NAME,APP_VERSION_STR,__DATE__,__TIME__);
+
 	opts_t options=opts_parse(argc,argv);
 
-#if CONFIG_QT4
-#define FLAG Qt::WindowStaysOnTopHint
-#else
-#define FLAG Qt::WStyle_StaysOnTop
-//using X::QApplication;
-#endif
 	ZApplication a(argc, argv, QApplication::GuiClient);
 	printf("Qt %s\n",qVersion());
 #if QT_VERSION >= 0x040000
@@ -84,6 +79,7 @@ int main(int argc, char *argv[])
 	//QString dirname=getFileDir(argv[0]);//
 #endif
 	//QDir::setCurrent(dirname); //bad in windows cygwin
+
 
 	QTranslator appTranslator(0);
 #if CONFIG_EZX
@@ -96,89 +92,36 @@ int main(int argc, char *argv[])
 #endif //CONFIG_EZX
 	a.installTranslator(&appTranslator);
 
+
+
 	Qop *qop=new Qop;
 #if !CONFIG_QT4
 	a.setMainWidget(qop->progress);
 #endif //CONFIG_QT4
-	if(!options->hide) qop->progress->show();
+	qop->progress->setMaximum(options->steps);
+	if(!options->hide)
+		qop->progress->show();
+	//order is important
+	qop->parser_type=options->parser_type;
+	qop->setArchive(options->x_file);
 
-	if(options->diy || argc<2) {
-	    qop->setBuildinMethod(true);
-	    qop->setArchive(options->x_file);
-	    qop->initArchive();
-	    /*
-		Archive::QArchive* qarc=new Archive::Tar::QTar(options->x_file);
-		printf("archive: %s\n",options->x_file);
-		qop->progress->setMaximum(qarc->unpackedSize());
-		qop->progress->addButton(QObject::tr("Pause"),1);
-		QObject::connect(qop->progress->button(1),SIGNAL(clicked()),qarc,SLOT(pauseOrContinue()));
-		QObject::connect(qarc,SIGNAL(byteProcessed(int)),qop->progress,SLOT(setValue(int)));
-		QObject::connect(qarc,SIGNAL(textChanged(const QString&)),qop->progress,SLOT(setLabelText(const QString&)));
-		QObject::connect(qop->progress,SIGNAL(canceled()),qarc,SLOT(terminate()));
-		QObject::connect(qarc,SIGNAL(finished()),qop->progress,SLOT(showNormal()));
-		*/
-#if CONFIG_EZX
-	//progress->exec(); //NO_MODAL
-		a.processEvents();
-//#else
-	//progress->show();
-#endif
-		qop->archive->extract();
-	} else {
-		if(options->x_file!=NULL) {
-			if(!QFile(options->x_file).exists()) {
-				printf("file:%s does not exists\n",options->x_file);
-				fflush(stdout);
-				exit(0);
-			}
-			Archive::ArcReader ar(options->x_file);
-			switch(ar.formatByBuf()) {
-			case Archive::FormatRar:	options->parser_type="unrar";	break;
-			case Archive::FormatZip:	options->parser_type="unzip";	break;
-			case Archive::Format7zip:	options->parser_type="7z";	break;
-			default: break;
-			}
-			options->steps=ar.uncompressedSize();
-		}//omit -T
-#if OP_TEMPLATE
-	QOutParser *parser=new QOutParser;
-	parser->setLineFormat(options->parser_type);
-#else
-		QOutParser *parser=getParser(options->parser_type);
-#endif //OP_TEMPLATE
-#if CONFIG_QT4
-	//progress->setWindowTitle("qop "+QObject::tr("Compression/Extraction progress dialog"));
-	//progress->setObjectName("QProgressDialog");
-		QObject::connect(parser,SIGNAL(valueChanged(int)),qop->progress,SLOT(setValue(int)));
-	//QObject::connect(progress,SIGNAL(canceled()),qApp,SLOT(quit())); //does not work. Will send sig aboutToQuit()
-		QObject::connect(qop->progress,SIGNAL(canceled()),parser,SLOT(terminate()));
-#else
-	//progress->setCaption("qop "+QObject::tr("Compression/Extraction progress dialog"));
-	//a.setMainWidget(progress);
-		QObject::connect(parser,SIGNAL(valueChanged(int)),progress,SLOT(setProgress(int)));
-		QObject::connect(progress,SIGNAL(cancelled()),parser,SLOT(terminate())); //to canceled
-#endif //CONFIG_EZX
-		QObject::connect(parser,SIGNAL(textChanged(const QString&)),qop->progress,SLOT(setLabelText(const QString&)));
-		QObject::connect(parser,SIGNAL(maximumChanged(int)),qop->progress,SLOT(setMaximum(int)));
-		QObject::connect(parser,SIGNAL(finished()),qop->progress,SLOT(showNormal()));
-#if CONFIG_EZX
-	//progress->exec(); //NO_MODAL
-		a.processEvents();
-//#else
-	//progress->show();
-#endif
-		if(options->unit) parser->setCountType(Num);
-		if(options->steps>0) {
-			parser->setTotalSize(options->steps);
-		} else {
+	if(options->diy || argc<2) //internal method
+		qop->extract(options->x_file,".");
+	else if(!options->cmd==0)
+		qop->execute(options->cmd);
+	else {
+		qop->initParser();
+		if(options->unit) qop->parser->setCountType(Num);
+		if(!qop->steps>0) { //compress
+			if(options->steps>0) qop->parser->setTotalSize(options->steps);
 			QStringList files=QStringList();
 		//why is optind?
 			for(int i=options->optind;i<argc;++i) files<<argv[i];
-			parser->setFiles(files);
-			parser->setMultiThread(options->multi_thread);
-			parser->startCounterThread();
+			qop->parser->setFiles(files);
+			qop->parser->setMultiThread(options->multi_thread);
+			qop->parser->startCounterThread();
 		}
-		parser->start();
+		qop->parser->start();
 	}
 #if CONFIG_EZX
 	a.processEvents();

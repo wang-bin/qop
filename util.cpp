@@ -221,15 +221,19 @@ int parseOct(const char *p, size_t n)
 #if CONFIG_QT4
 #include <QtCore/QElapsedTimer>
 #else
-#include <qtimer.h>
-typedef QTimer QElapsedTimer;
+#include <qdatetime.h>
+typedef QTime QElapsedTimer;
 #endif
 
 #if SLEEP_QTIME
-#include <QTime>
+#include <qdatetime.h>
 #elif SLEEP_WAITCONDITION
-#include <QWaitCondition>
-#include <QMutex>
+#if CONFIG_QT2
+#include <qthread.h>
+#else
+#include <qwaitcondition.h>
+#include <qmutex.h>
+#endif //CONFIG_QT2
 static QMutex mutex;
 #else
 #ifdef Q_OS_WIN
@@ -272,7 +276,7 @@ void qWait(int ms)
 		//解决界面无法刷新的问题
 		QCoreApplication::processEvents(QEventLoop::AllEvents, ms);
 #else
-		QApplication::processEvents(ms);
+		qApp->processEvents(ms);
 #endif
 		qSleep(10); //解决程序CPU占用率过高的问题
 	} while (timer.elapsed() < ms);

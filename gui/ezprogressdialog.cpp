@@ -131,9 +131,9 @@ EZProgressDialog::EZProgressDialog(const QString &labelText,const QString &cance
 	//connect(b,SIGNAL(clicked()),SLOT(reject()));
 	connect(b,SIGNAL(clicked()),this,SIGNAL(canceled()));
 	connect(b,SIGNAL(clicked()),this,SIGNAL(cancelled()));
-#if CONFIG_EZX
+//#if CONFIG_EZX
 	connect(b,SIGNAL(clicked()),qApp,SLOT(quit())); //EZX needs this
-#endif
+//#endif
 	startTimer(1000);
 }
 
@@ -187,7 +187,7 @@ ZPushButton* EZProgressDialog::button(int index) const
 {
 	Q_D(const EZProgressDialog);
 	if(index>=(int)d->buttons.count()) index=-1;
-	return d->buttons.at(index<0 ? d->buttons.count()+index : index);
+	return d->buttons.at(index<0 ? d->buttons.count()+index : index); //index%d->buttons.count()
 }
 
 int EZProgressDialog::buttonsCount() const

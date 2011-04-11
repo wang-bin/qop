@@ -46,8 +46,8 @@
 #endif
 */
 #define APP_NAME "qop"
-//#define APP_VERSION 0.1.4
-#define APP_VERSION_STR "0.1.4"
+//#define APP_VERSION 0.1.6
+#define APP_VERSION_STR "0.1.6"
 
 #include <qglobal.h>
 #if QT_VERSION >= 0x040000
@@ -60,6 +60,7 @@
 #	define CONFIG_QT3 1
 #elif QT_VERSION >= 235
 #	define CONFIG_QT2 1
+#	define CONFIG_EZX 1
 #else
 #	error Qt 2, Qt 3 or Qt 4 is required!
 #endif
@@ -87,7 +88,7 @@ using Qt::Alignment;
 #define ezDebug(s) qDebug(s)
 #define qMax(a,b) QMAX(a,b)
 #define qMin(a,b) QMIN(a,b)
-# if !CONFIG_EZX
+#if !CONFIG_EZX
 #	include <qprogressdialog.h>
 #define timerInformation(parent,pix_title,text,time,ok) information(parent,"",text)
 # else

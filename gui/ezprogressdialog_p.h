@@ -35,6 +35,7 @@ class QLabel;
 #endif
 #if CONFIG_EZX
 #include <UTIL_ProgressBar.h>
+#include <ZPushButton.h>
 #else
 #include <qprogressbar.h>
 #endif

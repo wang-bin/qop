@@ -66,11 +66,7 @@ public:
 	//#include <ZPushButton.h> first. connecting signals to slots etc. index<0, return the last index of abs(index)
 	//Don't only write ZPushButton* button(...); Thus the ZPushButton can't convert to QPushButton in connections
 	//just addButton() and connect(button(0)...) one by one. connection is not dynamic. why?
-#if CONFIG_EZX
 	ZPushButton *button(int index=0) const;
-#else
-	QPushButton *button(int index=0) const;
-#endif
 	int buttonsCount() const;
 
 	void addLabel(QLabel* label,int index=-1,int stretch=0,Alignment align=0);

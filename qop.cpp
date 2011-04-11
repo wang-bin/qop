@@ -1,5 +1,25 @@
+/******************************************************************************
+	QOP: Qt Output Parser for tar, zip etc with a compression/extraction progress indicator
+	Copyright (C) 2011 Wangbin <wbsecg1@gmail.com>
+	(aka. nukin in ccmove & novesky in http://forum.motorolafans.com)
+
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License along
+	with this program; if not, write to the Free Software Foundation, Inc.,
+	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+******************************************************************************/
+
 #include "qop.h"
-#include <qprocess.h>
+#include <qdir.h>
 
 #if CONFIG_QT4
 #define FLAG Qt::WindowStaysOnTopHint
@@ -8,18 +28,34 @@
 //using X::QApplication;
 #endif
 
-Qop::Qop():archive(0),parser(0),process(0)
+Qop::Qop()
+	:archive(0),parser(0),process(0)
   #ifndef EZPROGRESS
 	  ,progress(new EZ_ProgressDialog(QObject::tr("Calculating..."),QObject::tr("Cancel"),0,100,0,"UTIL_ProgressDialog",false,FLAG))
   #else
 	  ,progress(new EZProgressDialog(QObject::tr("Calculating..."),QObject::tr("Cancel"),0,100,0,FLAG))
   #endif //EZPROGRESS
-  ,buildin(false)
+  ,steps(-1),parser_type("tar"),internal(false)
 {
     initGui();
 }
 
+void Qop::extract(const QString& arc, const QString& outDir)
+{
+	setInternal(true);
+	setArchive(arc);
+	initArchive();
+	archive->extract();
+}
 
+void Qop::execute(const QString &cmd)
+{
+	initParser();
+	initProcess();
+	//progress->setLabelText(QDir::currentPath());//QApplication::applicationDirPath();
+	process->setWorkingDirectory(QDir::currentPath());
+	process->start(cmd);
+}
 
 void Qop::initGui()
 {
@@ -46,11 +82,11 @@ void Qop::initGui()
 void Qop::initArchive()
 {
     if(archive!=0) {
-	delete archive;
-	archive=0;
+		delete archive;
+		archive=0;
     }
     archive=new Archive::Tar::QTar(arc_path);
-    ezDebug("archive: "+arc_path);
+	ezDebug("archive: "+arc_path);
     progress->setMaximum(archive->unpackedSize());
     progress->addButton(QObject::tr("Pause"),1);
     QObject::connect(progress->button(1),SIGNAL(clicked()),archive,SLOT(pauseOrContinue()));
@@ -67,14 +103,85 @@ void Qop::initArchive()
 #endif
 }
 
-void Qop::setBuildinMethod(bool bi)
+void Qop::initParser()
 {
-    buildin=bi;
-    //if(buidin)
-	//initArchive();
+	//char* parser_type="tar";
+	if(!arc_path.isEmpty()) {
+	    if(!QFile(arc_path).exists()) {
+			ezDebug("file: "+arc_path+ " does not exists\n");
+		    fflush(stdout);
+		    exit(0);
+	    }
+	    Archive::ArcReader ar(arc_path);
+	    switch(ar.formatByBuf()) {
+	    case Archive::FormatRar:	parser_type="unrar";	break;
+	    case Archive::FormatZip:	parser_type="unzip";	break;
+		case Archive::Format7zip:	parser_type="7z";		break;
+		default:					parser_type="untar";	break;
+	    }
+		steps=ar.uncompressedSize();
+    }//omit -T
+
+    parser=getParser(parser_type);
+#if CONFIG_QT4
+	//progress->setWindowTitle("qop "+QObject::tr("Compression/Extraction progress dialog"));
+	//progress->setObjectName("QProgressDialog");
+	QObject::connect(parser,SIGNAL(valueChanged(int)),progress,SLOT(setValue(int)));
+	//QObject::connect(progress,SIGNAL(canceled()),qApp,SLOT(quit())); //does not work. Will send sig aboutToQuit()
+	QObject::connect(progress,SIGNAL(canceled()),parser,SLOT(terminate()));
+#else
+	//progress->setCaption("qop "+QObject::tr("Compression/Extraction progress dialog"));
+	//a.setMainWidget(progress);
+	QObject::connect(parser,SIGNAL(valueChanged(int)),progress,SLOT(setProgress(int)));
+	QObject::connect(progress,SIGNAL(cancelled()),parser,SLOT(terminate())); //to canceled
+#endif //CONFIG_EZX
+	QObject::connect(parser,SIGNAL(textChanged(const QString&)),progress,SLOT(setLabelText(const QString&)));
+	QObject::connect(parser,SIGNAL(maximumChanged(int)),progress,SLOT(setMaximum(int)));
+	QObject::connect(parser,SIGNAL(finished()),progress,SLOT(showNormal()));
+#if CONFIG_EZX
+	//progress->exec(); //NO_MODAL
+	qApp->processEvents();
+//#else
+	//progress->show();
+#endif
+
+	if(steps>0)
+		parser->setTotalSize(steps);
+
 }
 
-void Qop::setArchive(const QString &archive_path)
+void Qop::initProcess()
 {
-    arc_path=archive_path;
+	process=new QProcess(this);
+	process->setWorkingDirectory(QDir::currentPath());
+	//ZDEBUG("working dir: %s",process->workingDirectory().toLocal8Bit().constData());
+	connect(process, SIGNAL(readyReadStandardOutput()), SLOT(readStdOut()));
+	connect(process,SIGNAL(readyReadStandardError()),SLOT(readStdErr()));
+	connect(process, SIGNAL(finished(int,QProcess::ExitStatus)), SIGNAL(finished(int,QProcess::ExitStatus)));
+	connect(process,SIGNAL(started()),parser,SLOT(initTimer()));
+}
+
+void Qop::setInternal(bool bi)
+{
+	internal=bi;
+}
+
+void Qop::setArchive(const QString& archive_path)
+{
+	arc_path=archive_path;
+}
+
+void Qop::readStdOut()
+{
+	QByteArray data = process->readAllStandardOutput();
+	parser->parseLine(data.constData());
+	QString line = data.constData();
+	ZDEBUG("stdout: %s",line.toLocal8Bit().constData());
+}
+
+void Qop::readStdErr()
+{
+	QByteArray data = process->readAllStandardOutput();
+	QString line = data.constData();
+	ZDEBUG("stderr: %s",line.toLocal8Bit().constData());
 }

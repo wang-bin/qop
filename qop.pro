@@ -47,7 +47,9 @@ TRANSLATIONS += qop_zh-cn.ts
 
 OTHER_FILES += \
     doc/TODO.txt \
-    doc/history
+    doc/history \
+    doc/help-zh_CN.txt \
+    doc/help-en_US.txt
 
 
 INTERFACES	=
@@ -59,7 +61,7 @@ CONFIG(ezx) {
 	 DEFINES        += CONFIG_EZX
 	 QMAKE_CXXFLAGS.ARMCC +=
  } else {
-	 TARGET = pictureflow
+	 TARGET = qop
 	 unix:  {
 			MOC_DIR		= .moc/unix
 			OBJECTS_DIR	= .obj/unix

@@ -167,6 +167,8 @@ QOutParser::QOutParser(uint total):QObject(0),file(""),size(0),compressed(0),val
 	,lineFmt(new LineFormat)
 #endif //OP_TEMPLATE
 {
+	res_tmp=res;
+	first=true;
 	_time.start();
     connect(this,SIGNAL(finished()),SLOT(slotFinished()));
 	connect(&counter,SIGNAL(counted(uint)),SLOT(setTotalSize(uint)));
@@ -177,54 +179,64 @@ QOutParser::QOutParser(uint total):QObject(0),file(""),size(0),compressed(0),val
 QOutParser::~QOutParser()
 {}
 
-void QOutParser::start() {
-    _time.restart();
-	tid=startTimer(300); //startTimer(0) error in ezx
-	//read(STDIN_FILENO,buf,SIZE))
-	Format res_tmp=res;
-	bool first=true;
-    while(fgets(line,MAX,stdin)) {
-		qApp->processEvents();
-		res_tmp=parse(line);
-		//_speed=value/(1+_elapsed)*1000;
-		/*! 2010-11-27
-                    set count_type when as the first available format and switch to correct mode
-                    1-thread mode will perform perfectly
-                */
-		if(first && res_tmp!=Error && res_tmp!=Unknow) {
-			res=res_tmp;
-			first=false;
-			if((res_tmp==Simple && count_type==Size)||((res_tmp==Detail || res_tmp==DetailWithRatio)&&count_type!=Size)) {
-				count_type= (CountType)((int)~count_type&0x1);
-				setCountType(count_type);
-				startCounterThread(); //no effect on multi-threading
-			}
+void QOutParser::parseLine(const char* line)
+{
+	//Format res_tmp=res;
+	qApp->processEvents();
+	res_tmp=parse(line);
+	//_speed=value/(1+_elapsed)*1000;
+	/*! 2010-11-27
+				set count_type when as the first available format and switch to correct mode
+				1-thread mode will perform perfectly
+			*/
+	if(first && res_tmp!=Error && res_tmp!=Unknow) {
+		res=res_tmp;
+		first=false;
+		if((res_tmp==Simple && count_type==Size)||((res_tmp==Detail || res_tmp==DetailWithRatio)&&count_type!=Size)) {
+			count_type= (CountType)((int)~count_type&0x1);
+			setCountType(count_type);
+			startCounterThread(); //no effect on multi-threading
 		}
+	}
 
-		if(res==Detail) {
-			_out=file+"\n"+tr("Size: ")+size2Str<float>(size)+"\n"+tr("Processed: ")+size2Str<float>(value)+max_str+"\n";
-			_extra=tr("Speed: ")+size2Str<float>(_speed)+"/s\n"+tr("Elapsed: %1s Remaining: %2s").arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1);
-		} else if(res==Simple) {
-			_out=file+"\n"+tr("Processed: ")+QString::number(++value)+max_str+tr("files")+"\n";// .arg(_elapsed/1000.,0,'f',1).arg(++value).arg(max_str);
-			_extra=tr("Speed: ")+QString::number(_speed)+"/s\n"+tr("Elapsed: %1s Remaining: %2s").arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1);
-			//_extra=tr("Elapsed: %1s Processed: %2%3 files").arg(_elapsed/1000.,0,'f',1).arg(++value).arg(max_str);
-		} else if(res==DetailWithRatio) {
-			_out=file+"\n"+tr("Size: ")+size2Str<float>(size)+"  "+tr("Ratio: ")+ratio+"\n"+tr("Processed: ")+size2Str<float>(value)+max_str+"\n";
-			_extra=tr("Speed: ")+size2Str<float>(_speed)+"/s\n"+tr("Elapsed: %1s Remaining: %2s").arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1);
-		} else if(res==Unknow) {
-			puts(line);
-			fflush(stdout);
-			continue;
-		} else if(res==Error) {
-			puts(line);
-			_out=tr("Password Error!");
-			_extra="";
-		} else {
-			_out=line;
-			_extra="";
-		}
-		emit valueChanged(value);//_value++);//inavailable lines, value not ++
-		emit textChanged(_out+_extra);
+	if(res==Detail) {
+		_out=file+"\n"+tr("Size: ")+size2Str<float>(size)+"\n"+tr("Processed: ")+size2Str<float>(value)+max_str+"\n";
+		_extra=tr("Speed: ")+size2Str<float>(_speed)+"/s\n"+tr("Elapsed: %1s Remaining: %2s").arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1);
+	} else if(res==Simple) {
+		_out=file+"\n"+tr("Processed: ")+QString::number(++value)+max_str+tr("files")+"\n";// .arg(_elapsed/1000.,0,'f',1).arg(++value).arg(max_str);
+		_extra=tr("Speed: ")+QString::number(_speed)+"/s\n"+tr("Elapsed: %1s Remaining: %2s").arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1);
+		//_extra=tr("Elapsed: %1s Processed: %2%3 files").arg(_elapsed/1000.,0,'f',1).arg(++value).arg(max_str);
+	} else if(res==DetailWithRatio) {
+		_out=file+"\n"+tr("Size: ")+size2Str<float>(size)+"  "+tr("Ratio: ")+ratio+"\n"+tr("Processed: ")+size2Str<float>(value)+max_str+"\n";
+		_extra=tr("Speed: ")+size2Str<float>(_speed)+"/s\n"+tr("Elapsed: %1s Remaining: %2s").arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1);
+	} else if(res==Unknow) {
+		puts(line);
+		fflush(stdout);
+		return;//continue;
+	} else if(res==Error) {
+		puts(line);
+		_out=tr("Password Error!");
+		_extra="";
+	} else {
+		_out=line;
+		_extra="";
+	}
+	emit valueChanged(value);//_value++);//inavailable lines, value not ++
+	emit textChanged(_out+_extra);
+
+}
+
+void QOutParser::initTimer()
+{
+	_time.restart();
+	tid=startTimer(300); //startTimer(0) error in ezx
+}
+
+void QOutParser::start() {
+	initTimer();
+	//read(STDIN_FILENO,buf,SIZE))
+	while(fgets(line,MAX,stdin)) {
+		parseLine(line);
     }
     emit finished();
 }
