@@ -4,6 +4,14 @@
 QSocket 对qop与qprocess间进行通信。
 Error Handler
 Port Qt4 QProcess to Qt2 Qt3
+read all stdout then parse line by line
+or read all then parse the last line
+internal tar Chinese support
+
+
+FIXME:
+-C command: sometimes taroutparser unit error
+
 
 class CommadParser --- version 0.2.0
 

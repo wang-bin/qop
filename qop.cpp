@@ -215,4 +215,5 @@ void Qop::readStdErr()
 {
 	const char* all_error_msg = process->readAllStandardError().constData();
 	qDebug("stderr: %s",all_error_msg);
+	qDebug("Read form stderr End...");
 }

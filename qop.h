@@ -42,7 +42,7 @@ public:
 	~Qop();
 
 	void extract(const QString& archive,const QString& outDir);
-	void execute(const QString& cmd);
+	void execute(const QString& cmd); //execute(const QString& program,const QStringList& arg)
 	//void parseOutput();
 
 	void setInternal(bool);

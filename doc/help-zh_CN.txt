@@ -24,10 +24,12 @@ usage: qop [-t parserFor] [-n|s] [-chm] [-x archieve|-T totalSteps] [files...]
 若要解压tar或tar.xxx文件, 建议使用-tuntar.
 -x, --exteact=ARCHIVE: 解压缩. 忽略-T选项, 自动分析parser和总步长, 即无需-t选项.
 -c, --auto-close: 处理完毕自动关闭窗口
+-C, --cmd=command: 运行command命令
 -d, --diy[=TARFILE]: 使用自带的方法解压
 
 
 例子:
+	qop tar cvvf test.tar test
 	tar zcvvf test.tgz test |qop test -m
 	tar zxvvf test.tgz |qop -T `gzip -l test.tgz |sed -n '$s/\(.*\) \(.*\)  .*/\2/p'` -tuntar -c
 	tar zxvf test.tgz |qop -T `tar -zt <test.tgz |wc -l` -n  ##slower than former

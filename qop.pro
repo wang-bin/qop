@@ -24,7 +24,8 @@ HEADERS		= QOutParser.h \
     qarchive/gzip/GzipHeader.h \
 	qarchive/gzip/GzipItem.h \
 	Compress/BitlDecoder.h \
-    qop.h
+    qop.h \
+    commandparser.h
 
 SOURCES		= QOutParser.cpp \
 		  gui/ezprogressdialog.cpp \
@@ -39,7 +40,8 @@ SOURCES		= QOutParser.cpp \
     qarchive/zip/ZipHeader.cpp \
 	qarchive/gzip/GzipItem.cpp \
 	Compress/BitlDecoder.cpp \
-    qop.cpp
+    qop.cpp \
+    commandparser.cpp
 
 INCLUDEPATH	+= .
 LIBS	+= -Llib -lz

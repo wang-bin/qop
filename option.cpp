@@ -75,6 +75,7 @@ opts_t opts_parse(int argc, char **argv)
 				}
 				//opts->cmd=const_cast<char*>(s.c_str());
 				ZDEBUG("cmd: %s",opts->cmd);
+				//opts->steps=CommandParser(opts->cmd)::size()
 				return opts;
 			}
 			case 'x': opts->x_file=optarg; break;

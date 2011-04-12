@@ -20,10 +20,12 @@ usage: qop [-t parserFor] [-n|s] [-chm] [-x archieve|-T totalSteps] [files...]
 -t,  --parser[=TYPE]: usually is tool's name, such as tar, zip, unzip, unrar. If using xz, lzop etc with tar, parser is tar. -t tar is default.
 If you want to extract a .tar or .tar.xxx file and set size as total steps, use -tuntar is better.
 -c, --auto-close: auto close when finished
+-C, --cmd=command: execute command
 -x, --exteact=ARCHIVE: extracting mode. Omit -T argument. Analyze parser and total steps automaticly.
 -d, --diy[=TARFILE]: using built-in method to extract an archive
 
 examples:
+	qop tar cvvf test.tar test
 	tar zcvvf test.tgz test |qop test -m
 	tar zxvvf test.tgz |qop -T `gzip -l test.tgz |sed -n '$s/\(.*\) \(.*\)  .*/\2/p'` -tuntar -c
 	tar zxvf test.tgz |qop -T `tar -zt <test.tgz |wc -l` -n  ##slower than former

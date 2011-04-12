@@ -41,7 +41,7 @@ const QString program="qop";
 void printHelp()
 {
 	fprintf(stderr,	"%s %s (%s, %s)\n"
-					"Usage: %s [-t parserFor] [-n|s] [-hmc] [-x archieve|-T totalSteps] [files...]\n"
+					"Usage: %s [-t parserFor] [-n|s] [-hmc] [-x archieve|-T totalSteps] [files...] [-C cmd]\n"
 					"  -t, --parser[=TYPE]  parser(tar,untar,zip,unzip,unrar,lzip.upx)\n"
 					"  -n, --number         count number of files as total steps\n"
 					"  -s, --size           count size of files as total steps\n"
@@ -49,6 +49,7 @@ void printHelp()
 					"  -h, --help           help. print me\n"
 					"  -m, --multi-thread   multi-thread counting steps while (de)compressing\n"
 					"  -c, --auto-close     auto close when finished\n"
+					"  -C, --cmd=command    execute command. e.g. -C tar cvvf test.tar test\n"
 					"  -x, --extract=FILE   indicates extracting progress\n"
 
 					"\nCopyright (C) 2010 Wangbin(nukin CCMOVE, aka novesky in motorolafans)\n"
