@@ -2,7 +2,7 @@
 
 
 QSocket 对qop与qprocess间进行通信。
-
+Error Handler
 
 class QOP {
 public:

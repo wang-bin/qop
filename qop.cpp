@@ -171,17 +171,28 @@ void Qop::setArchive(const QString& archive_path)
 	arc_path=archive_path;
 }
 
+/*!
+  parse the last line, find the index in filelist;
+  or read all then parse line by line
+  or read line by line
+ */
 void Qop::readStdOut()
-{
-	QByteArray data = process->readAllStandardOutput();
-	parser->parseLine(data.constData());
+{/*
+	char* line = process->readAllStandardOutput();
+	parser->parseLine(line);
 	QString line = data.constData();
-	ZDEBUG("stdout: %s",line.toLocal8Bit().constData());
+	ZDEBUG("stdout: %s",line);
+*/
+    while(process->canReadLine()) {
+	const char* line = process->readLine().constData();
+	parser->parseLine(line);
+	ZDEBUG("stdout: %s",line);
+
+    }
 }
 
 void Qop::readStdErr()
 {
-	QByteArray data = process->readAllStandardOutput();
-	QString line = data.constData();
-	ZDEBUG("stderr: %s",line.toLocal8Bit().constData());
+	const char* all_error_msg = process->readAllStandardError().constData();
+	ZDEBUG("stderr: %s",all_error_msg);
 }
