@@ -40,6 +40,14 @@ Qop::Qop()
     initGui();
 }
 
+Qop::~Qop()
+{
+	delete progress;
+	if(archive) delete archive;
+	if(process) delete process;
+	if(parser)  delete parser;
+}
+
 void Qop::extract(const QString& arc, const QString& outDir)
 {
 	setInternal(true);
@@ -55,6 +63,19 @@ void Qop::execute(const QString &cmd)
 	//progress->setLabelText(QDir::currentPath());//QApplication::applicationDirPath();
 	process->setWorkingDirectory(QDir::currentPath());
 	process->start(cmd);
+	while(!process->waitForFinished(500)) {
+		if(process->state()==QProcess::NotRunning)
+			qDebug("Not running!");
+		qApp->processEvents();
+	}
+	if(process->exitCode()!=0) {
+		qDebug("Run error!");
+	} else if(process->exitStatus()==QProcess::CrashExit) {
+		qDebug("Crashed exit!");
+	} else {
+		qDebug("Normal exit");
+	}
+
 }
 
 void Qop::initGui()
@@ -110,7 +131,6 @@ void Qop::initParser()
 	    if(!QFile(arc_path).exists()) {
 			ezDebug("file: "+arc_path+ " does not exists\n");
 		    fflush(stdout);
-		    exit(0);
 	    }
 	    Archive::ArcReader ar(arc_path);
 	    switch(ar.formatByBuf()) {
@@ -184,9 +204,9 @@ void Qop::readStdOut()
 	ZDEBUG("stdout: %s",line);
 */
     while(process->canReadLine()) {
-	const char* line = process->readLine().constData();
-	parser->parseLine(line);
-	ZDEBUG("stdout: %s",line);
+		const char* line = process->readLine().constData();
+		parser->parseLine(line);
+		qDebug("stdout: %s",line);
 
     }
 }
@@ -194,5 +214,5 @@ void Qop::readStdOut()
 void Qop::readStdErr()
 {
 	const char* all_error_msg = process->readAllStandardError().constData();
-	ZDEBUG("stderr: %s",all_error_msg);
+	qDebug("stderr: %s",all_error_msg);
 }

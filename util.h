@@ -25,6 +25,15 @@
 
 #include <qstring.h>
 #include <stdio.h>
+
+
+#if CONFIG_QT4
+#define QFILENAME(path) QString(path).mid(QString(path).lastIndexOf('/')+1)
+#else
+#define QFILENAME(path) QString(path).mid(QString(path).findRev('/')+1)
+#endif
+
+
 //to speed up!
 #define KInv 1./1024
 //const float KInv=1./1024;
@@ -45,7 +54,7 @@ template<typename T> QString size2Str(unsigned int s)
 		v*=KInv;
 		unit="G";
 	}
-	return QString().sprintf("%.2f",(float)v)+unit;
+	return QString().sprintf("%.2f",(double)v)+unit;
 }
 
 //extern int isBigEndian();

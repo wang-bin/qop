@@ -3,6 +3,9 @@
 
 QSocket 对qop与qprocess间进行通信。
 Error Handler
+Port Qt4 QProcess to Qt2 Qt3
+
+class CommadParser --- version 0.2.0
 
 class QOP {
 public:

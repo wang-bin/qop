@@ -29,8 +29,8 @@
   display size/number left----------------------------------------------X
   consol mode
 
-			_out="<H3><font color=#0000ff>"+file+"</font></H3><left>"+tr("Size: ")+size2Str<float>(size) \
-				 +"</left><br><left>"+tr("Processed: ")+size2Str<float>(value)+" / "+max_str+"</left><br>";
+			_out="<H3><font color=#0000ff>"+file+"</font></H3><left>"+tr("Size: ")+size2Str<double>(size) \
+				 +"</left><br><left>"+tr("Processed: ")+size2Str<double>(value)+" / "+max_str+"</left><br>";
 			Rich text takes much more time
 
 
@@ -158,8 +158,6 @@ QOutParser* getParser(const QString& type)
 
 
 
-
-
 QOutParser::QOutParser(uint total):QObject(0),file(""),size(0),compressed(0),value(0) \
 	,_out(""),_extra(tr("Calculating...")),_elapsed(0),_left(0),max_value(total),res(Unknow) \
 	,count_type(Size),multi_thread(false)
@@ -200,15 +198,15 @@ void QOutParser::parseLine(const char* line)
 	}
 
 	if(res==Detail) {
-		_out=file+"\n"+tr("Size: ")+size2Str<float>(size)+"\n"+tr("Processed: ")+size2Str<float>(value)+max_str+"\n";
-		_extra=tr("Speed: ")+size2Str<float>(_speed)+"/s\n"+tr("Elapsed: %1s Remaining: %2s").arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1);
+		_out=file+"\n"+tr("Size: ")+size2Str<double>(size)+"\n"+tr("Processed: ")+size2Str<double>(value)+max_str+"\n";
+		_extra=tr("Speed: ")+size2Str<double>(_speed)+"/s\n"+tr("Elapsed: %1s Remaining: %2s").arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1);
 	} else if(res==Simple) {
 		_out=file+"\n"+tr("Processed: ")+QString::number(++value)+max_str+tr("files")+"\n";// .arg(_elapsed/1000.,0,'f',1).arg(++value).arg(max_str);
 		_extra=tr("Speed: ")+QString::number(_speed)+"/s\n"+tr("Elapsed: %1s Remaining: %2s").arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1);
 		//_extra=tr("Elapsed: %1s Processed: %2%3 files").arg(_elapsed/1000.,0,'f',1).arg(++value).arg(max_str);
 	} else if(res==DetailWithRatio) {
-		_out=file+"\n"+tr("Size: ")+size2Str<float>(size)+"  "+tr("Ratio: ")+ratio+"\n"+tr("Processed: ")+size2Str<float>(value)+max_str+"\n";
-		_extra=tr("Speed: ")+size2Str<float>(_speed)+"/s\n"+tr("Elapsed: %1s Remaining: %2s").arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1);
+		_out=file+"\n"+tr("Size: ")+size2Str<double>(size)+"  "+tr("Ratio: ")+ratio+"\n"+tr("Processed: ")+size2Str<double>(value)+max_str+"\n";
+		_extra=tr("Speed: ")+size2Str<double>(_speed)+"/s\n"+tr("Elapsed: %1s Remaining: %2s").arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1);
 	} else if(res==Unknow) {
 		puts(line);
 		fflush(stdout);
@@ -286,12 +284,12 @@ Format QOutParser::parse(const char *line)
 	if(kw_found) {
 		sscanf(line,lineFmt->format,lineFmt->argv1,lineFmt->argv2,lineFmt->argv3);ZDEBUG();
 		value+=size=s;
-		file=QFileInfo(name).fileName();
+		file=QFILENAME(name);
 		if(file.isEmpty()) { //"./a/"
 			file=name;
 		} return Detail;
 	} else {
-		file=QFileInfo(line).fileName();
+		file=QFILENAME(line);
 		if(file.isEmpty()) {
 			file=line;
 		} return Simple;
@@ -317,14 +315,14 @@ void QOutParser::slotFinished()
 		_out=tr("Finished: ")+QString("%1").arg(value)+max_str+tr("files")+"\n";
 		_extra=tr("Speed: ")+QString::number(_speed)+"/s\n"+tr("Elapsed time: ")+QString("%1s").arg(_elapsed/1000.,0,'f',1);
 	} else if(res==Detail) {
-		_out=tr("Finished: ")+size2Str<float>(value)+max_str+"\n";
-		_extra=tr("Speed: ")+size2Str<float>(value/(1+_elapsed)*1000)+"/s\n"+tr("Elapsed: %1s Remaining: %2s").arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1);
+		_out=tr("Finished: ")+size2Str<double>(value)+max_str+"\n";
+		_extra=tr("Speed: ")+size2Str<double>(value/(1+_elapsed)*1000)+"/s\n"+tr("Elapsed: %1s Remaining: %2s").arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1);
 	} else if(res==DetailWithRatio) {
-		_out=tr("Finished: ")+size2Str<float>(value)+max_str+"\n";
-		_extra=tr("Speed: ")+size2Str<float>(value/(1+_elapsed)*1000)+"/s\n"+tr("Elapsed: %1s Remaining: %2s").arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1);
+		_out=tr("Finished: ")+size2Str<double>(value)+max_str+"\n";
+		_extra=tr("Speed: ")+size2Str<double>(value/(1+_elapsed)*1000)+"/s\n"+tr("Elapsed: %1s Remaining: %2s").arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1);
 	} else if(res==EndZip) { //zip
-		_out=tr("Finished: ")+size2Str<float>(value)+max_str+"\n"+tr("Compressed: ")+size2Str<float>(compressed)+"\n"+tr("Compression ratio: ")+ratio+"\n";
-		_extra=tr("Speed: ")+size2Str<float>(value/(1+_elapsed)*1000)+"/s\n"+tr("Elapsed: %1s Remaining: %2s").arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1);
+		_out=tr("Finished: ")+size2Str<double>(value)+max_str+"\n"+tr("Compressed: ")+size2Str<double>(compressed)+"\n"+tr("Compression ratio: ")+ratio+"\n";
+		_extra=tr("Speed: ")+size2Str<double>(value/(1+_elapsed)*1000)+"/s\n"+tr("Elapsed: %1s Remaining: %2s").arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1);
 	} else if(res==Error) {
 		_out=tr("Password Error!");
 		_extra="";
@@ -334,11 +332,11 @@ void QOutParser::slotFinished()
 
 void QOutParser::setTotalSize(uint s)
 {
-	//emit textChanged(tr("Counting...")+size2Str<float>(s));
+	//emit textChanged(tr("Counting...")+size2Str<double>(s));
 	emit maximumChanged(max_value=s);
 	//qApp->processEvents();
     estimate();
-	if(count_type==Size) max_str=" / "+size2Str<float>(max_value);
+	if(count_type==Size) max_str=" / "+size2Str<double>(max_value);
 	else max_str=" / "+QString::number(s)+" ";
 #ifndef NO_EZX
 	//ZDEBUG("TS: %d time: %d",max_value,_time.elapsed());
@@ -483,13 +481,13 @@ Format QTarOutParser::parse(const char* line)
     if(QString(line).contains(" ")) {
 		sscanf(line,"%*s%*s%d%*s%*s%s",&s,name);
 		value+=size=s;
-		file=QFileInfo(name).fileName();
+		file=QFILENAME(name);
 		if(file.isEmpty()) { //"./a/"
 			file=name;
 		} return Detail;
 	} else {
 		//puts(line);
-		file=QFileInfo(line).fileName();
+		file=QFILENAME(line);
 		if(file.isEmpty()) {
 			file=line;
 		} return Simple;
@@ -503,6 +501,9 @@ QUntarOutParser::QUntarOutParser(uint tota_size):QOutParser(tota_size)
 	value=512*2; //2*sizeof(tar_header)
 }
 
+/*!
+  FIXME: QFileInfo(name).fileName() is slow and cost to much;
+*/
 Format QUntarOutParser::parse(const char *line)
 {
     int s=0;
@@ -511,13 +512,13 @@ Format QUntarOutParser::parse(const char *line)
 		sscanf(line,"%*s%*s%d%*s%*s%s",&s,name);
 		size=s;
 		value+=512+ROUND512(s);//512+(s%512 ? s+512-s%512 :s); //sizeof(tar_header)+n*512: 512+s+512+(-s)%512
-		file=QFileInfo(name).fileName();
+		file=QFILENAME(name);
 		if(file.isEmpty()) { //"./a/"
 			file=name;
 		} return Detail;
 	} else {
 		//puts(line);
-		file=QFileInfo(line).fileName();
+		file=QFILENAME(line);
 		if(file.isEmpty()) {
 			file=line;
 		} return Simple;
@@ -549,14 +550,14 @@ Format QZipOutParser::parse(const char* line)
 			sscanf(line,"%*s%s\t(in=%d)%*s%*s%[^)]",name,&s,r);
 			ratio=r;
 			value+=size=s;
-			file=QFileInfo(name).fileName();
+			file=QFILENAME(name);
 			if(file.isEmpty()) { //"./a/"
 				file=name;
 			}
 			return DetailWithRatio;
 		}  else {
 			sscanf(line,"%*s%s",name);
-			file=QFileInfo(name).fileName();
+			file=QFILENAME(name);
 			if(file.isEmpty()) {
 				file=name;
 			}
@@ -618,14 +619,14 @@ Format QUnzipOutParser::parse(const char* line)
 		if(!QString(line).contains(":")) return Unknow;
 		sscanf(line,"%d%*s%*d%s%*s%*s%*s%s",&s,r,name);
 		value+=size=s;
-		file=QFileInfo(name).fileName();
+		file=QFILENAME(name);
 		if(file.isEmpty()) { //"./a/"
 				file=name;
 		}
 		return Detail;
     } else {
 		sscanf(line,"%*s%s",name);
-		file=QFileInfo(name).fileName();
+		file=QFILENAME(name);
 		if(file.isEmpty()) {
 				file=name;
 		}
@@ -652,7 +653,7 @@ Format QUnrarOutParser::parse(const char* line)
 
     char name[256];
     sscanf(line,"%*s%s",name);
-    file=QFileInfo(name).fileName();
+	file=QFILENAME(name);
     if(file.isEmpty()) {
 		file=name;
     }
@@ -675,14 +676,14 @@ Format QLzipOutParser::parse(const char* line)
 		sscanf(line,"%s:%*s%*s%s%*s%d",name,r,&size);
 		ratio=r;
 		value+=size=s;
-		file=QFileInfo(name).fileName();
+		file=QFILENAME(name);
 		if(file.isEmpty()) { //"./a/"
 				file=name;
 		}
 		return Detail;
     } else {
 		sscanf(line,"%*s%s",name);
-		file=QFileInfo(name).fileName();
+		file=QFILENAME(name);
 		return Simple;
     }
 }
@@ -708,7 +709,7 @@ Format QUpxOutParser::parse(const char* line)
     char r[7], format[32], outName[32];
     if(!QString(line).contains("%")) return Unknow;
     sscanf(line,"%d%*s%d%s%s%s",&in,&out,r,format,outName);
-    _out="Name: "+QString(outName)+"\nFormate: "+QString(format)+"\n"+size2Str<float>(in)+" -> "+size2Str<float>(out) \
+	_out="Name: "+QString(outName)+"\nFormate: "+QString(format)+"\n"+size2Str<double>(in)+" -> "+size2Str<double>(out) \
 		 +"\nRatio: "+QString(ratio);
     return Unknow;
 }
@@ -729,7 +730,7 @@ Format Q7zOutParser::parse(const char *line)
 	if(QString(line).contains("Compressing") || QString(line).contains("Extracting")) {
 		char name[256];
 		sscanf(line,"%*s%s",name);
-		file=QFileInfo(name).fileName();
+		file=QFILENAME(name);
 		if(file.isEmpty())
 			file=name;
 		return Simple;

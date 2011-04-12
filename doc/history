@@ -1,5 +1,10 @@
 =====================================2011=======================================
-04-11:
+04-12:
+size2Str<float> to size2Str<double>
+~Qop()
+add macro: QFILENAME and replace QFileinfo::fileName()
+
+04-11: Version 0.1.6
 new: qop -C|--cmd commad (e.g. qop -C tar zxvf test.tgz)
 bug: can't show correct progress 
 =====================================2010=======================================

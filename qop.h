@@ -39,6 +39,7 @@ class Qop :public QObject
 	Q_OBJECT
 public:
     Qop();
+	~Qop();
 
 	void extract(const QString& archive,const QString& outDir);
 	void execute(const QString& cmd);
