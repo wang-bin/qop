@@ -26,13 +26,14 @@
 #include "util.h"
 
 CommandParser::CommandParser()
+	:_cmd(""),_archive(""),_files(QStringList()),cmd_parser(0)
 {
 }
 
 CommandParser::CommandParser(const QString &cmd)
-	:_cmd(cmd)
+	:_archive(""),_files(QStringList()),cmd_parser(0)
 {
-
+	setCommand(cmd);
 }
 /*
 CommandParser::CommandParser(const QString &program, const QStringList &argv)
@@ -41,40 +42,78 @@ CommandParser::CommandParser(const QString &program, const QStringList &argv)
 }
 */
 CommandParser::~CommandParser()
-{}
+{
+	if(cmd_parser) {
+		delete cmd_parser;
+		cmd_parser=0;
+	}
+}
+
+void CommandParser::setCommand(const QString &cmd)
+{
+	_cmd=cmd;
+	if(cmd_parser) {
+		delete cmd_parser;
+		cmd_parser=0;
+	}
+	if(_cmd.startsWith("tar"))
+		cmd_parser=new TarCommandParser();
+
+	if(cmd_parser) {
+		cmd_parser->_cmd=_cmd;
+		files();
+		archive();
+	}
+}
 
 QStringList CommandParser::files()
 {
+	if(cmd_parser)
+		_files=cmd_parser->files();
 	return _files;
 }
 
 QString CommandParser::archive()
 {
+	if(cmd_parser)
+		_archive=cmd_parser->archive();
 	return _archive;
 }
 
 size_t CommandParser::filesCount() const
 {
+	if(cmd_parser)
+		return cmd_parser->filesCount();
 	return 0;
 }
 
 size_t CommandParser::filesSize() const
 {
+	if(cmd_parser)
+		return cmd_parser->filesSize();
 	return 0;
 }
 
 size_t CommandParser::archiveSize() const
 {
-	return QFileInfo(_archive).size();
+	if(cmd_parser) return QFileInfo(cmd_parser->archive()).size();
+	return 0;
 }
 
 size_t CommandParser::archiveUnpackSize() const
 {
-	uint unx_size=Archive::QArcReader(_archive).uncompressedSize();
+	if(cmd_parser==0) return 0;
+	uint unx_size=Archive::QArcReader(cmd_parser->archive()).uncompressedSize();
 	qDebug("Archive unpacked size: %db == %s",unx_size,size2Str<double>(unx_size).toLocal8Bit().constData());
 	return unx_size;
 }
 
+
+
+TarCommandParser::TarCommandParser()
+	:CommandParser()
+{
+}
 
 TarCommandParser::TarCommandParser(const QString &cmd)
 	:CommandParser(cmd)
@@ -88,7 +127,7 @@ TarCommandParser::~TarCommandParser()
 
 QStringList TarCommandParser::files()
 {
-
+	return QStringList();
 }
 
 //skip whitespace?
@@ -100,6 +139,5 @@ QString TarCommandParser::archive()
 
 	_archive=_cmd.mid(index_start,index_end-index_start);
 	ezDebug("Archive is: "+_archive);
-
 	return _archive;
 }

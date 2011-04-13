@@ -76,8 +76,8 @@ opts_t opts_parse(int argc, char **argv)
 					//s.append(argv[i]).append(" ");
 				}
 				//opts->cmd=const_cast<char*>(s.c_str());
-				ZDEBUG("cmd: %s",opts->cmd);
-				opts->steps=TarCommandParser(opts->cmd).archiveUnpackSize();
+				qDebug("cmd: %s",opts->cmd);
+				opts->steps=CommandParser(opts->cmd).archiveUnpackSize();
 				return opts;
 			}
 			case 'x': opts->x_file=optarg; break;

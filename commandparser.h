@@ -21,6 +21,20 @@
 #ifndef COMMANDPARSER_H
 #define COMMANDPARSER_H
 
+/*!
+	You can directly write CommandParser(cmd).files(), CommandParser(cmd).archive(),
+	 CommandParser(cmd).filesSize(), CommandParser(cmd).archiveUnpackSize() etc. to get the
+	 correct value you need;
+	 The key technology is that class CommandParser has a CommandParser pointer which points to
+	 a command determined CommandParser pointer; Some CommandParser's member functions call the
+	 pointer's corresponding functions.
+
+	 You also can write code like this:
+	 CommandParser cp;
+	 cp.setCommand(cmd);
+	 uint s=cp.archiveUnpackSize();
+*/
+
 #include <qstringlist.h>
 class CommandParser
 {
@@ -33,12 +47,13 @@ public:
 
 	void setCommand(const QString& cmd);
 
-	virtual QStringList files()=0;
-	virtual QString archive()=0;
+	virtual QStringList files();
+	virtual QString archive();
 
 	/*!
 		CommandParser(cmd).unpackSize();
 	*/
+	bool isSize() const;
 	size_t filesCount() const;
 	size_t filesSize() const;
 	size_t archiveSize() const;
@@ -49,11 +64,14 @@ protected:
 	QString _archive;
 	QStringList _files;
 
+	CommandParser *cmd_parser;
+
 };
 
 class TarCommandParser : public CommandParser
 {
 public:
+	TarCommandParser();
 	TarCommandParser(const QString& cmd);
 	//TarCommandParser(const QString& program, const QStringList& argv);
 
