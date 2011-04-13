@@ -6,6 +6,8 @@
 #include <errno.h>
 #include <unistd.h>
 
+#include "commandparser.h"
+
 void printHelp();
 
 void opts_free(opts_t opts)
@@ -75,7 +77,7 @@ opts_t opts_parse(int argc, char **argv)
 				}
 				//opts->cmd=const_cast<char*>(s.c_str());
 				ZDEBUG("cmd: %s",opts->cmd);
-				//opts->steps=CommandParser(opts->cmd)::size()
+				opts->steps=TarCommandParser(opts->cmd).archiveUnpackSize();
 				return opts;
 			}
 			case 'x': opts->x_file=optarg; break;

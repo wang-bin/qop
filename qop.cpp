@@ -206,7 +206,8 @@ void Qop::readStdOut()
     while(process->canReadLine()) {
 		const char* line = process->readLine().constData();
 		parser->parseLine(line);
-		qDebug("stdout: %s",line);
+		//qDebug("stdout: %s",line);
+		//ezDebug("stdout: "+QString::fromLocal8Bit(line));
 
     }
 }

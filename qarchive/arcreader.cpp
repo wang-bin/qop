@@ -226,8 +226,8 @@ Format QArcReader::formatByName()
 size_t QArcReader::uncompressedSize()
 {
 	formatByBuf();
-	size_t unx_size=0;
 	QFile file(fileName);
+	size_t unx_size=file.size();
 #if ARCREADER_QT4
 	if(!file.open(QIODevice::ReadOnly)) {
 		file.error();

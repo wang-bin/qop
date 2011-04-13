@@ -1,5 +1,6 @@
 文档，使用说明
 
+-C is conflict with tar's arg
 
 QSocket 对qop与qprocess间进行通信。
 Error Handler

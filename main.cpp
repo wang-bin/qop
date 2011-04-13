@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
 	if(options->diy || argc<2) //internal method
 		qop->extract(options->x_file,".");
 	else if(!options->cmd==0)
-		qop->execute(options->cmd);
+		qop->execute(QString::fromLocal8Bit(options->cmd));
 	else {
 		qop->initParser();
 		if(options->unit) qop->parser->setCountType(Num);
