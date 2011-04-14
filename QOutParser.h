@@ -142,53 +142,27 @@ inline void QOutParser::estimate()
 #endif //NO_EZX
 }
 
-class QTarOutParser :public QOutParser
-{
-protected:
-	Format parse(const char* line);
-};
+
+#define Q_DECLARE_OUTPARSER(T) \
+	class Q##T##OutParser :public QOutParser { \
+	protected: Format parse(const char* line); };
+
+//NO Q_OBJECT?
+
+Q_DECLARE_OUTPARSER(Tar)
+//Q_DECLARE_OUTPARSER(Untar)
+Q_DECLARE_OUTPARSER(Zip)
+Q_DECLARE_OUTPARSER(Unzip)
+Q_DECLARE_OUTPARSER(Unrar)
+Q_DECLARE_OUTPARSER(Lzip)
+Q_DECLARE_OUTPARSER(Upx)
+Q_DECLARE_OUTPARSER(7z)
 
 class QUntarOutParser :public QOutParser
 {
 public:
 	QUntarOutParser(uint tota_size=0);
 
-protected:
-	Format parse(const char* line);
-};
-
-class QZipOutParser :public QOutParser
-{
-protected:
-	Format parse(const char* line);
-};
-
-class QUnzipOutParser :public QOutParser
-{
-protected:
-	Format parse(const char* line);
-};
-
-class QUnrarOutParser :public QOutParser
-{
-protected:
-	Format parse(const char* line);
-};
-
-class QLzipOutParser :public QOutParser
-{
-protected:
-	Format parse(const char* line);
-};
-
-class QUpxOutParser :public QOutParser
-{
-protected:
-	Format parse(const char* line);
-};
-
-class Q7zOutParser :public QOutParser
-{
 protected:
 	Format parse(const char* line);
 };

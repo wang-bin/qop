@@ -63,9 +63,8 @@ void Qop::execute(const QString &cmd)
 	//progress->setLabelText(QDir::currentPath());//QApplication::applicationDirPath();
 	process->setWorkingDirectory(QDir::currentPath());
 	process->start(cmd);
-	while(!process->waitForFinished(500)) {
-		if(process->state()==QProcess::NotRunning)
-			qDebug("Not running!");
+	while(!process->waitForFinished(1000)) {
+		//if(process->state()==QProcess::NotRunning) qDebug("Not running!"); //true in linux, why?
 		qApp->processEvents();
 	}
 	if(process->exitCode()!=0) {
@@ -206,15 +205,13 @@ void Qop::readStdOut()
     while(process->canReadLine()) {
 		const char* line = process->readLine().constData();
 		parser->parseLine(line);
-		//qDebug("stdout: %s",line);
-		//ezDebug("stdout: "+QString::fromLocal8Bit(line));
-
+		qDebug("stdout: %s",line);
     }
 }
 
 void Qop::readStdErr()
 {
 	const char* all_error_msg = process->readAllStandardError().constData();
-	qDebug("stderr: %s",all_error_msg);
+	qDebug("Read from stderr: \n%s",all_error_msg);
 	qDebug("Read form stderr End...");
 }

@@ -43,6 +43,11 @@ void EZProgressDialogPrivate::setupUi(EZProgressDialog *dialog)
 	q_ptr=dialog;
 	//buttons.setAutoDelete(true);  //not exists in Qt4
 	Q_Q(EZProgressDialog);
+#if CONFIG_QT4
+	q->setMaximumWidth(qApp->desktop()->width()*4/5);
+#else
+	q->setMaximumWidth(qApp->desktop()->width());
+#endif
 	labelLayout = new QVBoxLayout();
 	labelLayout->setSpacing(10);
 
