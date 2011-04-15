@@ -10,62 +10,62 @@
 #if (QT_VERSION >= 0x040000)
 QFile::Permissions modeToPermissions(unsigned int mode)
 {
-    QFile::Permissions ret;
-    if (mode & S_IRUSR)
-        ret |= QFile::ReadOwner;
-    if (mode & S_IWUSR)
-        ret |= QFile::WriteOwner;
-    if (mode & S_IXUSR)
-        ret |= QFile::ExeOwner;
-    if (mode & S_IRUSR)
-        ret |= QFile::ReadUser;
-    if (mode & S_IWUSR)
-        ret |= QFile::WriteUser;
-    if (mode & S_IXUSR)
-        ret |= QFile::ExeUser;
-    if (mode & S_IRGRP)
-        ret |= QFile::ReadGroup;
-    if (mode & S_IWGRP)
-        ret |= QFile::WriteGroup;
-    if (mode & S_IXGRP)
-        ret |= QFile::ExeGroup;
-    if (mode & S_IROTH)
-        ret |= QFile::ReadOther;
-    if (mode & S_IWOTH)
-        ret |= QFile::WriteOther;
-    if (mode & S_IXOTH)
-        ret |= QFile::ExeOther;
-    return ret;
+	QFile::Permissions ret;
+	if (mode & S_IRUSR)
+		ret |= QFile::ReadOwner;
+	if (mode & S_IWUSR)
+		ret |= QFile::WriteOwner;
+	if (mode & S_IXUSR)
+		ret |= QFile::ExeOwner;
+	if (mode & S_IRUSR)
+		ret |= QFile::ReadUser;
+	if (mode & S_IWUSR)
+		ret |= QFile::WriteUser;
+	if (mode & S_IXUSR)
+		ret |= QFile::ExeUser;
+	if (mode & S_IRGRP)
+		ret |= QFile::ReadGroup;
+	if (mode & S_IWGRP)
+		ret |= QFile::WriteGroup;
+	if (mode & S_IXGRP)
+		ret |= QFile::ExeGroup;
+	if (mode & S_IROTH)
+		ret |= QFile::ReadOther;
+	if (mode & S_IWOTH)
+		ret |= QFile::WriteOther;
+	if (mode & S_IXOTH)
+		ret |= QFile::ExeOther;
+	return ret;
 }
 
 unsigned int permissionsToMode(QFile::Permissions perms)
 {
-    quint32 mode = 0;
-    if (perms & QFile::ReadOwner)
-        mode |= S_IRUSR;
-    if (perms & QFile::WriteOwner)
-        mode |= S_IWUSR;
-    if (perms & QFile::ExeOwner)
-        mode |= S_IXUSR;
-    if (perms & QFile::ReadUser)
-        mode |= S_IRUSR;
-    if (perms & QFile::WriteUser)
-        mode |= S_IWUSR;
-    if (perms & QFile::ExeUser)
-        mode |= S_IXUSR;
-    if (perms & QFile::ReadGroup)
-        mode |= S_IRGRP;
-    if (perms & QFile::WriteGroup)
-        mode |= S_IWGRP;
-    if (perms & QFile::ExeGroup)
-        mode |= S_IXGRP;
-    if (perms & QFile::ReadOther)
-        mode |= S_IROTH;
-    if (perms & QFile::WriteOther)
-        mode |= S_IWOTH;
-    if (perms & QFile::ExeOther)
-        mode |= S_IXOTH;
-    return mode;
+	quint32 mode = 0;
+	if (perms & QFile::ReadOwner)
+		mode |= S_IRUSR;
+	if (perms & QFile::WriteOwner)
+		mode |= S_IWUSR;
+	if (perms & QFile::ExeOwner)
+		mode |= S_IXUSR;
+	if (perms & QFile::ReadUser)
+		mode |= S_IRUSR;
+	if (perms & QFile::WriteUser)
+		mode |= S_IWUSR;
+	if (perms & QFile::ExeUser)
+		mode |= S_IXUSR;
+	if (perms & QFile::ReadGroup)
+		mode |= S_IRGRP;
+	if (perms & QFile::WriteGroup)
+		mode |= S_IWGRP;
+	if (perms & QFile::ExeGroup)
+		mode |= S_IXGRP;
+	if (perms & QFile::ReadOther)
+		mode |= S_IROTH;
+	if (perms & QFile::WriteOther)
+		mode |= S_IWOTH;
+	if (perms & QFile::ExeOther)
+		mode |= S_IXOTH;
+	return mode;
 }
 
 #endif //ARCREADER_QT4
@@ -117,6 +117,7 @@ void QArchive::create_dir(char *pathname, int mode)
 /* Create a file, including parent directory as necessary. */
 FILE * QArchive::create_file(char *pathname, int mode)
 {
+	Q_UNUSED(mode);
 	FILE *f;
 	f = fopen(pathname, "w+");
 	if (f == NULL) {
@@ -234,7 +235,7 @@ uint QArchive::unpackedSize()
 
 Error QArchive::extract()
 {
-    _time.restart();
+	_time.restart();
 	tid=startTimer(300); //startTimer(0) error in ezx
 	return NoError;
 }

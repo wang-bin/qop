@@ -39,7 +39,7 @@
 class CommandParser
 {
 public:
-    CommandParser();
+	CommandParser();
 	CommandParser(const QString& cmd);
 	//CommandParser(const QString& program, const QStringList& argv);
 

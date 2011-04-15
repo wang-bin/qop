@@ -1,21 +1,21 @@
 /******************************************************************************
 	Macros for compatibility
-    Copyright (C) 2010 Wangbin <wbsecg1@gmail.com>
+	Copyright (C) 2010 Wangbin <wbsecg1@gmail.com>
  	(aka. nukin in ccmove & novesky in http://forum.motorolafans.com)
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2 of the License, or
+	(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License along
-    with this program; if not, write to the Free Software Foundation, Inc.,
-    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+	You should have received a copy of the GNU General Public License along
+	with this program; if not, write to the Free Software Foundation, Inc.,
+	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 ******************************************************************************/
 #ifndef GLOBAL_H
 #define GLOBAL_H
@@ -46,8 +46,8 @@
 #endif
 */
 #define APP_NAME "qop"
-//#define APP_VERSION 0.1.8
-#define APP_VERSION_STR "0.1.8"
+//#define APP_VERSION 0.2.0
+#define APP_VERSION_STR "0.2.0"
 
 #include <qglobal.h>
 #if QT_VERSION >= 0x040000
@@ -60,7 +60,9 @@
 #	define CONFIG_QT3 1
 #elif QT_VERSION >= 235
 #	define CONFIG_QT2 1
+#   ifndef CONFIG_EZX
 #	define CONFIG_EZX 1
+#   endif
 #else
 #	error Qt 2, Qt 3 or Qt 4 is required!
 #endif
@@ -147,8 +149,8 @@ typedef int Alignment;
 
 #define SIZE 1
 #define MAX 1024
-#define ZDEBUG(fmt,args...) printf("line: %d, function: %s, file: %s...\t"fmt"\n",__LINE__,__PRETTY_FUNCTION__,__FILE__,## args); \
-	fflush(stdout)
+#define ZDEBUG(fmt,args...) qDebug("[%s] %s @%d: \t"fmt" ---%s, %s",__FILE__,__PRETTY_FUNCTION__,__LINE__,## args,__TIME__,__DATE__)
+//#define ZDEBUG(fmt,args...) fprintf(stdout,"[%s] %s @%d: \t"fmt" ---%s, %s\n",__FILE__,__PRETTY_FUNCTION__,__LINE__,## args,__TIME__,__DATE__); fflush(stdout)
 
 #if !CONFIG_QT4
 template <typename ForwardIterator> void qDeleteAll(ForwardIterator begin, ForwardIterator end)

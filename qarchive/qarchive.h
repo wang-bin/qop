@@ -19,24 +19,24 @@
 #  undef S_IFREG
 #  define S_IFREG 0100000
 #  ifndef S_IFDIR
-#    define S_IFDIR 0040000
+#	define S_IFDIR 0040000
 #  endif
 #  ifndef S_ISDIR
-#    define S_ISDIR(x) ((x) & S_IFDIR) > 0
+#	define S_ISDIR(x) ((x) & S_IFDIR) > 0
 #  endif
 #  ifndef S_ISREG
-#    define S_ISREG(x) ((x) & 0170000) == S_IFREG
+#	define S_ISREG(x) ((x) & 0170000) == S_IFREG
 #  endif
 #  define S_IFLNK 020000
 #  define S_ISLNK(x) ((x) & S_IFLNK) > 0
 #  ifndef S_IRUSR
-#    define S_IRUSR 0400
+#	define S_IRUSR 0400
 #  endif
 #  ifndef S_IWUSR
-#    define S_IWUSR 0200
+#	define S_IWUSR 0200
 #  endif
 #  ifndef S_IXUSR
-#    define S_IXUSR 0100
+#	define S_IXUSR 0100
 #  endif
 #  define S_IRGRP 0040
 #  define S_IWGRP 0020
@@ -65,7 +65,7 @@ class QArchive :public QObject
 {
 	Q_OBJECT
 public:
-    QArchive(const QString& file="",IODev idev=File,IODev odev=File);
+	QArchive(const QString& file="",IODev idev=File,IODev odev=File);
 	virtual ~QArchive()=0;
 
 	void setInput(IODev idev);
@@ -80,7 +80,7 @@ public:
 
 	virtual uint unpackedSize();
 
-    void estimate();
+	void estimate();
 	void updateMessage();
 	void finishMessage();
 	//since the gui will be blocked while writng files, we must call forceShowMessage() to show text every interval ms.
@@ -97,7 +97,7 @@ signals:
 
 public slots:
 	void pauseOrContinue();
-    void terminate();
+	void terminate();
 
 protected:
 	virtual void timerEvent(QTimerEvent *);
@@ -110,10 +110,10 @@ protected:
 	uint size;
 
 	QString file;
-    QTime _time;
-    QString _out, _extra;
+	QTime _time;
+	QString _out, _extra;
 	uint _elapsed, _speed; //ms
-    double  _left;
+	double  _left;
 	QString max_str;
 	int tid;
 

@@ -38,7 +38,7 @@ class Qop :public QObject
 {
 	Q_OBJECT
 public:
-    Qop();
+	Qop();
 	~Qop();
 
 	void extract(const QString& archive,const QString& outDir);
@@ -50,18 +50,18 @@ public:
 
 //union!!
 /*!
-    for build-in method
+	for build-in method
 */
-    Archive::QArchive* archive;
+	Archive::QArchive* archive;
 
 /*!
-    for tools in PATH with qop executable. In Qt2.x, copy QProcess
+	for tools in PATH with qop executable. In Qt2.x, copy QProcess
 */
-    QOutParser *parser;
-    QProcess *process;
+	QOutParser *parser;
+	QProcess *process;
 
 /*!
-    common gui for all
+	common gui for all
 */
 #ifndef EZPROGRESS
 	UTIL_ProgressDialog *progress;
@@ -80,7 +80,7 @@ private slots:
 	void readStdErr();
 
 private:
-    void initGui();
+	void initGui();
 
 	bool internal;
 	QString arc_path;

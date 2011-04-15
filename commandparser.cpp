@@ -104,7 +104,7 @@ size_t CommandParser::archiveUnpackSize() const
 {
 	if(cmd_parser==0) return 0;
 	uint unx_size=Archive::QArcReader(cmd_parser->archive()).uncompressedSize();
-	qDebug("Archive unpacked size: %db == %s",unx_size,size2Str<double>(unx_size).toLocal8Bit().constData());
+	qDebug("Archive unpacked size: %db == %s",unx_size,UTIL::qstr2cstr(size2Str<double>(unx_size)));
 	return unx_size;
 }
 
@@ -131,6 +131,10 @@ QStringList TarCommandParser::files()
 }
 
 //skip whitespace?
+#if !CONFIG_QT4
+#define indexOf find
+#define lastIndexOf findRev
+#endif
 QString TarCommandParser::archive()
 {
 	int index_start=_cmd.indexOf(".tar"); //"tar "

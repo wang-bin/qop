@@ -1,21 +1,21 @@
 /******************************************************************************
 	QOutParser: Achieve tools' output parser. It's a part of QOP.
-    Copyright (C) 2010 Wangbin <wbsecg1@gmail.com>
+	Copyright (C) 2010 Wangbin <wbsecg1@gmail.com>
  	(aka. nukin in ccmove & novesky in http://forum.motorolafans.com)
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2 of the License, or
+	(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License along
-    with this program; if not, write to the Free Software Foundation, Inc.,
-    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+	You should have received a copy of the GNU General Public License along
+	with this program; if not, write to the Free Software Foundation, Inc.,
+	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 ******************************************************************************/
 /*!
 
@@ -68,7 +68,7 @@
 
 	class LineFormat {
 	public:
-	    virtual ~LineFormat()=0;
+		virtual ~LineFormat()=0;
 		char* format;
 		QStringList keyword, keyword_unkown;
 		QString keyword_err;
@@ -77,7 +77,7 @@
 	template<typename T1,typename T2,typename T3>
 	class LineFormatArc :public LineFormat {
 		void map_addr(T1* ptr1,T2* ptr2,T3* ptr3) {
-		    argv1=ptr1,argv2=ptr2,argv3=ptr3;
+			argv1=ptr1,argv2=ptr2,argv3=ptr3;
 		}
 	private:
 		T1 argv1; //ptr
@@ -90,34 +90,34 @@
 	class QOutParser {
 	...
 	private:
-	    char name[256], r[8];
+		char name[256], r[8];
 		int s;
-	    LineFormat *line_fmt;
+		LineFormat *line_fmt;
 	}
 
 	QOutParser::setLineFormat(const QString& type)
 	{
-	    if(type=="tar") { line_fmt=new LineFormatArc<int,char*,char*>();lf.map_addr(*s,name,null);
-	    keyword<<""<<...;}
+		if(type=="tar") { line_fmt=new LineFormatArc<int,char*,char*>();lf.map_addr(*s,name,null);
+		keyword<<""<<...;}
 		...
 
 	}
 
 	QOutParser::parse() {
-	    bool kw_found=false;
-	    it //keyword
-	    for(it) {
-		    if(line.contains(*it) {kw_found=true;break;}
+		bool kw_found=false;
+		it //keyword
+		for(it) {
+			if(line.contains(*it) {kw_found=true;break;}
 		}
 		if(!kw_found) return Unknow;
 		else { fprintf(line,line_fmt.format,line_fmt.argv1...);
-		    file=...
+			file=...
 			...
 		}
 	}
 
 	main.cpp:
-	    QOutParser *qop=new QOutParser;
+		QOutParser *qop=new QOutParser;
 		qop->setFormat(type);
 
 		qop->parse()
@@ -168,7 +168,7 @@ QOutParser::QOutParser(uint total):QObject(0),file(""),size(0),compressed(0),val
 	res_tmp=res;
 	first=true;
 	_time.start();
-    connect(this,SIGNAL(finished()),SLOT(slotFinished()));
+	connect(this,SIGNAL(finished()),SLOT(slotFinished()));
 	connect(&counter,SIGNAL(counted(uint)),SLOT(setTotalSize(uint)));
 	//connect(&counter,SIGNAL(counted(uint)),this,SIGNAL(maximumChanged(int)));
 	//connect(&counter,SIGNAL(done()),SLOT());
@@ -235,8 +235,8 @@ void QOutParser::start() {
 	//read(STDIN_FILENO,buf,SIZE))
 	while(fgets(line,MAX,stdin)) {
 		parseLine(line);
-    }
-    emit finished();
+	}
+	emit finished();
 }
 
 
@@ -293,7 +293,7 @@ Format QOutParser::parse(const char *line)
 		if(file.isEmpty()) {
 			file=line;
 		} return Simple;
-    }
+	}
 #else
 	return All;
 #endif //OP_TEMPLATE
@@ -301,13 +301,13 @@ Format QOutParser::parse(const char *line)
 
 void QOutParser::timerEvent(QTimerEvent *)
 {
-    estimate();
+	estimate();
 }
 
 void QOutParser::slotFinished()
 {
-    killTimer(tid);
-    estimate();
+	killTimer(tid);
+	estimate();
 	printf("Out: %d b, Time: %.1f s, Speed: %d Kb/s",value,_elapsed/1000.,value/(1+_elapsed));
 	fflush(stdout);
 	//value*1000/_elapsed is not correct, why?
@@ -335,7 +335,7 @@ void QOutParser::setTotalSize(uint s)
 	//emit textChanged(tr("Counting...")+size2Str<double>(s));
 	emit maximumChanged(max_value=s);
 	//qApp->processEvents();
-    estimate();
+	estimate();
 	if(count_type==Size) max_str=" / "+size2Str<double>(max_value);
 	else max_str=" / "+QString::number(s)+" ";
 #ifndef NO_EZX
@@ -355,19 +355,19 @@ void QOutParser::setTotalSize(uint s)
 //how to kill relative pids?
 void QOutParser::terminate()
 {
-    qDebug("signal sender: %s",
+	qDebug("signal sender: %s",
 #if CONFIG_QT4
-	    sender()->objectName().toLocal8Bit().data()
+		sender()->objectName().toLocal8Bit().data()
 #else
-	    sender()->name()
+		sender()->name()
 #endif
-	    );
+		);
 #if defined(_OS_LINUX_)
 	ZDEBUG("OS LINUX");
-    //bash: ppid!=pid==pgid==..., qpkg:pid!=ppid==pgid, tar,this,etc:ppid!=pid!=pgid
-    pid_t pgid=getpgrp();
-    char cmd[64];
-    int pid, ppid, pgrp;
+	//bash: ppid!=pid==pgid==..., qpkg:pid!=ppid==pgid, tar,this,etc:ppid!=pid!=pgid
+	pid_t pgid=getpgrp();
+	char cmd[64];
+	int pid, ppid, pgrp;
 	//QDir *procdir = new QDir("/proc", 0, QDir::Name, QDir::Dirs);
 	QDir procdir("/proc", 0, QDir::Name, QDir::Dirs);
 #if CONFIG_QT4
@@ -390,10 +390,10 @@ void QOutParser::terminate()
 			QString pidNow=f.fileName();
 #else
 		while ( ( f = it.current() ) != 0 ) {
-		    ++it;
+			++it;
 			QString pidNow=f->fileName();
 #endif //CONFIG_QT4
-		    if ( pidNow >= "0" && pidNow <= "99999" ) {
+			if ( pidNow >= "0" && pidNow <= "99999" ) {
 #if CONFIG_QT4
 				FILE *procfile = fopen( QString("/proc/" + pidNow + "/stat").toLocal8Bit().constData(), "r");
 #else
@@ -420,9 +420,9 @@ void QOutParser::terminate()
 						}
 					}
 				}
-		    }
+			}
 		}
-    }
+	}
 	printf("try kill(getpid(),SIGKILL)"); fflush(stdout);
 	kill(getpid(),SIGKILL);
 	printf("try kill(getpid(),SIGTERM)"); fflush(stdout);
@@ -432,11 +432,11 @@ void QOutParser::terminate()
 #	if CONFIG_QT4
 	QThread::currentThread()->exit();
 #else
-    QThread::exit();
+	QThread::exit();
 #	endif
 #endif
-    printf("terminate by exit(1)\n");
-    exit(1);
+	printf("terminate by exit(1)\n");
+	exit(1);
 }
 
 #if OP_TEMPLATE
@@ -461,24 +461,24 @@ void QOutParser::setLineFormat(const QString &type)
 //subclasse
 
 /*!
-    command:
-    tar --use-compress-program=lzip -cvvf core.tar.lz core
-    tar --use=lzip -cvvf core.tar.lz core
-    output:
-    drwxr-xr-x wbin/wbin         0 2010-06-27 12:56 core/
-    -rwxr-xr-x wbin/wbin      7137 2010-06-27 01:10 core/p
+	command:
+	tar --use-compress-program=lzip -cvvf core.tar.lz core
+	tar --use=lzip -cvvf core.tar.lz core
+	output:
+	drwxr-xr-x wbin/wbin		 0 2010-06-27 12:56 core/
+	-rwxr-xr-x wbin/wbin	  7137 2010-06-27 01:10 core/p
 
-    command:
-    tar --use=lzip -cvf core.tar.lz core
-    output:
-    core/
-    core/p
+	command:
+	tar --use=lzip -cvf core.tar.lz core
+	output:
+	core/
+	core/p
 */
 Format QTarOutParser::parse(const char* line)
 {
-    int s=0;
+	int s=0;
 	char name[256];
-    if(QString(line).contains(" ")) {
+	if(QString(line).contains(" ")) {
 		sscanf(line,"%*s%*s%d%*s%*s%s",&s,name);
 		value+=size=s;
 		file=QFILENAME(name);
@@ -491,7 +491,7 @@ Format QTarOutParser::parse(const char* line)
 		if(file.isEmpty()) {
 			file=line;
 		} return Simple;
-    }
+	}
 }
 
 
@@ -506,9 +506,9 @@ QUntarOutParser::QUntarOutParser(uint tota_size):QOutParser(tota_size)
 */
 Format QUntarOutParser::parse(const char *line)
 {
-    int s=0;
-    char name[256];
-    if(QString(line).contains(" ")) {
+	int s=0;
+	char name[256];
+	if(QString(line).contains(" ")) {
 		sscanf(line,"%*s%*s%d%*s%*s%s",&s,name);
 		size=s;
 		value+=512+ROUND512(s);//512+(s%512 ? s+512-s%512 :s); //sizeof(tar_header)+n*512: 512+s+512+(-s)%512
@@ -522,29 +522,29 @@ Format QUntarOutParser::parse(const char *line)
 		if(file.isEmpty()) {
 			file=line;
 		} return Simple;
-    }
+	}
 }
 
 /*!
-    command:
-    zip -ry -P pw test.zip test (-Ppw)
-    output:
-    updating: core/p (deflated 70%)
+	command:
+	zip -ry -P pw test.zip test (-Ppw)
+	output:
+	updating: core/p (deflated 70%)
 
-    command:
-    zip -ryv -9 -FS -P pw -db -dc test.zip test //if exists a non-zip file with the same name, then error
-    output:
+	command:
+	zip -ryv -9 -FS -P pw -db -dc test.zip test //if exists a non-zip file with the same name, then error
+	output:
 	 0/ 12 [   0/133k]  deleting: core/a
-     1/ 11 [ 12k/121k]  updating: core/p	(in=7137) (out=2146) (deflated 70%)
-	 2/ 10 [ 31k/ 90k]    adding: core/qq	(in=7137) (out=2146) (deflated 70%)
-    total bytes=23479416, compressed=23432410 -> 0% savings
+	 1/ 11 [ 12k/121k]  updating: core/p	(in=7137) (out=2146) (deflated 70%)
+	 2/ 10 [ 31k/ 90k]	adding: core/qq	(in=7137) (out=2146) (deflated 70%)
+	total bytes=23479416, compressed=23432410 -> 0% savings
 
 	[processed/remaining]
  */
 Format QZipOutParser::parse(const char* line)
 {
 	int s=0;
-    char name[256],r[4];
+	char name[256],r[4];
 	if(QString(line).contains("updating:") || (QString(line).contains("adding:"))) {
 		if(QString(line).contains("in=")) {
 			sscanf(line,"%*s%s\t(in=%d)%*s%*s%[^)]",name,&s,r);
@@ -578,24 +578,24 @@ Format QZipOutParser::parse(const char* line)
 }
 
 /*!
-    command: unzip -o zip.zip
-    output:
-    Archive:  core.zip
-       creating: core/
-      inflating: core/p
-     extracting: core/tt
+	command: unzip -o zip.zip
+	output:
+	Archive:  core.zip
+	   creating: core/
+	  inflating: core/p
+	 extracting: core/tt
 
 
-    command: unzip -ov zip.zip, do not extract
+	command: unzip -ov zip.zip, do not extract
 		-P pw , -P- skip pw
-    output:
-    Archive:  core.zip
-    Length   Method    Size  Cmpr    Date    Time   CRC-32   Name
-    --------  ------  ------- ---- ---------- ----- --------  ----
-		7137  Defl:N     2146  70% 2010-06-27 01:10 a601af6a  core/p
-		   0  Stored        0   0% 2010-06-27 10:44 00000000  core/
-    --------          -------  ---                            -------
-    16611901         16194567   3%                            19 files
+	output:
+	Archive:  core.zip
+	Length   Method	Size  Cmpr	Date	Time   CRC-32   Name
+	--------  ------  ------- ---- ---------- ----- --------  ----
+		7137  Defl:N	 2146  70% 2010-06-27 01:10 a601af6a  core/p
+		   0  Stored		0   0% 2010-06-27 10:44 00000000  core/
+	--------		  -------  ---							-------
+	16611901		 16194567   3%							19 files
 
 	unzip -Z -t file.zip:
 	20 files, 9999 bytes uncompressed, 1111 bytes compressed:  10%
@@ -605,15 +605,15 @@ Format QZipOutParser::parse(const char* line)
 //	get number: unzip -Z -t img.zip |sed 's/\(.*\) files.*/\1/'
 Format QUnzipOutParser::parse(const char* line)
 {
-    if(QString(line).contains("Archive")) return Unknow;
-    if(QString(line).contains("--------")) return Unknow;
+	if(QString(line).contains("Archive")) return Unknow;
+	if(QString(line).contains("--------")) return Unknow;
 
 	if((QString(line).contains("incorrect"))) {
 		return Error; //not work??
 	}
 
-    int s=0;
-    char name[256],r[4];
+	int s=0;
+	char name[256],r[4];
 	if(QString(line).contains("%")) {
 		// change to if( extracting, inflating)
 		if(!QString(line).contains(":")) return Unknow;
@@ -624,55 +624,55 @@ Format QUnzipOutParser::parse(const char* line)
 				file=name;
 		}
 		return Detail;
-    } else {
+	} else {
 		sscanf(line,"%*s%s",name);
 		file=QFILENAME(name);
 		if(file.isEmpty()) {
 				file=name;
 		}
 		return Simple;
-    }
+	}
 }
 /*!
-    command: unrar x -o+ -p- -y rar.rar destdir
+	command: unrar x -o+ -p- -y rar.rar destdir
 		//-o- not overwrite, -or rename auto, -p[pw]
-    output:
+	output:
 
-    UNRAR 3.90 beta 2 freeware      Copyright (c) 1993-2009 Alexander Roshal
+	UNRAR 3.90 beta 2 freeware	  Copyright (c) 1993-2009 Alexander Roshal
 
 
-    Extracting from core.rar
+	Extracting from core.rar
 
-    Extracting  core/p                                                    OK
-    All OK
+	Extracting  core/p													OK
+	All OK
  */
 Format QUnrarOutParser::parse(const char* line)
 {
-    if(QString(line).contains("UNRAR ")) return Unknow;
-    if(QString(line).isEmpty()) return Unknow;
+	if(QString(line).contains("UNRAR ")) return Unknow;
+	if(QString(line).isEmpty()) return Unknow;
 
-    char name[256];
-    sscanf(line,"%*s%s",name);
+	char name[256];
+	sscanf(line,"%*s%s",name);
 	file=QFILENAME(name);
-    if(file.isEmpty()) {
+	if(file.isEmpty()) {
 		file=name;
-    }
+	}
 	return Simple;
 }
 /** lzip: does not support dirs, compress files individually
-    command: lzip -9kvf gui.tar
-    output:
-      gui.tar:  4.832:1,  1.655 bits/byte, 79.31% saved, 92160 in, 19071 out.
+	command: lzip -9kvf gui.tar
+	output:
+	  gui.tar:  4.832:1,  1.655 bits/byte, 79.31% saved, 92160 in, 19071 out.
 
-    command: lzip -kdvf gui.tar.lz
-    output:
-      gui.tar.lz: done
+	command: lzip -kdvf gui.tar.lz
+	output:
+	  gui.tar.lz: done
 ***/
 Format QLzipOutParser::parse(const char* line)
 {
-    int s=0;
-    char name[256],r[8];
-    if(QString(line).contains("o")) {
+	int s=0;
+	char name[256],r[8];
+	if(QString(line).contains("o")) {
 		sscanf(line,"%s:%*s%*s%s%*s%d",name,r,&size);
 		ratio=r;
 		value+=size=s;
@@ -681,23 +681,23 @@ Format QLzipOutParser::parse(const char* line)
 				file=name;
 		}
 		return Detail;
-    } else {
+	} else {
 		sscanf(line,"%*s%s",name);
 		file=QFILENAME(name);
 		return Simple;
-    }
+	}
 }
 /*!
-    upx -9kvf --ultra-brute -o out.upx in
-    -d :decompress
-    output:
-		               Ultimate Packer for eXecutables
-                          Copyright (C) 1996 - 2009
-UPX 3.04        Markus Oberhumer, Laszlo Molnar & John Reiser   Sep 27th 2009
+	upx -9kvf --ultra-brute -o out.upx in
+	-d :decompress
+	output:
+					   Ultimate Packer for eXecutables
+						  Copyright (C) 1996 - 2009
+UPX 3.04		Markus Oberhumer, Laszlo Molnar & John Reiser   Sep 27th 2009
 
-        File size         Ratio      Format      Name
+		File size		 Ratio	  Format	  Name
    --------------------   ------   -----------   -----------
-	218389 ->     72900   33.38%  linux/elf386   qop.upx
+	218389 ->	 72900   33.38%  linux/elf386   qop.upx
 
 Packed 1 file.
 
@@ -705,17 +705,17 @@ Packed 1 file.
 */
 Format QUpxOutParser::parse(const char* line)
 {
-    int in, out;
-    char r[7], format[32], outName[32];
-    if(!QString(line).contains("%")) return Unknow;
-    sscanf(line,"%d%*s%d%s%s%s",&in,&out,r,format,outName);
+	int in, out;
+	char r[7], format[32], outName[32];
+	if(!QString(line).contains("%")) return Unknow;
+	sscanf(line,"%d%*s%d%s%s%s",&in,&out,r,format,outName);
 	_out="Name: "+QString(outName)+"\nFormate: "+QString(format)+"\n"+size2Str<double>(in)+" -> "+size2Str<double>(out) \
 		 +"\nRatio: "+QString(ratio);
-    return Unknow;
+	return Unknow;
 }
 /**
  gzip -d <../core.tar.gz |tar xvvf - |qop -T `tar -zt <core.tar.gz |wc -l`
-    tar cvvf -  gui |gzip -9  >gui.tar.gz
+	tar cvvf -  gui |gzip -9  >gui.tar.gz
 
 tar zxvf test.tgz |qop -T `tar -zt <test.tgz |wc -l` -n
 

@@ -1,21 +1,21 @@
 /******************************************************************************
 	EZProgressDialog
-    Copyright (C) 2010 Wangbin <wbsecg1@gmail.com>
+	Copyright (C) 2010 Wangbin <wbsecg1@gmail.com>
  	(aka. nukin in ccmove & novesky in http://forum.motorolafans.com)
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2 of the License, or
+	(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License along
-    with this program; if not, write to the Free Software Foundation, Inc.,
-    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+	You should have received a copy of the GNU General Public License along
+	with this program; if not, write to the Free Software Foundation, Inc.,
+	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 ******************************************************************************/
 #ifndef EZPROGRESSDIALOG_H
 #define EZPROGRESSDIALOG_H
@@ -42,21 +42,21 @@
 
 
 #if QT_VERSION < 0x040000
-template <typename T> static inline T *qGetPtrHelper(T *ptr) { return ptr; }
+//template <typename T> static inline T *qGetPtrHelper(T *ptr) { return ptr; } // \//return reinterpret_cast<Class##Private *>(qGetPtrHelper(d_ptr));
 #define Q_DECLARE_PRIVATE(Class) \
-    inline Class##Private* d_func() { return reinterpret_cast<Class##Private *>(qGetPtrHelper(d_ptr)); } \
-    inline const Class##Private* d_func() const { return reinterpret_cast<const Class##Private *>(qGetPtrHelper(d_ptr)); } \
-    friend class Class##Private;
+	inline Class##Private* d_func() { return reinterpret_cast<Class##Private *>(d_ptr); } \
+	inline const Class##Private* d_func() const { return reinterpret_cast<const Class##Private *>(d_ptr); }
+//	friend class Class##Private;
 
 #define Q_DECLARE_PRIVATE_D(Dptr, Class) \
-    inline Class##Private* d_func() { return reinterpret_cast<Class##Private *>(Dptr); } \
-    inline const Class##Private* d_func() const { return reinterpret_cast<const Class##Private *>(Dptr); } \
-    friend class Class##Private;
+	inline Class##Private* d_func() { return reinterpret_cast<Class##Private *>(Dptr); } \
+	inline const Class##Private* d_func() const { return reinterpret_cast<const Class##Private *>(Dptr); }
+//	friend class Class##Private;
 
-#define Q_DECLARE_PUBLIC(Class)                                    \
-    inline Class* q_func() { return static_cast<Class *>(q_ptr); } \
-    inline const Class* q_func() const { return static_cast<const Class *>(q_ptr); } \
-    friend class Class;
+#define Q_DECLARE_PUBLIC(Class)									\
+	inline Class* q_func() { return static_cast<Class *>(q_ptr); } \
+	inline const Class* q_func() const { return static_cast<const Class *>(q_ptr); } \
+	friend class Class;
 
 #define Q_D(Class) Class##Private * const d = d_func()
 #define Q_Q(Class) Class * const q = q_func()
@@ -69,7 +69,7 @@ class ZPushButton; //need by addButton(ZPushButton*,...) in Qt4, include <qpushb
 class EZProgressDialogPrivate;
 
 class EZProgressDialog : public ZBaseDialog {
-    Q_OBJECT
+	Q_OBJECT
 	Q_DECLARE_PRIVATE(EZProgressDialog)
 	//Q_PROPERTY(bool wasCanceled READ wasCanceled)
 	//Q_PROPERTY(int maximum READ maximum WRITE setMaximum)
@@ -79,9 +79,9 @@ class EZProgressDialog : public ZBaseDialog {
 	//Q_PROPERTY(int minimumDuration READ minimumDuration WRITE setMinimumDuration)
 	//Q_PROPERTY(QString labelText READ labelText WRITE setLabelText)
 public:
-    explicit EZProgressDialog(QWidget *parent = 0,Qt::WFlags f=0);
+	explicit EZProgressDialog(QWidget *parent = 0,Qt::WFlags f=0);
 	EZProgressDialog(const QString& labelText,const QString& cancelButtonText="Cancel",int value=0,int max=100,QWidget* parent=0,Qt::WFlags f=0);
-    ~EZProgressDialog();
+	~EZProgressDialog();
 
 	void addButton(ZPushButton *button,int index=-1,int stretch=0,Alignment align=0);	//index<0, insert at the tail
 	void addButton(const QString& text=0,int index=-1,int stretch=0,Alignment align=0); //addButton(,Align)
@@ -140,7 +140,7 @@ private:
 	void resizeButtons();
 
 #if !INHERIT_PRIVATE || (QT_VERSION < 0x040000)
-    EZProgressDialogPrivate *d_ptr;
+	EZProgressDialogPrivate *d_ptr;
 #endif
 };
 

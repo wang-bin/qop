@@ -28,6 +28,7 @@
 //using X::QApplication;
 #endif
 
+// vv :archiveSize(). v: filesCount()
 Qop::Qop()
 	:archive(0),parser(0),process(0)
   #ifndef EZPROGRESS
@@ -37,7 +38,7 @@ Qop::Qop()
   #endif //EZPROGRESS
   ,steps(-1),parser_type("tar"),internal(false)
 {
-    initGui();
+	initGui();
 }
 
 Qop::~Qop()
@@ -48,7 +49,7 @@ Qop::~Qop()
 	if(parser)  delete parser;
 }
 
-void Qop::extract(const QString& arc, const QString& outDir)
+void Qop::extract(const QString& arc, const QString& )
 {
 	setInternal(true);
 	setArchive(arc);
@@ -56,11 +57,15 @@ void Qop::extract(const QString& arc, const QString& outDir)
 	archive->extract();
 }
 
+#if !CONFIG_QT4
+#define currentPath() current().absPath()
+#endif
 void Qop::execute(const QString &cmd)
 {
 	initParser();
 	initProcess();
 	//progress->setLabelText(QDir::currentPath());//QApplication::applicationDirPath();
+#if CONFIG_QT4 || CONFIG_QT3
 	process->setWorkingDirectory(QDir::currentPath());
 	process->start(cmd);
 	while(!process->waitForFinished(1000)) {
@@ -74,46 +79,46 @@ void Qop::execute(const QString &cmd)
 	} else {
 		qDebug("Normal exit");
 	}
-
+#endif
 }
 
 void Qop::initGui()
 {
-    progress->addButton(QObject::tr("Hide"),0,1,Qt::AlignRight);
-    QObject::connect(progress->button(0),SIGNAL(clicked()),progress,SLOT(hide())); //Hide the widget will be faster. not showMinimum
-    progress->setAutoClose(false);
-    progress->setAutoReset(false);  //true: 最大值时变为最小
+	progress->addButton(QObject::tr("Hide"),0,1,Qt::AlignRight);
+	QObject::connect(progress->button(0),SIGNAL(clicked()),progress,SLOT(hide())); //Hide the widget will be faster. not showMinimum
+	progress->setAutoClose(false);
+	progress->setAutoReset(false);  //true: 最大值时变为最小
 
 #if CONFIG_EZX
-    QFont f;
-    f.setPointSize(14);
-    progress->setLabelFont(0,f);
-    progress->bar()->setCenterIndicator(true);
-    progress->bar()->setIndicatorFollowsStyle(false);
+	QFont f;
+	f.setPointSize(14);
+	progress->setLabelFont(0,f);
+	progress->bar()->setCenterIndicator(true);
+	progress->bar()->setIndicatorFollowsStyle(false);
 #endif //CONFIG_EZX
 #if CONFIG_QT4
-    progress->setWindowTitle("qop "+QObject::tr("Compression/Extraction progress dialog"));
-    progress->setObjectName("QProgressDialog");
+	progress->setWindowTitle("qop "+QObject::tr("Compression/Extraction progress dialog"));
+	progress->setObjectName("QProgressDialog");
 #else
-    progress->setCaption("qop "+QObject::tr("Compression/Extraction progress dialog"));
+	progress->setCaption("qop "+QObject::tr("Compression/Extraction progress dialog"));
 #endif //CONFIG_QT4
 }
 
 void Qop::initArchive()
 {
-    if(archive!=0) {
+	if(archive!=0) {
 		delete archive;
 		archive=0;
-    }
-    archive=new Archive::Tar::QTar(arc_path);
+	}
+	archive=new Archive::Tar::QTar(arc_path);
 	ezDebug("archive: "+arc_path);
-    progress->setMaximum(archive->unpackedSize());
-    progress->addButton(QObject::tr("Pause"),1);
-    QObject::connect(progress->button(1),SIGNAL(clicked()),archive,SLOT(pauseOrContinue()));
-    QObject::connect(archive,SIGNAL(byteProcessed(int)),progress,SLOT(setValue(int)));
-    QObject::connect(archive,SIGNAL(textChanged(const QString&)),progress,SLOT(setLabelText(const QString&)));
-    QObject::connect(progress,SIGNAL(canceled()),archive,SLOT(terminate()));
-    QObject::connect(archive,SIGNAL(finished()),progress,SLOT(showNormal()));
+	progress->setMaximum(archive->unpackedSize());
+	progress->addButton(QObject::tr("Pause"),1);
+	QObject::connect(progress->button(1),SIGNAL(clicked()),archive,SLOT(pauseOrContinue()));
+	QObject::connect(archive,SIGNAL(byteProcessed(int)),progress,SLOT(setValue(int)));
+	QObject::connect(archive,SIGNAL(textChanged(const QString&)),progress,SLOT(setLabelText(const QString&)));
+	QObject::connect(progress,SIGNAL(canceled()),archive,SLOT(terminate()));
+	QObject::connect(archive,SIGNAL(finished()),progress,SLOT(showNormal()));
 
 #if CONFIG_EZX
 	//progress->exec(); //NO_MODAL
@@ -127,21 +132,21 @@ void Qop::initParser()
 {
 	//char* parser_type="tar";
 	if(!arc_path.isEmpty()) {
-	    if(!QFile(arc_path).exists()) {
+		if(!QFile(arc_path).exists()) {
 			ezDebug("file: "+arc_path+ " does not exists\n");
-		    fflush(stdout);
-	    }
-	    Archive::ArcReader ar(arc_path);
-	    switch(ar.formatByBuf()) {
-	    case Archive::FormatRar:	parser_type="unrar";	break;
-	    case Archive::FormatZip:	parser_type="unzip";	break;
+			fflush(stdout);
+		}
+		Archive::ArcReader ar(arc_path);
+		switch(ar.formatByBuf()) {
+		case Archive::FormatRar:	parser_type="unrar";	break;
+		case Archive::FormatZip:	parser_type="unzip";	break;
 		case Archive::Format7zip:	parser_type="7z";		break;
 		default:					parser_type="untar";	break;
-	    }
+		}
 		steps=ar.uncompressedSize();
-    }//omit -T
+	}//omit -T
 
-    parser=getParser(parser_type);
+	parser=getParser(parser_type);
 #if CONFIG_QT4
 	//progress->setWindowTitle("qop "+QObject::tr("Compression/Extraction progress dialog"));
 	//progress->setObjectName("QProgressDialog");
@@ -171,6 +176,7 @@ void Qop::initParser()
 
 void Qop::initProcess()
 {
+#if CONFIG_QT4 || CONFIG_QT3
 	process=new QProcess(this);
 	process->setWorkingDirectory(QDir::currentPath());
 	//ZDEBUG("working dir: %s",process->workingDirectory().toLocal8Bit().constData());
@@ -178,6 +184,7 @@ void Qop::initProcess()
 	connect(process,SIGNAL(readyReadStandardError()),SLOT(readStdErr()));
 	connect(process, SIGNAL(finished(int,QProcess::ExitStatus)), SIGNAL(finished(int,QProcess::ExitStatus)));
 	connect(process,SIGNAL(started()),parser,SLOT(initTimer()));
+#endif
 }
 
 void Qop::setInternal(bool bi)
@@ -202,16 +209,20 @@ void Qop::readStdOut()
 	QString line = data.constData();
 	ZDEBUG("stdout: %s",line);
 */
-    while(process->canReadLine()) {
+#if CONFIG_QT4 || CONFIG_QT3
+	while(process->canReadLine()) {
 		const char* line = process->readLine().constData();
 		parser->parseLine(line);
-		qDebug("stdout: %s",line);
-    }
+		//qDebug("stdout: %s",line);
+	}
+#endif
 }
 
 void Qop::readStdErr()
 {
+#if CONFIG_QT4 || CONFIG_QT3
 	const char* all_error_msg = process->readAllStandardError().constData();
 	qDebug("Read from stderr: \n%s",all_error_msg);
 	qDebug("Read form stderr End...");
+#endif
 }

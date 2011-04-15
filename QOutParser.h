@@ -1,21 +1,21 @@
 /******************************************************************************
 	QOutParser: Achieve tools' output parser. It's a part of QOP.
-    Copyright (C) 2010 Wangbin <wbsecg1@gmail.com>
+	Copyright (C) 2010 Wangbin <wbsecg1@gmail.com>
  	(aka. nukin in ccmove & novesky in http://forum.motorolafans.com)
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2 of the License, or
+	(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License along
-    with this program; if not, write to the Free Software Foundation, Inc.,
-    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+	You should have received a copy of the GNU General Public License along
+	with this program; if not, write to the Free Software Foundation, Inc.,
+	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 ******************************************************************************/
 #ifndef QOUTPARSER_H
 #define QOUTPARSER_H
@@ -75,38 +75,38 @@ public:
 public slots:
 	void initTimer();
 	void setTotalSize(uint);
-    void estimate();
-    void terminate();
+	void estimate();
+	void terminate();
 
 private slots:
-    void slotFinished();
+	void slotFinished();
 
 signals:
-    void valueChanged(int);
-    void textChanged(const QString&);
-    void finished();
+	void valueChanged(int);
+	void textChanged(const QString&);
+	void finished();
 	void maximumChanged(int);
 
 protected:
-    virtual void timerEvent(QTimerEvent *);
+	virtual void timerEvent(QTimerEvent *);
 	virtual Format parse(const char* line); //return int
 	//<H1>File: %1</H>, _out=dspFormat.arg(file);
 	//virtual void setDiaplayFormat(Format fmt=All,const QString& txt="");
 
 //private:
 	QString file; //file just compressed/extracted
-    char line[1024]; //add char name[256], ratio[4], int s? they are frequently used in parse
-    uint size, compressed, value; //outSize numbers-->value
+	char line[1024]; //add char name[256], ratio[4], int s? they are frequently used in parse
+	uint size, compressed, value; //outSize numbers-->value
 	QString ratio; //ratio: zip
-    QTime _time;
-    QString _out, _extra;
+	QTime _time;
+	QString _out, _extra;
 	uint _elapsed, _speed; //ms
-    double  _left;
-    volatile uint max_value;
+	double  _left;
+	volatile uint max_value;
 	QString max_str;
 	Format res, res_tmp;
 	bool first;
-    int tid;
+	int tid;
 
 	QCounterThread counter;
 

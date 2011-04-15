@@ -1,21 +1,21 @@
 /******************************************************************************
 	EZProgressDialog
-    Copyright (C) 2010 Wangbin <wbsecg1@gmail.com>
+	Copyright (C) 2010 Wangbin <wbsecg1@gmail.com>
  	(aka. nukin in ccmove & novesky in http://forum.motorolafans.com)
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2 of the License, or
+	(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License along
-    with this program; if not, write to the Free Software Foundation, Inc.,
-    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+	You should have received a copy of the GNU General Public License along
+	with this program; if not, write to the Free Software Foundation, Inc.,
+	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 ******************************************************************************/
 #include "ezprogressdialog.h"
 #include "ezprogressdialog_p.h"
@@ -190,9 +190,9 @@ void EZProgressDialog::setButtonText(int index, const QString &text)
 
 ZPushButton* EZProgressDialog::button(int index) const
 {
-	Q_D(const EZProgressDialog);
-	if(index>=(int)d->buttons.count()) index=-1;
-	return d->buttons.at(index<0 ? d->buttons.count()+index : index); //index%d->buttons.count()
+	EZProgressDialogPrivate *d=d_ptr;//Q_D(const EZProgressDialog);
+	//if(index>=(int)d->buttons.count()) index=-1;
+	return d->buttons.at(index % d->buttons.count());//index<0 ? d->buttons.count()+index : index); //index%d->buttons.count()
 }
 
 int EZProgressDialog::buttonsCount() const
@@ -227,9 +227,9 @@ void EZProgressDialog::setLabelText(int index, const QString &text)
 
 QLabel* EZProgressDialog::label(int index) const
 {
-	Q_D(const EZProgressDialog);
-	if(index>=(int)d->buttons.count()) index=-1;
-	return d->labels.at(index<0 ? d->buttons.count()+index : index);
+	EZProgressDialogPrivate *d=d_ptr;//Q_D(const EZProgressDialog);
+	//if(index>=(int)d->buttons.count()) index=-1;
+	return d->labels.at(index % d->buttons.count());//index<0 ? d->buttons.count()+index : index);
 }
 
 int EZProgressDialog::labelsCount() const
@@ -413,9 +413,9 @@ void EZProgressDialog::removeButton(int index)
 //Protected (Events)
 void EZProgressDialog::closeEvent(QCloseEvent *e)
 {
-    emit canceled();
-    emit cancelled();
-    QWidget::closeEvent(e);
+	emit canceled();
+	emit cancelled();
+	QWidget::closeEvent(e);
 }
 
 void EZProgressDialog::timerEvent(QTimerEvent *)
@@ -446,7 +446,7 @@ void EZProgressDialog::slotButtonClicked()
 {
 	ZPushButton* btn=(ZPushButton*)sender();
 
-	Q_D(const EZProgressDialog);
+	Q_D(EZProgressDialog); //Q_D(const EZProgressDialog)
 #if CONFIG_QT4
 	int index=d->buttons.indexOf(btn);
 #else
