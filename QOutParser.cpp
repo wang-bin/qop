@@ -125,6 +125,8 @@
 
 */
 #include "QOutParser.h"
+#include <qsocketnotifier.h>
+
 #include "util.h"
 QOutParser* getParser(const QString& type)
 {
@@ -161,9 +163,6 @@ QOutParser* getParser(const QString& type)
 QOutParser::QOutParser(uint total):QObject(0),file(""),size(0),compressed(0),value(0) \
 	,_out(""),_extra(tr("Calculating...")),_elapsed(0),_left(0),max_value(total),res(Unknow) \
 	,count_type(Size),multi_thread(false)
-#if OP_TEMPLATE
-	,lineFmt(new LineFormat)
-#endif //OP_TEMPLATE
 {
 	res_tmp=res;
 	first=true;
@@ -172,15 +171,23 @@ QOutParser::QOutParser(uint total):QObject(0),file(""),size(0),compressed(0),val
 	connect(&counter,SIGNAL(counted(uint)),SLOT(setTotalSize(uint)));
 	//connect(&counter,SIGNAL(counted(uint)),this,SIGNAL(maximumChanged(int)));
 	//connect(&counter,SIGNAL(done()),SLOT());
+#if 0
+		QSocketNotifier *socket_notifier=new QSocketNotifier(STDIN_FILENO,QSocketNotifier::Read,this);
+		ZDEBUG("SocketNotifier is enabled: %d",socket_notifier->isEnabled());
+		connect(socket_notifier,SIGNAL(activated(int)),SLOT(readFromFile(int)));
+		initTimer();
+#endif
+
 }
 
 QOutParser::~QOutParser()
-{}
+{
+}
 
 void QOutParser::parseLine(const char* line)
 {
 	//Format res_tmp=res;
-	qApp->processEvents();
+	qApp->processEvents(); //remove ?
 	res_tmp=parse(line);
 	//_speed=value/(1+_elapsed)*1000;
 	/*! 2010-11-27
@@ -230,6 +237,17 @@ void QOutParser::initTimer()
 	tid=startTimer(300); //startTimer(0) error in ezx
 }
 
+void QOutParser::readFromFile(int fd)
+{
+	if(fd!=STDIN_FILENO) {
+		ZDEBUG("Data not from stdin...");
+		return;
+	}
+	int count = read(STDIN_FILENO, line, 1024);
+	//ZDEBUG("stdout: %s",line);
+	//parseLineByLine(line);
+}
+
 void QOutParser::start() {
 	initTimer();
 	//read(STDIN_FILENO,buf,SIZE))
@@ -267,36 +285,7 @@ void QOutParser::setFiles(const QStringList &f)
 Format QOutParser::parse(const char *line)
 {
 	_out=line; //can remove
-	//return All;
-#if OP_TEMPLATE
-	QMap<QString,Format>::iterator it;//(lineFmt->key_result);
-	for(it=lineFmt->key_result.begin();it!=lineFmt->key_result.end();++it) {
-		if(QString(line).contains(*it))
-			return lineFmt->key_result.value(it.key());
-	}
-	bool kw_found=false;
-	for(QStringList::Iterator it_l=lineFmt->keyword.begin();it_l!=lineFmt->keyword.end();++it_l) {
-		if(QString(line).contains(*it_l)) {
-			kw_found=true;
-			break;
-		}
-	}
-	if(kw_found) {
-		sscanf(line,lineFmt->format,lineFmt->argv1,lineFmt->argv2,lineFmt->argv3);ZDEBUG();
-		value+=size=s;
-		file=QFILENAME(name);
-		if(file.isEmpty()) { //"./a/"
-			file=name;
-		} return Detail;
-	} else {
-		file=QFILENAME(line);
-		if(file.isEmpty()) {
-			file=line;
-		} return Simple;
-	}
-#else
 	return All;
-#endif //OP_TEMPLATE
 }
 
 void QOutParser::timerEvent(QTimerEvent *)
@@ -423,9 +412,9 @@ void QOutParser::terminate()
 			}
 		}
 	}
-	printf("try kill(getpid(),SIGKILL)"); fflush(stdout);
+	ZDEBUG("try kill(getpid(),SIGKILL)");
 	kill(getpid(),SIGKILL);
-	printf("try kill(getpid(),SIGTERM)"); fflush(stdout);
+	ZDEBUG("try kill(getpid(),SIGTERM)");
 	kill(getpid(),SIGTERM);
 #endif
 #if defined(QT_THREAD_SUPPORT)
@@ -435,28 +424,10 @@ void QOutParser::terminate()
 	QThread::exit();
 #	endif
 #endif
-	printf("terminate by exit(1)\n");
+	ZDEBUG("terminate by exit(1)");
 	exit(1);
 }
 
-#if OP_TEMPLATE
-void QOutParser::setLineFormat(const QString &type)
-{ZDEBUG();
-#if CONFIG_QT4
-	QString t=type.toLower();
-#else
-	QString t=type.lower();
-#endif // CONFIG_QT4
-	if(t.contains("tar")) {
-		ZDEBUG();
-		lineFmt=new LineFormatArc<int*,char*,void*>();
-		lineFmt->keyword<<" ";
-		lineFmt->format="%*s%*s%d%*s%*s%s";
-		lineFmt->mapPtr(&s,name,NULL);
-		ZDEBUG("fmt: %s",lineFmt->format);
-	}
-}
-#endif //OP_TEMPLATE
 
 //subclasse
 

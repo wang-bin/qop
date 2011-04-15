@@ -29,31 +29,8 @@
 
 enum Format { All,Simple, Detail, DetailWithRatio, EndZip,End7z, Error, Unknow }; //Format
 
-#if OP_TEMPLATE
-class LineFormat {
-public:
-	virtual ~LineFormat() {}
-	char* format;
-	QStringList keyword;
-	QMap<QString,Format> key_result;
-
-	void* argv1; //ptr
-	void* argv2;
-	void* argv3;
-
-	virtual void mapPtr(void*,void*,void*) {}
-};
-
-template<typename T1,typename T2,typename T3> class LineFormatArc :public LineFormat {
-	void mapPtr(T1 ptr1,T2 ptr2,T3 ptr3) {
-			argv1=ptr1,argv2=ptr2,argv3=ptr3;
-	}
-};
-#endif //OP_TEMPLATE
-
 class QOutParser;
 extern "C" QOutParser* getParser(const QString& type="tar");
-
 
 class QOutParser :public QObject
 {
@@ -80,6 +57,7 @@ public slots:
 
 private slots:
 	void slotFinished();
+	void readFromFile(int fd);
 
 signals:
 	void valueChanged(int);
@@ -112,12 +90,6 @@ protected:
 
 	CountType count_type;
 	bool multi_thread;
-
-#if OP_TEMPLATE
-	LineFormat *lineFmt;
-	int s;
-	char name[256], r[8];
-#endif //OP_TEMPLATE
 
 };
 

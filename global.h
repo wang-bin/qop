@@ -149,8 +149,8 @@ typedef int Alignment;
 
 #define SIZE 1
 #define MAX 1024
-#define ZDEBUG(fmt,args...) qDebug("[%s] %s @%d: \t"fmt" ---%s, %s",__FILE__,__PRETTY_FUNCTION__,__LINE__,## args,__TIME__,__DATE__)
-//#define ZDEBUG(fmt,args...) fprintf(stdout,"[%s] %s @%d: \t"fmt" ---%s, %s\n",__FILE__,__PRETTY_FUNCTION__,__LINE__,## args,__TIME__,__DATE__); fflush(stdout)
+#define ZDEBUG(fmt,args...) qDebug("[%s] %s @%d: \t"fmt,__FILE__,__PRETTY_FUNCTION__,__LINE__,## args)
+//#define ZDEBUG(fmt,args...) fprintf(stdout,"[%s] %s @%d: \t"fmt" \t---%s, %s\n",__FILE__,__PRETTY_FUNCTION__,__LINE__,## args,__TIME__,__DATE__); fflush(stdout)
 
 #if !CONFIG_QT4
 template <typename ForwardIterator> void qDeleteAll(ForwardIterator begin, ForwardIterator end)

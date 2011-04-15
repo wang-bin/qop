@@ -98,9 +98,10 @@ void Qop::initGui()
 #endif //CONFIG_EZX
 #if CONFIG_QT4
 	progress->setWindowTitle("qop "+QObject::tr("Compression/Extraction progress dialog"));
-	progress->setObjectName("QProgressDialog");
+	progress->setObjectName("EZProgressDialog");
 #else
 	progress->setCaption("qop "+QObject::tr("Compression/Extraction progress dialog"));
+	progress->setName("EZProgressDialog");
 #endif //CONFIG_QT4
 }
 
