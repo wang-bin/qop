@@ -87,8 +87,8 @@ public:
 	void forceShowMessage(int interval=1000);
 	void checkTryPause();
 
-	void create_dir(char *pathname, int mode); //move to parent
-	FILE *create_file(char *pathname, int mode); //move to parent
+	void createDir(const QString& pathname, int mode); //move to parent
+	void createFile(const QString& pathname, int mode); //move to parent
 
 signals:
 	void byteProcessed(int size); //size_t
@@ -105,13 +105,13 @@ protected:
 	IODev _output, _input;
 	QString _archiveName, _outDir;
 	//QStringList _inFiles;
-	QFile _archiveFile;
+	QFile _archiveFile, _outFile;
 	uint _totalSize, _processedSize;
 	uint size;
 
-	QString file;
+	QString _current_fileName;
 	QTime _time;
-	QString _out, _extra;
+	QString _out_msg, _extra_msg;
 	uint _elapsed, _speed; //ms
 	double  _left;
 	QString max_str;

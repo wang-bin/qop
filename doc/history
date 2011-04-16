@@ -1,4 +1,8 @@
 =====================================2011=======================================
+04-16:
+show the correct total steps when compressing. filter out the symlinks.
+New: -o, --outdir=dir. set output dir when using internal extracting method
+
 04-12:
 size2Str<float> to size2Str<double>
 ~Qop()

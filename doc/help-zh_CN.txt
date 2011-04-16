@@ -23,6 +23,7 @@ usage: qop [-t parserFor] [-n|s] [-chm] [-x archieve|-T totalSteps] [files...]
 -t,  --parser[=TYPE]: 通常为压缩解压工具的名字, 如tar, zip, unzip, unrar. 如果xz, lzop等结合tar使用, parser为tar. 缺省值 -t tar
 若要解压tar或tar.xxx文件, 建议使用-tuntar.
 -x, --exteact=ARCHIVE: 解压缩. 忽略-T选项, 自动分析parser和总步长, 即无需-t选项.
+-o, --outdir=dir: 使用内置解压时设置输出目录为dir
 -c, --auto-close: 处理完毕自动关闭窗口
 -C, --cmd=command: 运行command命令
 -d, --diy[=TARFILE]: 使用自带的方法解压

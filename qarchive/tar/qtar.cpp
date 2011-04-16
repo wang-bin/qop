@@ -5,8 +5,8 @@
 namespace Archive {
 namespace Tar {
 
-QTar::QTar(const QString &file, IODev idev, IODev odev)
-	:QArchive(file,idev,odev)
+QTar::QTar(const QString &archive, IODev idev, IODev odev)
+	:QArchive(archive,idev,odev)
 {
 }
 
@@ -56,8 +56,8 @@ Error QTar::extract()
 
 	if(!_archiveFile.exists()) return OpenError;
 	char buff[Header::RecordSize];
-	//QFile outFile;
-	FILE* f;
+	//QFile _outFile;
+	//FILE* f;
 	size_t bytes_read;
 	unsigned int filesize;
 
@@ -78,7 +78,7 @@ Error QTar::extract()
 #endif //ARCREADER_QT4
 		//put them here
 		emit byteProcessed(_processedSize+=Header::RecordSize);
-		file=QFileInfo(buff).fileName();
+		_current_fileName=QFileInfo(buff).fileName();
 
 		if (bytes_read < Header::RecordSize) {
 			fprintf(stderr,"Short read. expected 512, got %d\n", bytes_read);
@@ -101,12 +101,12 @@ Error QTar::extract()
 		case Header::LinkFlag::kCharacter:		printf(" Ignoring character device %s\n", buff); break;
 		case Header::LinkFlag::kBlock:			printf(" Ignoring block device %s\n", buff); break;
 		case Header::LinkFlag::kDirectory:
-			create_dir(buff, parseOct(buff + 100, 8));
+			createDir(buff, parseOct(buff + 100, 8));
 			filesize = 0;
 			break;
 		case Header::LinkFlag::kFIFO:			printf(" Ignoring FIFO %s\n", buff); break;
 		default:
-			f = create_file(buff, parseOct(buff + 100, 8));
+			createFile(buff, parseOct(buff + 100, 8));
 			break;
 		}
 
@@ -126,12 +126,16 @@ Error QTar::extract()
 				return ReadError;
 			}
 			if (filesize < Header::RecordSize) bytes_read = filesize;
-			if (f != NULL) {
-				if (fwrite(buff, 1, bytes_read, f)!= bytes_read) {
+			if (_outFile.isOpen()) {
+			    if(_outFile.write(buff,bytes_read)!=bytes_read) {
+				fprintf(stderr, "Failed to write\n");
+				_outFile.close();
+			    }
+				/*if (fwrite(buff, 1, bytes_read, f)!= bytes_read) {
 					fprintf(stderr, "Failed write\n");
 					fclose(f);
 					f = NULL;
-				}
+				}*/
 			}
 
 			forceShowMessage(1000);
@@ -139,10 +143,11 @@ Error QTar::extract()
 			filesize -= bytes_read;
 		}
 		//emit byteProcessed(_processedSize+=size);
-		if (f != NULL) {
+		if(_outFile.isOpen()) _outFile.close();
+		/*if (f != NULL) {
 			fclose(f);
 			f = NULL;
-		}
+		}*/
 	}
 	_archiveFile.close();
 }

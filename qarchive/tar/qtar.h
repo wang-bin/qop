@@ -10,7 +10,7 @@ class QTar : public QArchive
 {
 	Q_OBJECT
 public:
-	QTar(const QString& file="",IODev idev=File,IODev odev=File);
+	QTar(const QString& archive="",IODev idev=File,IODev odev=File);
 	~QTar();
 
 	bool isEndBuff(const char*);

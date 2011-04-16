@@ -51,6 +51,7 @@ void printHelp()
 					"  -c, --auto-close     auto close when finished\n"
 					"  -C, --cmd=command    execute command. e.g. -C tar cvvf test.tar test\n"
 					"  -x, --extract=FILE   indicates extracting progress\n"
+					"  -o, --outdir=dir     set the output dir when using internal extract method\n"
 
 					"\nCopyright (C) 2010 Wangbin(nukin CCMOVE, aka novesky in motorolafans)\n"
 					"This program comes with ABSOLUTELY NO WARRANTY, to the extent permitted by low.\n"
@@ -107,7 +108,7 @@ int main(int argc, char *argv[])
 	qop->setArchive(options->x_file);
 
 	if(options->diy || argc<2) //internal method
-		qop->extract(options->x_file,".");
+		qop->extract(options->x_file,options->out_dir);
 	else if(!options->cmd==0)
 		qop->execute(QString::fromLocal8Bit(options->cmd));
 	else {

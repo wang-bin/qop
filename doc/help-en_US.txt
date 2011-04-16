@@ -19,9 +19,10 @@ usage: qop [-t parserFor] [-n|s] [-chm] [-x archieve|-T totalSteps] [files...]
 -T, --steps=STEPS: specify total steps.
 -t,  --parser[=TYPE]: usually is tool's name, such as tar, zip, unzip, unrar. If using xz, lzop etc with tar, parser is tar. -t tar is default.
 If you want to extract a .tar or .tar.xxx file and set size as total steps, use -tuntar is better.
+-x, --exteact=ARCHIVE: extracting mode. Omit -T argument. Analyze parser and total steps automaticly.
+-o, --outdir=dir： set the output dir when using internal extract method
 -c, --auto-close: auto close when finished
 -C, --cmd=command: execute command
--x, --exteact=ARCHIVE: extracting mode. Omit -T argument. Analyze parser and total steps automaticly.
 -d, --diy[=TARFILE]: using built-in method to extract an archive
 
 examples:

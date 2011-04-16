@@ -72,11 +72,11 @@ unsigned int permissionsToMode(QFile::Permissions perms)
 */
 namespace Archive {
 
-QArchive::QArchive(const QString &file,IODev idev,IODev odev)
-	:_output(odev),_input(idev),_outDir("."),_totalSize(0),_processedSize(0),size(0),file("") \
-	,_out(""),_extra(tr("Calculating...")),_elapsed(0),_left(0),_numFiles(0),_pause(false)
+QArchive::QArchive(const QString &archive,IODev idev,IODev odev)
+	:_output(odev),_input(idev),_outDir("."),_totalSize(0),_processedSize(0),size(0),_current_fileName("") \
+	,_out_msg(""),_extra_msg(tr("Calculating...")),_elapsed(0),_left(0),_numFiles(0),_pause(false)
 {
-	setArchive(file);
+	setArchive(archive);
 	_time.start();
 }
 
@@ -85,51 +85,25 @@ QArchive::~QArchive()
 }
 
 
-void QArchive::create_dir(char *pathname, int mode)
+void QArchive::createDir(const QString& pathname, int mode)
 {
-	/* Strip trailing '/' */
-	if (pathname[strlen(pathname) - 1] == '/')
-		pathname[strlen(pathname) - 1] = '\0';
-#if defined(linux) || defined(__linux) || defined(__linux__)
-	char *p;
-	int r;
-	/* Try creating the directory. */
-	r = mkdir(pathname, mode);
-	if (r != 0) {
-		/* On failure, try creating parent directory. */
-		p = strrchr(pathname, '/');
-		if (p != NULL) {
-			*p = '\0';
-			create_dir(pathname, 0755);
-			*p = '/';
-			r = mkdir(pathname, mode);
-		}
-	}
-	//if (r != 0)
-	//	fprintf(stderr, "Could not create directory %s\n", pathname);
-#else
-	QDir dir(_outDir);
-	dir.mkdir(pathname);
-#endif
-
+	QDir(_outDir).mkdir(pathname);
 }
 
 /* Create a file, including parent directory as necessary. */
-FILE * QArchive::create_file(char *pathname, int mode)
+void QArchive::createFile(const QString& pathname, int /*mode*/)
 {
-	Q_UNUSED(mode);
-	FILE *f;
-	f = fopen(pathname, "w+");
-	if (f == NULL) {
-		char *p = strrchr(pathname, '/');
-		if (p != NULL) {
-			*p = '\0';
-			create_dir(pathname, 0755);
-			*p = '/';
-			f = fopen(pathname, "w+");
-		}
+	_outFile.setFileName(_outDir+"/"+pathname);
+	if(!_outFile.open(QIODevice::ReadWrite)) {
+		ezDebug(_outDir+"/"+pathname);
+		if(pathname.left(1)=="/") {
+			QDir(_outDir).mkdir(pathname.mid(1));
+		} else	QDir(_outDir).mkdir(pathname);
+	} else {
+#if CONFIG_QT4
+		//_outFile.setPermissions();
+#endif
 	}
-	return (f);
 }
 
 void QArchive::timerEvent(QTimerEvent *)
@@ -163,20 +137,20 @@ void QArchive::pauseOrContinue()
 void QArchive::updateMessage()
 {
 	estimate();
-	_out=file+"\n"+QObject::tr("Size: ")+size2Str<float>(size)+"\n"+QObject::tr("Processed: ")+size2Str<float>(_processedSize)+max_str+"\n";
-	_extra=QObject::tr("Speed: ")+size2Str<float>(_speed)+"/s\n"+QObject::tr("Elapsed: %1s Remaining: %2s").arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1);
-	emit textChanged(_out+_extra);
+	_out_msg=_current_fileName+"\n"+QObject::tr("Size: ")+size2Str<double>(size)+"\n"+QObject::tr("Processed: ")+size2Str<double>(_processedSize)+max_str+"\n";
+	_extra_msg=QObject::tr("Speed: ")+size2Str<double>(_speed)+"/s\n"+QObject::tr("Elapsed: %1s Remaining: %2s").arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1);
+	emit textChanged(_out_msg+_extra_msg);
 	qApp->processEvents();
 }
 
 void QArchive::finishMessage()
 {
 	estimate();
-	_out=QObject::tr("Finished: ")+QString::number(_numFiles)+" "+QObject::tr("files")+"\n"+size2Str<float>(_processedSize)+max_str+"\n";
-	_extra=QObject::tr("Speed: ")+size2Str<float>(_processedSize/(1+_elapsed)*1000)+"/s\n"+QObject::tr("Elapsed: %1s Remaining: %2s").arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1);
+	_out_msg=QObject::tr("Finished: ")+QString::number(_numFiles)+" "+QObject::tr("files")+"\n"+size2Str<double>(_processedSize)+max_str+"\n";
+	_extra_msg=QObject::tr("Speed: ")+size2Str<double>(_processedSize/(1+_elapsed)*1000)+"/s\n"+QObject::tr("Elapsed: %1s Remaining: %2s").arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1);
 	killTimer(tid);
 	emit finished();
-	emit textChanged(_out+_extra);
+	emit textChanged(_out_msg+_extra_msg);
 	qApp->processEvents();
 }
 
@@ -208,6 +182,10 @@ void QArchive::setOutput(IODev odev)
 void QArchive::setOutDir(const QString &odir)
 {
 	_outDir=odir;
+	if(!QDir(_outDir).exists()) {
+		ZDEBUG("out dir %s doesn't exist. creating...",_outDir.toLocal8Bit().data());
+		QDir().mkdir(odir);
+	}
 }
 
 QString QArchive::outDir() const
@@ -225,7 +203,7 @@ void QArchive::setArchive(const QString &name)
 	_archiveFile.setName(_archiveName);
 #endif
 	_totalSize=_archiveFile.size();
-	max_str=" / "+size2Str<float>(_totalSize);
+	max_str=" / "+size2Str<double>(_totalSize);
 }
 
 uint QArchive::unpackedSize()

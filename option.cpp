@@ -22,7 +22,7 @@ void opts_free(opts_t opts)
 opts_t opts_parse(int argc, char **argv)
 {
 	int option_index = 0;
-	const char *short_options = "t:mnshHT:x:cd::C:";
+	const char *short_options = "t:mnshHT:x:o:cd::C:";
 	int c;
 	opts_t opts;
 
@@ -37,6 +37,7 @@ opts_t opts_parse(int argc, char **argv)
 	opts->cmd=0;
 	opts->parser_type="tar";
 	opts->x_file=NULL;
+	opts->out_dir="./";
 	opts->auto_close=0;
 	opts->help=0;
 	opts->multi_thread=0;
@@ -84,6 +85,7 @@ opts_t opts_parse(int argc, char **argv)
 			case 'd': opts->diy=1; if(optarg!=NULL) opts->x_file=optarg; break;
 			case 'I': opts->Stdin=1; break;
 			case 'O': opts->Stdout=1; break;
+			case 'o': opts->out_dir=optarg; break;
 			case '?': printHelp(); exit(0);//opts->help=1;break;//
 			default:
 				break;

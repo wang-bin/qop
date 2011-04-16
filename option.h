@@ -23,6 +23,7 @@ const struct option long_options[] = {
 		{"diy",2,0,'d'},
 		{"stdin",0,0,'I'},
 		{"stdout",0,0,'O'},
+		{"outdir",0,0,'o'},
 		{"hide",0,0,'H'},
 		{0, 0, 0, 0}
 	};
@@ -41,6 +42,7 @@ struct opts_s {
 	int auto_close;
 	int hide;
 	const char* x_file;
+	char* out_dir; //default is ./
 	int help;
 	int optind;
 

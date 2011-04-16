@@ -12,6 +12,7 @@ read all stdout then parse line by line
 or read all then parse the last line
 internal tar Chinese support, QProcess env
 
+file permisson
 
 FIXME:
 -C command: sometimes taroutparser unit error

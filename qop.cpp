@@ -49,11 +49,12 @@ Qop::~Qop()
 	if(parser)  delete parser;
 }
 
-void Qop::extract(const QString& arc, const QString& )
+void Qop::extract(const QString& arc, const QString& outDir)
 {
 	setInternal(true);
 	setArchive(arc);
 	initArchive();
+	archive->setOutDir(outDir);
 	archive->extract();
 }
 
