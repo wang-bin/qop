@@ -50,8 +50,8 @@
 #endif
 */
 #define APP_NAME "qop"
-//#define APP_VERSION 0.2.0
-#define APP_VERSION_STR "0.2.0"
+//#define APP_VERSION 0.2.2
+#define APP_VERSION_STR "0.2.2"
 
 #include <qglobal.h>
 #if QT_VERSION >= 0x040000

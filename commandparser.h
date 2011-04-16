@@ -81,22 +81,21 @@ protected:
 	CommandParser *cmd_parser;
 };
 
-class TarCommandParser : public CommandParser
-{
-public:
-	TarCommandParser();
-	TarCommandParser(const QString& cmd);
-	//TarCommandParser(const QString& program, const QStringList& argv);
+#define DECLARE_COMMANDPARSER(T) \
+	class T##CommandParser : public CommandParser { \
+	public: \
+		TarCommandParser(); \
+		TarCommandParser(const QString& cmd); \
+		virtual ~TarCommandParser(); \
+		virtual void setCommand(const QString &cmd); \
+		virtual QStringList files(); \
+		virtual QString archive(); \
+		virtual CountType countType(); \
+		virtual bool isCompressMode(); \
+	private: \
+		void init(); \
+	};
 
-	virtual ~TarCommandParser();
-
-	virtual void setCommand(const QString &cmd);
-	virtual QStringList files();
-	virtual QString archive();
-	virtual CountType countType();
-	virtual bool isCompressMode();
-private:
-	void init();
-};
+DECLARE_COMMANDPARSER(Tar)
 
 #endif // COMMANDPARSER_H

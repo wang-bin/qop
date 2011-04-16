@@ -1,7 +1,7 @@
 TEMPLATE	= app
 #CONFIG		= qt warn_on release #for EZX
 #CONFIG		+= static #ezx
-DESTDIR	= bin
+DESTDIR		= bin
 MOC_DIR		= .moc
 OBJECTS_DIR	= .obj
 DEFINES		+= QT_THREAD_SUPPORT
