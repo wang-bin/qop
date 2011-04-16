@@ -84,12 +84,13 @@ void QCounterThread::sizeOfFiles(const QStringList& list)
 		if ((*it != ".") && (*it != "..")) {
 			if(QFileInfo(name).isDir()) {
 				QStringList pathList;
-				QStringList nameList=QDir(name).entryList();
+				//filter is important. if list symlinks, the target size will be added
+				QStringList nameList=QDir(name).entryList(QDir::Files|QDir::Dirs|QDir::NoSymLinks|QDir::Hidden|QDir::Readable);
 				for(QStringList::ConstIterator it = nameList.begin();it != nameList.end(); ++it)
 					if ((*it != ".") && (*it != ".."))	pathList.append(name+"/"+*it);   //can't be root,so override
 						sizeOfFiles(pathList);
 			} else {
-				size+=QFileInfo(*it).size();
+				size+=QFileInfo(*it).size();  //QFileInfo()::isSymLink()
 				//emit counted(size); //too frequent. app will abort in windows
 			}
 		}
