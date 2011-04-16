@@ -21,6 +21,8 @@
 #include "qop.h"
 #include <qdir.h>
 
+#include "commandparser.h"
+
 #if CONFIG_QT4
 #define FLAG Qt::WindowStaysOnTopHint
 #else
@@ -67,6 +69,21 @@ void Qop::execute(const QString &cmd)
 	initProcess();
 	//progress->setLabelText(QDir::currentPath());//QApplication::applicationDirPath();
 #if CONFIG_QT4 || CONFIG_QT3
+	CommandParser cmdParser(cmd);
+	if(cmdParser.countType()==CommandParser::Num)
+		parser->setCountType(QCounterThread::Num);
+	else
+		parser->setCountType(QCounterThread::Size);
+#if COUNTER_THREAD
+	if(cmdParser.isCompressMode()) {
+		connect(cmdParser.counterThread(),SIGNAL(maxChanged(int)),progress,SLOT(setMaximum(int)));
+		connect(cmdParser.counterThread(),SIGNAL(counted(uint)),parser,SLOT(setTotalSize(int)));
+		cmdParser.counterThread()->start();
+	} else {
+		progress->setMaximum(cmdParser.archiveUnpackSize());
+	}
+#endif
+	if(progress->maximum()) parser->setTotalSize(progress->maximum());
 	process->setWorkingDirectory(QDir::currentPath());
 	process->start(cmd);
 	while(!process->waitForFinished(1000)) {
@@ -117,6 +134,11 @@ void Qop::initArchive()
 	ezDebug("archive: "+arc_path);
 	progress->setMaximum(archive->unpackedSize());
 	progress->addButton(QObject::tr("Pause"),1);
+#if CONFIG_QT4
+	progress->button(1)->setCheckable(true);
+#else
+	progress->button(1)->setToggleButton(true);
+#endif
 	QObject::connect(progress->button(1),SIGNAL(clicked()),archive,SLOT(pauseOrContinue()));
 	QObject::connect(archive,SIGNAL(byteProcessed(int)),progress,SLOT(setValue(int)));
 	QObject::connect(archive,SIGNAL(textChanged(const QString&)),progress,SLOT(setLabelText(const QString&)));

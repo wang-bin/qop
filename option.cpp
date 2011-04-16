@@ -78,7 +78,17 @@ opts_t opts_parse(int argc, char **argv)
 				}
 				//opts->cmd=const_cast<char*>(s.c_str());
 				qDebug("cmd: %s",opts->cmd);
-				opts->steps=CommandParser(opts->cmd).archiveUnpackSize();
+#if !COUNTER_THREAD
+				CommandParser cmdParser(opts->cmd);
+				if(!cmdParser.isCompressMode()) {
+					opts->steps=cmdParser.archiveUnpackSize();
+					return opts;
+				}
+				if(cmdParser.countType()==CommandParser::Size)
+					opts->steps=cmdParser.filesSize();
+				else
+					opts->steps=cmdParser.filesCount();
+#endif
 				return opts;
 			}
 			case 'x': opts->x_file=optarg; break;
@@ -98,51 +108,3 @@ opts_t opts_parse(int argc, char **argv)
 
 	return opts;
 }
-
-
-/***************************************************************************************/
-#if TEST_MYOPT
-
-QOptions::QOptions(int argc, char **argv)
-{
-	readCommand(argc,argv);
-}
-
-QOptions::~QOptions()
-{
-	qDeleteAll(opts);
-	opts.clear();
-}
-
-void QOptions::readCommand(int argc, char **argv)
-{
-	//opts.resize(0);
-
-}
-
-void QOptions::doOptions()
-{
-	QList<QOptionsPrivate*>::Iterator it;
-	for(it=opts_in.begin();it!=opts_in.end();++it) {
-		(*it)->func_ptr();
-	}
-}
-
-QOptions& QOptions::operator ()(const char* name,const QAny& value,const char* description)
-{
-	//opts.insert();
-	return *this;
-}
-
-QOptions& QOptions::operator ()(const char* name,const char* description)
-{
-	return *this;
-
-}
-
-QAny& QOptions::operator [](const char* name)
-{
-}
-
-
-#endif //TEST_MYOPT

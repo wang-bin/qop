@@ -28,9 +28,7 @@
 //#ifdef QT_THREAD_SUPPORT
 #include <qthread.h>
 //#endif //QT_THREAD_SUPPORT
-enum CountType {
-		Size=0x0, Num=0x1, NumNoDir=0x3
-};
+
 //if no thread support, inherits qobject
 class QCounterThread :
 #if !(QT_VERSION >= 0x040000)
@@ -40,6 +38,10 @@ class QCounterThread :
 {
 	Q_OBJECT
 public:
+	enum CountType {
+			Size=0x0, Num=0x1, NumNoDir=0x3
+	};
+
 	QCounterThread(const QStringList& files=QStringList());
 	virtual ~QCounterThread();
 
@@ -49,14 +51,17 @@ public:
 	void start();
 #endif //QT_THREAD_SUPPORT
 	virtual void run();
+	//num() size()
+
 signals:
 	void done();
 	void counted(uint); //connect to QOutParser
+	void maxChanged(int);
 
-protected:
-	void numOfFilesNoDir(const QStringList&);
-	void numOfFiles(const QStringList&); //or return uint
-	void sizeOfFiles(const QStringList&);
+public:
+	uint numOfFilesNoDir(const QStringList&);
+	uint numOfFiles(const QStringList&); //or return uint
+	uint sizeOfFiles(const QStringList&);
 
 private:
 	QStringList files;

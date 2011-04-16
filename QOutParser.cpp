@@ -147,7 +147,7 @@ QOutParser* getParser(const QString& type)
 		return new QUnrarOutParser;
 	} else if(t=="7z") {
 		QOutParser *qop=new Q7zOutParser;
-		qop->setCountType(NumNoDir);
+		qop->setCountType(QCounterThread::NumNoDir);
 		return qop;
 	} else if(t=="lzip") {
 		return new QLzipOutParser;
@@ -162,7 +162,7 @@ QOutParser* getParser(const QString& type)
 
 QOutParser::QOutParser(uint total):QObject(0),file(""),size(0),compressed(0),value(0) \
 	,_out(""),_extra(tr("Calculating...")),_elapsed(0),_left(0),max_value(total),res(Unknow) \
-	,count_type(Size),multi_thread(false)
+	,count_type(QCounterThread::Size),multi_thread(false)
 {
 	res_tmp=res;
 	first=true;
@@ -198,8 +198,8 @@ void QOutParser::parseLine(const char* line)
 	if(first && res_tmp!=Error && res_tmp!=Unknow) {
 		res=res_tmp;
 		first=false;
-		if((res_tmp==Simple && count_type==Size)||((res_tmp==Detail || res_tmp==DetailWithRatio)&&count_type!=Size)) {
-			count_type= (CountType)((int)~count_type&0x1);
+		if((res_tmp==Simple && count_type==QCounterThread::Size)||((res_tmp==Detail || res_tmp==DetailWithRatio)&&count_type!=QCounterThread::Size)) {
+			count_type= (QCounterThread::CountType)((int)~count_type&0x1);
 			setCountType(count_type);
 			startCounterThread(); //no effect on multi-threading
 		}
@@ -244,7 +244,7 @@ void QOutParser::readFromFile(int fd)
 		ZDEBUG("Data not from stdin...");
 		return;
 	}
-	int count = read(STDIN_FILENO, line, 1024);
+	read(STDIN_FILENO, line, 1024);
 	//ZDEBUG("stdout: %s",line);
 	//parseLineByLine(line);
 }
@@ -259,7 +259,7 @@ void QOutParser::start() {
 }
 
 
-void QOutParser::setCountType(CountType ct)
+void QOutParser::setCountType(QCounterThread::CountType ct)
 {
 	count_type=ct;
 	counter.setCountType(count_type);
@@ -327,7 +327,7 @@ void QOutParser::setTotalSize(uint s)
 	emit maximumChanged(max_value=s);
 	//qApp->processEvents();
 	estimate();
-	if(count_type==Size) max_str=" / "+size2Str<double>(max_value);
+	if(count_type==QCounterThread::Size) max_str=" / "+size2Str<double>(max_value);
 	else max_str=" / "+QString::number(s)+" ";
 #ifndef NO_EZX
 	//ZDEBUG("TS: %d time: %d",max_value,_time.elapsed());

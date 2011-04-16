@@ -45,10 +45,8 @@ public:
 	void startCounterThread(); //start a QCounterThread thread
 
 	void setFiles(const QStringList&);
-	void setCountType(CountType);
-#if OP_TEMPLATE
-	void setLineFormat(const QString& type);
-#endif //OP_TEMPLATE
+	void setCountType(QCounterThread::CountType);
+
 public slots:
 	void initTimer();
 	void setTotalSize(uint);
@@ -88,7 +86,7 @@ protected:
 
 	QCounterThread counter;
 
-	CountType count_type;
+	QCounterThread::CountType count_type;
 	bool multi_thread;
 
 };

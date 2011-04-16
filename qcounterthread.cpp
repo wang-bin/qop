@@ -24,7 +24,7 @@ QCounterThread::QCounterThread(const QStringList &f)
 	:files(f),size(0),num(0),ct(Size)
 {}
 
-QCounterThread::~QCounterThread() { ZDEBUG("Thread destroyed");}
+QCounterThread::~QCounterThread() {}
 
 #ifndef QT_THREAD_SUPPORT
 void QCounterThread::start() { run();}
@@ -42,7 +42,7 @@ void QCounterThread::run()
 	emit done();
 }
 
-void QCounterThread::numOfFilesNoDir(const QStringList& list)
+uint QCounterThread::numOfFilesNoDir(const QStringList& list)
 {
 	QString name;
 	for(QStringList::ConstIterator it = list.begin();it != list.end(); ++it) {
@@ -56,10 +56,11 @@ void QCounterThread::numOfFilesNoDir(const QStringList& list)
 						numOfFilesNoDir(pathList);
 			} else ++num;
 		}
-	} emit counted(num);
+	} emit counted(num); emit maxChanged(num);
+	return num;
 }
 
-void QCounterThread::numOfFiles(const QStringList& list)
+uint QCounterThread::numOfFiles(const QStringList& list)
 {
 	QString name;
 	for(QStringList::ConstIterator it = list.begin();it != list.end(); ++it) {
@@ -73,10 +74,11 @@ void QCounterThread::numOfFiles(const QStringList& list)
 						numOfFiles(pathList);
 			} ++num;
 		}
-	} emit counted(num);
+	} emit counted(num); emit maxChanged(num);
+	return num;
 }
 
-void QCounterThread::sizeOfFiles(const QStringList& list)
+uint QCounterThread::sizeOfFiles(const QStringList& list)
 {
 	QString name;
 	for(QStringList::ConstIterator it = list.begin();it != list.end(); ++it) {
@@ -94,7 +96,8 @@ void QCounterThread::sizeOfFiles(const QStringList& list)
 				//emit counted(size); //too frequent. app will abort in windows
 			}
 		}
-	} emit counted(size);
+	} emit counted(size); emit maxChanged(num);
+	return size;
 }
 
 

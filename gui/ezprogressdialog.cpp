@@ -135,8 +135,10 @@ EZProgressDialog::EZProgressDialog(const QString &labelText,const QString &cance
 	ZPushButton *b=button(0);
 #if CONFIG_QT4
 	b->setObjectName("CancelButton");
+	b->setCheckable(true);
 #else
 	b->setName("CancelButton");
+	b->setToggleButton(true);
 #endif
 	//connect(b,SIGNAL(clicked()),SLOT(reject()));
 	connect(b,SIGNAL(clicked()),this,SIGNAL(canceled()));
@@ -341,6 +343,16 @@ void EZProgressDialog::setMaximum(int max)
 	d->bar->setProgress(d->value);
 	//ZDEBUG("%d,%d",d->value,d->bar->totalSteps());
 	d->bar->setProgress(d->bar->progress());
+#endif //CONFIG_QT4
+}
+
+int EZProgressDialog::maximum()
+{
+	Q_D(EZProgressDialog);
+#if CONFIG_QT4
+	d->bar->maximum();
+#else
+	d->bar->totalSteps();
 #endif //CONFIG_QT4
 }
 

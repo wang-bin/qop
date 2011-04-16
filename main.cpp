@@ -100,7 +100,9 @@ int main(int argc, char *argv[])
 #if !CONFIG_QT4
 	a.setMainWidget(qop->progress);
 #endif //CONFIG_QT4
+	ZDEBUG("Steps from options: %d",options->steps);
 	qop->progress->setMaximum(options->steps);
+	//qop->parser->setTotalSize(options->steps); //abort -C tar zxvf
 	if(!options->hide)
 		qop->progress->show();
 	//order is important
@@ -113,7 +115,7 @@ int main(int argc, char *argv[])
 		qop->execute(QString::fromLocal8Bit(options->cmd));
 	else {
 		qop->initParser();
-		if(options->unit) qop->parser->setCountType(Num);
+		if(options->unit) qop->parser->setCountType(QCounterThread::Num);
 		ZDEBUG("steps: %d",qop->steps);
 		if(qop->steps<=0) { //compress
 			if(options->steps>0) qop->parser->setTotalSize(options->steps);

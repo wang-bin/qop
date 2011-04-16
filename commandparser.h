@@ -35,20 +35,29 @@
 	 uint s=cp.archiveUnpackSize();
 */
 
+#define COUNTER_THREAD 0
 #include <qstringlist.h>
+
+class QCounterThread;
 class CommandParser
 {
 public:
+	enum CountType {
+			Size=0x0, Num=0x1, NumNoDir=0x3
+	};
+
 	CommandParser();
 	CommandParser(const QString& cmd);
 	//CommandParser(const QString& program, const QStringList& argv);
 
 	virtual ~CommandParser();
 
-	void setCommand(const QString& cmd);
+	virtual void setCommand(const QString& cmd);
 
 	virtual QStringList files();
 	virtual QString archive();
+	virtual CountType countType();
+	virtual bool isCompressMode();
 
 	/*!
 		CommandParser(cmd).unpackSize();
@@ -59,13 +68,17 @@ public:
 	size_t archiveSize() const;
 	size_t archiveUnpackSize() const;
 
+	QCounterThread* counterThread() { return counter;}
+
 protected:
+	QCounterThread *counter;
+
 	QString _cmd;
 	QString _archive;
 	QStringList _files;
-
+	bool _compress_mode;
+	CountType _count_type;
 	CommandParser *cmd_parser;
-
 };
 
 class TarCommandParser : public CommandParser
@@ -77,8 +90,13 @@ public:
 
 	virtual ~TarCommandParser();
 
+	virtual void setCommand(const QString &cmd);
 	virtual QStringList files();
 	virtual QString archive();
+	virtual CountType countType();
+	virtual bool isCompressMode();
+private:
+	void init();
 };
 
 #endif // COMMANDPARSER_H

@@ -106,6 +106,7 @@ public:
 	void setBar(UTIL_ProgressBar*);
 	void setLabel(QLabel*); //set the content label
 	int value() const;
+	int maximum();
 
 	//bool clickDo(int index,const QObject* receiver,const char* member=0);
 	//bool clickUndo(int index,const QObject* receiver,const char* member=0);

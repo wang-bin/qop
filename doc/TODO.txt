@@ -1,7 +1,8 @@
 文档，使用说明
 
--C is conflict with tar's arg
+-C is conflict with tar's arg, 解压的totalsetps
 
+EZProgressDialog Q_D() etc
 
 QSocket 对qop与qprocess间进行通信。
 EZProgressDialog::socket()
