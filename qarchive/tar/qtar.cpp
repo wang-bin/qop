@@ -101,12 +101,12 @@ Error QTar::extract()
 		case Header::LinkFlag::kCharacter:		printf(" Ignoring character device %s\n", buff); break;
 		case Header::LinkFlag::kBlock:			printf(" Ignoring block device %s\n", buff); break;
 		case Header::LinkFlag::kDirectory:
-			createDir(buff, parseOct(buff + 100, 8));
+			createDir(QString::fromLocal8Bit(buff), parseOct(buff + 100, 8));
 			filesize = 0;
 			break;
 		case Header::LinkFlag::kFIFO:			printf(" Ignoring FIFO %s\n", buff); break;
 		default:
-			createFile(buff, parseOct(buff + 100, 8));
+			createFile(QString::fromLocal8Bit(buff), parseOct(buff + 100, 8));
 			break;
 		}
 
@@ -127,7 +127,11 @@ Error QTar::extract()
 			}
 			if (filesize < Header::RecordSize) bytes_read = filesize;
 			if (_outFile.isOpen()) {
-			    if(_outFile.write(buff,bytes_read)!=bytes_read) {
+#if CONFIG_QT4
+				if(_outFile.write(buff,bytes_read)!=bytes_read) {
+#else
+				if(_outFile.writeBlock(buff,bytes_read)!=bytes_read) {
+#endif
 				fprintf(stderr, "Failed to write\n");
 				_outFile.close();
 			    }

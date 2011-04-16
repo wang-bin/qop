@@ -2,6 +2,7 @@
 04-16:
 show the correct total steps when compressing. filter out the symlinks.
 New: -o, --outdir=dir. set output dir when using internal extracting method
+QString::fromLocal8Bit(cstr) to have a right decoder. File name can be show correctly
 
 04-12:
 size2Str<float> to size2Str<double>

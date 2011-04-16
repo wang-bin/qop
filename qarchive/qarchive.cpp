@@ -93,8 +93,13 @@ void QArchive::createDir(const QString& pathname, int mode)
 /* Create a file, including parent directory as necessary. */
 void QArchive::createFile(const QString& pathname, int /*mode*/)
 {
+#if CONFIG_QT4
 	_outFile.setFileName(_outDir+"/"+pathname);
 	if(!_outFile.open(QIODevice::ReadWrite)) {
+#else
+	_outFile.setName(_outDir+"/"+pathname);
+	if(!_outFile.open(IO_ReadWrite)) {
+#endif
 		ezDebug(_outDir+"/"+pathname);
 		if(pathname.left(1)=="/") {
 			QDir(_outDir).mkdir(pathname.mid(1));
@@ -183,7 +188,7 @@ void QArchive::setOutDir(const QString &odir)
 {
 	_outDir=odir;
 	if(!QDir(_outDir).exists()) {
-		ZDEBUG("out dir %s doesn't exist. creating...",_outDir.toLocal8Bit().data());
+		ZDEBUG("out dir %s doesn't exist. creating...",UTIL::qstr2cstr(_outDir));
 		QDir().mkdir(odir);
 	}
 }
