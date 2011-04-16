@@ -22,6 +22,10 @@
 #ifndef __cplusplus
 #error "Use C++ Compiler Please..."
 #endif
+
+#define SOCKET_FILE "qop.socket"
+#define CANCEL_MSG  "cancel-process"
+
 #include <qglobal.h>
 
 #if defined(linux) || defined(__linux) || defined(__linux__)

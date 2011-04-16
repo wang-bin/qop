@@ -113,7 +113,8 @@ int main(int argc, char *argv[])
 	else {
 		qop->initParser();
 		if(options->unit) qop->parser->setCountType(Num);
-		if(!qop->steps>0) { //compress
+		ZDEBUG("steps: %d",qop->steps);
+		if(qop->steps<=0) { //compress
 			if(options->steps>0) qop->parser->setTotalSize(options->steps);
 			QStringList files=QStringList();
 		//why is optind?

@@ -171,10 +171,11 @@ QOutParser::QOutParser(uint total):QObject(0),file(""),size(0),compressed(0),val
 	connect(&counter,SIGNAL(counted(uint)),SLOT(setTotalSize(uint)));
 	//connect(&counter,SIGNAL(counted(uint)),this,SIGNAL(maximumChanged(int)));
 	//connect(&counter,SIGNAL(done()),SLOT());
-#if 0
-		QSocketNotifier *socket_notifier=new QSocketNotifier(STDIN_FILENO,QSocketNotifier::Read,this);
+#if NO_SOCKET
+		QSocketNotifier *stdin_notifier=new QSocketNotifier(STDIN_FILENO,QSocketNotifier::Read,this);
 		ZDEBUG("SocketNotifier is enabled: %d",socket_notifier->isEnabled());
-		connect(socket_notifier,SIGNAL(activated(int)),SLOT(readFromFile(int)));
+		connect(stdin_notifier,SIGNAL(activated(int)),SLOT(readFromFile(int)));
+
 		initTimer();
 #endif
 
@@ -271,6 +272,7 @@ void QOutParser::setMultiThread(bool mt)
 
 void QOutParser::startCounterThread()
 {
+	ZDEBUG();
 	emit textChanged(tr("Calculating..."));
 	qApp->processEvents();
 	if(multi_thread) counter.start();

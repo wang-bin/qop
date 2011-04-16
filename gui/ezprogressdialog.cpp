@@ -133,6 +133,11 @@ EZProgressDialog::EZProgressDialog(const QString &labelText,const QString &cance
 
 	addButton(cancelButtonText);
 	ZPushButton *b=button(0);
+#if CONFIG_QT4
+	b->setObjectName("CancelButton");
+#else
+	b->setName("CancelButton");
+#endif
 	//connect(b,SIGNAL(clicked()),SLOT(reject()));
 	connect(b,SIGNAL(clicked()),this,SIGNAL(canceled()));
 	connect(b,SIGNAL(clicked()),this,SIGNAL(cancelled()));

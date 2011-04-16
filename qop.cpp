@@ -69,6 +69,7 @@ void Qop::execute(const QString &cmd)
 	process->setWorkingDirectory(QDir::currentPath());
 	process->start(cmd);
 	while(!process->waitForFinished(1000)) {
+		if(process->state()==QProcess::Starting) qDebug("Starting process...Program has not yet been invoked");
 		//if(process->state()==QProcess::NotRunning) qDebug("Not running!"); //true in linux, why?
 		qApp->processEvents();
 	}
@@ -172,7 +173,6 @@ void Qop::initParser()
 
 	if(steps>0)
 		parser->setTotalSize(steps);
-
 }
 
 void Qop::initProcess()
