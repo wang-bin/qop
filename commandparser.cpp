@@ -190,7 +190,7 @@ void TarCommandParser::init()
 #if CONFIG_QT4
 		_files=fs.split(" ");
 #else
-		_files=split(" ",fs);
+		_files=QStringList::split(" ",fs);
 #endif
 	}
 

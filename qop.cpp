@@ -83,7 +83,10 @@ void Qop::execute(const QString &cmd)
 		progress->setMaximum(cmdParser.archiveUnpackSize());
 	}
 #endif
-	if(progress->maximum()) parser->setTotalSize(progress->maximum());
+	if(progress->maximum()) {
+		ZDEBUG();
+		parser->setTotalSize(progress->maximum());
+	}
 	process->setWorkingDirectory(QDir::currentPath());
 	process->start(cmd);
 	while(!process->waitForFinished(1000)) {
@@ -206,8 +209,10 @@ void Qop::initProcess()
 	//ZDEBUG("working dir: %s",process->workingDirectory().toLocal8Bit().constData());
 	connect(process, SIGNAL(readyReadStandardOutput()), SLOT(readStdOut()));
 	connect(process,SIGNAL(readyReadStandardError()),SLOT(readStdErr()));
-	connect(process, SIGNAL(finished(int,QProcess::ExitStatus)), SIGNAL(finished(int,QProcess::ExitStatus)));
+	//connect(process, SIGNAL(finished(int,QProcess::ExitStatus)), SIGNAL(finished(int,QProcess::ExitStatus)));
 	connect(process,SIGNAL(started()),parser,SLOT(initTimer()));
+	connect(process, SIGNAL(finished(int)), parser, SIGNAL(finished()));
+	//connect(process, SIGNAL(finished(int)), parser, SLOT(slotFinished()));
 #endif
 }
 

@@ -1,6 +1,15 @@
 =====================================2011=======================================
+04-17:
+You can just omit the -s and -n like the following:
+tar zcvvf test.tgz test |qop test -m
+tar zcvvf test.tgz test |qop test -m
+because i calculate the frequency of the unit when analyzing the output message
+Pause button is checkable.
+Show approximate total steps, progress using -C option for tar. Also can get correct number/size of archive and files with -C option.
+(check vv or v, c or x)
+
 04-16:
-show the correct total steps when compressing. filter out the symlinks.
+show the correct total steps when compressing use -C option. filter out the symlinks.
 New: -o, --outdir=dir. set output dir when using internal extracting method
 QString::fromLocal8Bit(cstr) to have a right decoder. File name can be show correctly
 Pause button is checkable

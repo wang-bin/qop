@@ -125,6 +125,7 @@
 
 */
 #include "QOutParser.h"
+#include <algorithm>
 #include <qsocketnotifier.h>
 
 #include "util.h"
@@ -158,17 +159,20 @@ QOutParser* getParser(const QString& type)
 	}
 }
 
-
+int QOutParser::detail_freq=0;
+int QOutParser::simple_freq=0;
+int QOutParser::detail_ratio_freq=0;
 
 QOutParser::QOutParser(uint total):QObject(0),file(""),size(0),compressed(0),value(0) \
 	,_out(""),_extra(tr("Calculating...")),_elapsed(0),_left(0),max_value(total),res(Unknow) \
 	,count_type(QCounterThread::Size),multi_thread(false)
 {
 	res_tmp=res;
-	first=true;
+	//first=true;
 	_time.start();
 	connect(this,SIGNAL(finished()),SLOT(slotFinished()));
 	connect(&counter,SIGNAL(counted(uint)),SLOT(setTotalSize(uint)));
+	connect(this,SIGNAL(unitChanged()),SLOT(slotResetUnit()));
 	//connect(&counter,SIGNAL(counted(uint)),this,SIGNAL(maximumChanged(int)));
 	//connect(&counter,SIGNAL(done()),SLOT());
 #if NO_SOCKET
@@ -189,21 +193,26 @@ void QOutParser::parseLine(const char* line)
 {
 	//Format res_tmp=res;
 	qApp->processEvents(); //remove ?
-	res_tmp=parse(line);
-	//_speed=value/(1+_elapsed)*1000;
-	/*! 2010-11-27
-				set count_type when as the first available format and switch to correct mode
-				1-thread mode will perform perfectly
-			*/
-	if(first && res_tmp!=Error && res_tmp!=Unknow) {
-		res=res_tmp;
-		first=false;
-		if((res_tmp==Simple && count_type==QCounterThread::Size)||((res_tmp==Detail || res_tmp==DetailWithRatio)&&count_type!=QCounterThread::Size)) {
-			count_type= (QCounterThread::CountType)((int)~count_type&0x1);
-			setCountType(count_type);
-			startCounterThread(); //no effect on multi-threading
-		}
+	res=parse(line);
+	if(res==Detail) {
+		detail_freq++;
+	} else if(res==Simple) {
+		simple_freq++;
+	} else if(res==DetailWithRatio) {
+		detail_ratio_freq++;
 	}
+	if(std::max(detail_freq,simple_freq)==detail_freq) {
+		if(std::max(detail_freq,detail_ratio_freq)==detail_freq)
+			res=Detail;
+		else
+			res=DetailWithRatio;
+	} else {
+		if(std::max(simple_freq,detail_ratio_freq)==simple_freq)
+			res=Simple;
+		else
+			res=DetailWithRatio;
+	}
+
 
 	if(res==Detail) {
 		_out=file+"\n"+tr("Size: ")+size2Str<double>(size)+"\n"+tr("Processed: ")+size2Str<double>(value)+max_str+"\n";
@@ -216,14 +225,17 @@ void QOutParser::parseLine(const char* line)
 		_out=file+"\n"+tr("Size: ")+size2Str<double>(size)+"  "+tr("Ratio: ")+ratio+"\n"+tr("Processed: ")+size2Str<double>(value)+max_str+"\n";
 		_extra=tr("Speed: ")+size2Str<double>(_speed)+"/s\n"+tr("Elapsed: %1s Remaining: %2s").arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1);
 	} else if(res==Unknow) {
+		//res=res_tmp;
 		puts(line);
 		fflush(stdout);
 		return;//continue;
 	} else if(res==Error) {
+	    //res=res_tmp;
 		puts(line);
 		_out=tr("Password Error!");
 		_extra="";
 	} else {
+	    //res=res_tmp;
 		_out=line;
 		_extra="";
 	}
@@ -253,7 +265,29 @@ void QOutParser::start() {
 	initTimer();
 	//read(STDIN_FILENO,buf,SIZE))
 	while(fgets(line,MAX,stdin)) {
-		parseLine(line);
+		/*if(first) {
+			res_tmp=parse(line);
+		//_speed=value/(1+_elapsed)*1000;
+		/// 2010-11-27
+			//set count_type when as the first available format and switch to correct mode
+			//1-thread mode will perform perfectly
+
+			if(res_tmp!=Error && res_tmp!=Unknow) {
+				res=res_tmp;
+				first=false;
+				if((res_tmp==Simple && count_type==QCounterThread::Size)||((res_tmp==Detail || res_tmp==DetailWithRatio)&&count_type!=QCounterThread::Size)) {
+					count_type= (QCounterThread::CountType)((int)~count_type&0x1);
+					setCountType(count_type);
+					//startCounterThread(); //no effect on multi-threading
+				}
+			}
+		} else {*/
+			res_tmp=res;
+			parseLine(line);
+			if(res!=res_tmp) {
+				emit unitChanged();
+			}
+		//}
 	}
 	emit finished();
 }
@@ -328,10 +362,24 @@ void QOutParser::setTotalSize(uint s)
 	//qApp->processEvents();
 	estimate();
 	if(count_type==QCounterThread::Size) max_str=" / "+size2Str<double>(max_value);
-	else max_str=" / "+QString::number(s)+" ";
+	else max_str=" / "+QString::number(max_value)+" ";
 #ifndef NO_EZX
 	//ZDEBUG("TS: %d time: %d",max_value,_time.elapsed());
 #endif
+}
+
+void QOutParser::slotResetUnit()
+{ZDEBUG();
+	if(res==Simple)	 {
+		setCountType(QCounterThread::Num);
+		startCounterThread();
+		//max_str=" / "+QString::number(max_value)+" ";
+	} else {
+	    setCountType(QCounterThread::Size);
+	    startCounterThread();
+	    //max_str=" / "+size2Str<double>(max_value);
+	}
+	emit maximumChanged(max_value);
 }
 
 #if defined(_OS_LINUX_) || defined(_OS_CYGWIN_)

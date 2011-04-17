@@ -56,12 +56,14 @@ public slots:
 private slots:
 	void slotFinished();
 	void readFromFile(int fd);
+	void slotResetUnit();
 
 signals:
 	void valueChanged(int);
 	void textChanged(const QString&);
 	void finished();
 	void maximumChanged(int);
+	void unitChanged();
 
 protected:
 	virtual void timerEvent(QTimerEvent *);
@@ -81,13 +83,14 @@ protected:
 	volatile uint max_value;
 	QString max_str;
 	Format res, res_tmp;
-	bool first;
+	//bool first;
 	int tid;
 
 	QCounterThread counter;
 
 	QCounterThread::CountType count_type;
 	bool multi_thread;
+	static int detail_freq, simple_freq, detail_ratio_freq;
 
 };
 
