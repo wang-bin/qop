@@ -218,7 +218,7 @@ int parseOct(const char *p, size_t n)
 #define SLEEP_WAITCONDITION 1
 
 #include "global.h"
-#if CONFIG_QT4
+#if QT_VERSION >= 0x040700
 #include <QtCore/QElapsedTimer>
 #else
 #include <qdatetime.h>

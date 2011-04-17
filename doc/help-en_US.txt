@@ -6,7 +6,7 @@ Project: http://sourceforge.net/projects/qop/files"
 		 http://qt-apps.org/content/show.php/qop?content=132430
 
 Qt Output Parser for tar, zip, unzip, unrar, 7z with a compression/extraction progress indicator.
-Support platforms: windows(Qt4), Linux(Qt4, tested on ubuntu 10.04), motorola ezx(Qt2, tested on ROKR E6)
+Support platforms: windows(Qt4), Linux(Qt4, tested on ubuntu 10.04), motorola ezx(Qt2, tested on ROKR E6) and Maemo5 etc.
 
 bug: can't kill 7z in windows.
 
@@ -38,6 +38,10 @@ examples:
 	unzip -o test.zip -d . |qop -T `unzip -Z -t test.zip |sed 's/\(.*\) files.*/\1/'` -t unzip &
 	unrar x -o+ -y test.rar . |qop -t unrar
 	7z x -y test.7z |qop -t7z -T $((`7z l test.7z |sed -n '$s/\(.*\), \(.*\)folders/\2/p'`+`7z l test.7z |sed -n '$s/\(.*\) \(.*\)files.*/\2/p'`))
+
+for Version >= 0.2.2, you can omit -n and -s
+	tar zcvvf test.tgz test |qop test [-m]
+	tar zcvf test.tgz test |qop test [-m]
 
 extracting a tar.gz file for new version(>=0.1.0):
 	tar zxvvf test.tar.gz |qop -x test.tar.gz

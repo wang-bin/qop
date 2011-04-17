@@ -210,7 +210,7 @@ void Qop::initProcess()
 	connect(process, SIGNAL(readyReadStandardOutput()), SLOT(readStdOut()));
 	connect(process,SIGNAL(readyReadStandardError()),SLOT(readStdErr()));
 	//connect(process, SIGNAL(finished(int,QProcess::ExitStatus)), SIGNAL(finished(int,QProcess::ExitStatus)));
-	connect(process,SIGNAL(started()),parser,SLOT(initTimer()));
+	connect(process,SIGNAL(started()),parser,SLOT(initTimer()));  //Maemo5 seems not work
 	connect(process, SIGNAL(finished(int)), parser, SIGNAL(finished()));
 	//connect(process, SIGNAL(finished(int)), parser, SLOT(slotFinished()));
 #endif

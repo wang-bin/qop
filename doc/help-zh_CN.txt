@@ -5,7 +5,7 @@ wbsecg1@gmail.com
 
 软件名：qop. Qt Output Parser for tar, zip, unzip, unrar,7z with compressing/extracting progress indicator.
 用于显示tar,zip,unzip,unrar,7z这些工具进行压缩解压时的进度，与tar结合使用的工具如gzip,xz等也可以处理。
-平台支持：windows(Qt4), Linux(Qt4, tested on ubuntu 10.04), motorola ezx(Qt2, tested on ROKR E6)
+平台支持：windows(Qt4), Linux(Qt4, tested on ubuntu 10.04), motorola ezx(Qt2, tested on ROKR E6)和Maemo5等
 
 Project: http://sourceforge.net/projects/qop/files"
 		 http://qt-apps.org/content/show.php/qop?content=132430
@@ -44,7 +44,11 @@ usage: qop [-t parserFor] [-n|s] [-chm] [-x archieve|-T totalSteps] [files...]
 	7z x -y test.7z |qop -t7z -T $((`7z l test.7z |sed -n '$s/\(.*\), \(.*\)folders/\2/p'`+`7z l test.7z |sed -n '$s/\(.*\) \(.*\)files.*/\2/p'`))
 
 #7z的那个计算文件和文件夹总数的谁来写的更简洁些？输出为                                2833677      1029657  75 files, 7 folders
-	
+
+版本>= 0.2.2, 可以省略 -n 和 -s
+	tar zcvvf test.tgz test |qop test [-m]
+	tar zcvf test.tgz test |qop test [-m]
+
 新版(版本>=0.1.0)的解压tar.gz文件例子：
 	tar zxvvf test.tgz test |qop -x test.tgz
 
