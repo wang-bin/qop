@@ -107,6 +107,11 @@ bool CommandParser::isCompressMode()
 	return _compress_mode;
 }
 
+QString CommandParser::program() const
+{
+	return _cmd.left(_cmd.indexOf(" "));
+}
+
 size_t CommandParser::filesCount() const
 {
 	if(cmd_parser) {

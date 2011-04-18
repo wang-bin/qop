@@ -5,53 +5,53 @@ DESTDIR		= bin
 MOC_DIR		= .moc
 OBJECTS_DIR	= .obj
 DEFINES		+= QT_THREAD_SUPPORT
-HEADERS		= QOutParser.h \
-		  gui/ezprogressdialog.h \
-		  gui/ezprogressdialog_p.h \
-		  global.h \
-		  qcounterthread.h \
-		  util.h \
-    qarchive/arcreader.h \
-    option.h \
-    qany.h \
-	Types.h \
-    qarchive/qarchive.h \
-    qarchive/tar/qtar.h \
-    qarchive/tar/TarItem.h \
-    qarchive/tar/TarHeader.h \
-    algorithm/zlib_alg.h \
-	qarchive/zip/ZipHeader.h \
-    qarchive/gzip/GzipHeader.h \
-	qarchive/gzip/GzipItem.h \
-	Compress/BitlDecoder.h \
-    qop.h \
-    commandparser.h
+HEADERS		= src/QOutParser.h \
+		src/gui/ezprogressdialog.h \
+		src/gui/ezprogressdialog_p.h \
+		src/global.h \
+		src/qcounterthread.h \
+		src/util.h \
+		src/qarchive/arcreader.h \
+		src/option.h \
+		src/qany.h \
+		src/Types.h \
+		src/qarchive/qarchive.h \
+		src/qarchive/tar/qtar.h \
+		src/qarchive/tar/TarItem.h \
+		src/qarchive/tar/TarHeader.h \
+		src/algorithm/zlib_alg.h \
+		src/qarchive/zip/ZipHeader.h \
+		src/qarchive/gzip/GzipHeader.h \
+		src/qarchive/gzip/GzipItem.h \
+		src/Compress/BitlDecoder.h \
+		src/qop.h \
+		src/commandparser.h
 
-SOURCES		= QOutParser.cpp \
-		  gui/ezprogressdialog.cpp \
-		  main.cpp \
-		  qcounterthread.cpp \
-    qarchive/arcreader.cpp \
-    util.cpp \
-    option.cpp \
-    qarchive/qarchive.cpp \
-    qarchive/tar/qtar.cpp \
-    algorithm/zlib_alg.cpp \
-    qarchive/zip/ZipHeader.cpp \
-	qarchive/gzip/GzipItem.cpp \
-	Compress/BitlDecoder.cpp \
-    qop.cpp \
-    commandparser.cpp
+SOURCES		= src/QOutParser.cpp \
+		src/gui/ezprogressdialog.cpp \
+		src/main.cpp \
+		src/qcounterthread.cpp \
+		src/qarchive/arcreader.cpp \
+		src/util.cpp \
+		src/option.cpp \
+		src/qarchive/qarchive.cpp \
+		src/qarchive/tar/qtar.cpp \
+		src/algorithm/zlib_alg.cpp \
+		src/qarchive/zip/ZipHeader.cpp \
+		src/qarchive/gzip/GzipItem.cpp \
+		src/Compress/BitlDecoder.cpp \
+		src/qop.cpp \
+		src/commandparser.cpp
 
-INCLUDEPATH	+= .
-LIBS	+= -Llib -lz
-TRANSLATIONS += qop_zh-cn.ts
+INCLUDEPATH	+= src
+LIBS		+= -Llib -lz
+TRANSLATIONS+= i18n/qop_zh-cn.ts
 
-OTHER_FILES += \
-    doc/TODO.txt \
-    doc/history \
-    doc/help-zh_CN.txt \
-    doc/help-en_US.txt
+OTHER_FILES	+= \
+		doc/TODO.txt \
+		doc/history \
+		doc/help-zh_CN.txt \
+		doc/help-en_US.txt
 
 
 INTERFACES	=
@@ -64,7 +64,7 @@ CONFIG(ezx) {
 	 QMAKE_CXXFLAGS.ARMCC +=
  } else {
 	 TARGET = qop
-	 unix:  {
+	 unix: {
 			MOC_DIR		= .moc/unix
 			OBJECTS_DIR	= .obj/unix
 	 }
@@ -115,7 +115,7 @@ unix:maemo5 {
 # install
 	INSTALLS += target desktop service iconxpm icon26 icon48 icon64 sources
 
-	target.files = bin/$$TARGET bin/i18n
+	target.files = bin/$$TARGET i18n
 	target.path = $$BINDIR
 
 	desktop.path  = /usr/share/applications/hildon
@@ -127,7 +127,7 @@ unix:maemo5 {
 	icon64.path  = $$DATADIR/icons/hicolor/64x64/apps
 	icon64.files  = data/64x64/$${TARGET}.png
 
-	sources.files = $$SOURCES $$HEADERS $$FORMS $$RESOURCES $${TARGET}.pro images xml *.ico *.icns *.rc *.plist
+	sources.files = src/* $$FORMS $$RESOURCES $${TARGET}.pro *.ico *.icns *.rc *.plist
 	sources.path = /opt/usr/src/$${TARGET}
 
 #

@@ -62,7 +62,8 @@ public:
 	/*!
 		CommandParser(cmd).unpackSize();
 	*/
-	bool isSize() const;
+	QString program() const;
+	//bool isSize() const;
 	size_t filesCount() const;
 	size_t filesSize() const;
 	size_t archiveSize() const;

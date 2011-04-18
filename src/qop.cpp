@@ -65,11 +65,14 @@ void Qop::extract(const QString& arc, const QString& outDir)
 #endif
 void Qop::execute(const QString &cmd)
 {
+	CommandParser cmdParser(cmd);
+	if(cmdParser.program()=="tar" && !cmdParser.isCompressMode())
+		parser_type="untar";
+
 	initParser();
 	initProcess();
 	//progress->setLabelText(QDir::currentPath());//QApplication::applicationDirPath();
 #if CONFIG_QT4 || CONFIG_QT3
-	CommandParser cmdParser(cmd);
 	if(cmdParser.countType()==CommandParser::Num)
 		parser->setCountType(QCounterThread::Num);
 	else
@@ -84,7 +87,6 @@ void Qop::execute(const QString &cmd)
 	}
 #endif
 	if(progress->maximum()) {
-		ZDEBUG();
 		parser->setTotalSize(progress->maximum());
 	}
 	process->setWorkingDirectory(QDir::currentPath());
@@ -95,11 +97,11 @@ void Qop::execute(const QString &cmd)
 		qApp->processEvents();
 	}
 	if(process->exitCode()!=0) {
-		qDebug("Run error!");
+		ZDEBUG("Run error!");
 	} else if(process->exitStatus()==QProcess::CrashExit) {
-		qDebug("Crashed exit!");
+		ZDEBUG("Crashed exit!");
 	} else {
-		qDebug("Normal exit");
+		ZDEBUG("Normal exit");
 	}
 #endif
 }
