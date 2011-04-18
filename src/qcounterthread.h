@@ -38,6 +38,7 @@ class QCounterThread :
 {
 	Q_OBJECT
 public:
+	//Unknow: do not recount.
 	enum CountType {
 			Size=0x0, Num=0x1, NumNoDir=0x3
 	};

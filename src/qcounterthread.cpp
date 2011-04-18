@@ -50,7 +50,7 @@ uint QCounterThread::numOfFilesNoDir(const QStringList& list)
 		if ((*it != ".") && (*it != "..")) {
 			if(QFileInfo(name).isDir()) {
 				QStringList pathList;
-				QStringList nameList=QDir(name).entryList();
+				QStringList nameList=QDir(name).entryList(QDir::Files|QDir::Dirs|QDir::NoSymLinks|QDir::Hidden|QDir::Readable);
 				for(QStringList::ConstIterator it = nameList.begin();it != nameList.end(); ++it)
 					if ((*it != ".") && (*it != ".."))	pathList.append(name+"/"+*it);   //can't be root,so override
 						numOfFilesNoDir(pathList);
@@ -68,7 +68,7 @@ uint QCounterThread::numOfFiles(const QStringList& list)
 		if ((*it != ".") && (*it != "..")) {
 			if(QFileInfo(name).isDir()) {
 				QStringList pathList;
-				QStringList nameList=QDir(name).entryList();
+				QStringList nameList=QDir(name).entryList(QDir::Files|QDir::Dirs|QDir::NoSymLinks|QDir::Hidden|QDir::Readable);
 				for(QStringList::ConstIterator it = nameList.begin();it != nameList.end(); ++it)
 					if ((*it != ".") && (*it != ".."))	pathList.append(name+"/"+*it);   //can't be root,so override
 						numOfFiles(pathList);

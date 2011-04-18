@@ -139,9 +139,8 @@ size_t CommandParser::archiveSize() const
 size_t CommandParser::archiveUnpackSize() const
 {
 	if(cmd_parser==0) return 0;
-	ZDEBUG();
 	uint unx_size=Archive::QArcReader(cmd_parser->archive()).uncompressedSize();
-	qDebug("Archive unpacked size: %db == %s",unx_size,UTIL::qstr2cstr(size2Str<double>(unx_size)));
+	ZDEBUG("Archive unpacked size: %db == %s",unx_size,UTIL::qstr2cstr(size2Str<double>(unx_size)));
 	return unx_size;
 }
 
@@ -182,7 +181,7 @@ void TarCommandParser::init()
 	int index_end=_cmd.indexOf(" ",index_start);
 
 	_archive=_cmd.mid(index_start,index_end-index_start);
-	ezDebug("Archive is: "+_archive);
+	ZDEBUG("Archive is: %s",UTIL::qstr2cstr(_archive));
 
 	int idx_archive=_cmd.indexOf(_archive);
 	//files();
@@ -215,7 +214,7 @@ void TarCommandParser::init()
 	}
 
 // compress mode: c true x false
-	ezDebug(_cmd.mid(0,idx_archive));
+	//ezDebug(_cmd.mid(0,idx_archive));
 	if(_cmd.mid(0,idx_archive).contains("c")) {
 
 		_compress_mode=true;
@@ -227,7 +226,7 @@ void TarCommandParser::init()
 void TarCommandParser::setCommand(const QString &cmd)
 {
 	_cmd=cmd;
-	ezDebug(_cmd);
+	ZDEBUG("command: %d",UTIL::qstr2cstr(_cmd));
 	init();
 }
 

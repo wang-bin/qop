@@ -101,12 +101,10 @@ int main(int argc, char *argv[])
 	a.setMainWidget(qop->progress);
 #endif //CONFIG_QT4
 	ZDEBUG("Steps from options: %d",options->steps);
-	qop->progress->setMaximum(options->steps);
-	//qop->parser->setTotalSize(options->steps); //abort -C tar zxvf
 	if(!options->hide)
 		qop->progress->show();
 	//order is important
-	qop->parser_type=options->parser_type;
+	//qop->parser_type=options->parser_type;
 	qop->setArchive(options->x_file);
 
 	if(options->diy || argc<2) //internal method
@@ -114,9 +112,11 @@ int main(int argc, char *argv[])
 	else if(!options->cmd==0)
 		qop->execute(QString::fromLocal8Bit(options->cmd));
 	else {
+		qop->parser_type=options->parser_type;
+		if(options->steps>0) qop->progress->setMaximum(options->steps);
 		qop->initParser();
-		if(options->unit) qop->parser->setCountType(QCounterThread::Num);
-		ZDEBUG("steps: %d",qop->steps);
+		if(options->unit==0) qop->parser->setCountType(QCounterThread::Size);
+		else if(options->unit==1) qop->parser->setCountType(QCounterThread::Num);
 		if(qop->steps<=0) { //compress
 			if(options->steps>0) qop->parser->setTotalSize(options->steps);
 			QStringList files=QStringList();

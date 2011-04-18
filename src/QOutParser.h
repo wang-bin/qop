@@ -47,6 +47,8 @@ public:
 	void setFiles(const QStringList&);
 	void setCountType(QCounterThread::CountType);
 
+	void setRecount(bool);
+
 public slots:
 	void initTimer();
 	void setTotalSize(uint);
@@ -91,6 +93,7 @@ protected:
 	QCounterThread::CountType count_type;
 	bool multi_thread;
 	static int detail_freq, simple_freq, detail_ratio_freq;
+	bool _recount;
 
 };
 

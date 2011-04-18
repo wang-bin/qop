@@ -6,8 +6,6 @@
 #include <errno.h>
 #include <unistd.h>
 
-#include "commandparser.h"
-
 void printHelp();
 
 void opts_free(opts_t opts)
@@ -43,7 +41,7 @@ opts_t opts_parse(int argc, char **argv)
 	opts->multi_thread=0;
 	//opts->program_name="qop";
 	opts->steps=-1;
-	opts->unit=0;
+	opts->unit=2;
 
 	opts->argc = 0;
 	opts->argv = (char**)calloc(argc + 1, sizeof(char *));
@@ -77,18 +75,7 @@ opts_t opts_parse(int argc, char **argv)
 					//s.append(argv[i]).append(" ");
 				}
 				//opts->cmd=const_cast<char*>(s.c_str());
-				qDebug("cmd: %s",opts->cmd);
-#if !COUNTER_THREAD
-				CommandParser cmdParser(opts->cmd);
-				if(!cmdParser.isCompressMode()) {
-					opts->steps=cmdParser.archiveUnpackSize();
-					return opts;
-				}
-				if(cmdParser.countType()==CommandParser::Size)
-					opts->steps=cmdParser.filesSize();
-				else
-					opts->steps=cmdParser.filesCount();
-#endif
+				ZDEBUG("cmd: %s",opts->cmd);
 				return opts;
 			}
 			case 'x': opts->x_file=optarg; break;

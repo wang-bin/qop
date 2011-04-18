@@ -165,7 +165,7 @@ int QOutParser::detail_ratio_freq=0;
 
 QOutParser::QOutParser(uint total):QObject(0),file(""),size(0),compressed(0),value(0) \
 	,_out(""),_extra(tr("Calculating...")),_elapsed(0),_left(0),max_value(total),res(Unknow) \
-	,count_type(QCounterThread::Size),multi_thread(false)
+	,count_type(QCounterThread::Size),multi_thread(false),_recount(true)
 {
 	res_tmp=res;
 	//first=true;
@@ -299,6 +299,11 @@ void QOutParser::setCountType(QCounterThread::CountType ct)
 	counter.setCountType(count_type);
 }
 
+void QOutParser::setRecount(bool rc)
+{
+    _recount=rc;
+}
+
 void QOutParser::setMultiThread(bool mt)
 {
 	multi_thread=mt;
@@ -333,7 +338,7 @@ void QOutParser::slotFinished()
 {
 	killTimer(tid);
 	estimate();
-	printf("Out: %d b, Time: %.1f s, Speed: %d Kb/s",value,_elapsed/1000.,value/(1+_elapsed));
+	printf("\nOut: %d b, Time: %.1f s, Speed: %d Kb/s",value,_elapsed/1000.,value/(1+_elapsed));
 	fflush(stdout);
 	//value*1000/_elapsed is not correct, why?
 	if(res==Simple || res==End7z) {
@@ -369,17 +374,21 @@ void QOutParser::setTotalSize(uint s)
 }
 
 void QOutParser::slotResetUnit()
-{ZDEBUG();
+{	ZDEBUG();
 	if(res==Simple)	 {
 		setCountType(QCounterThread::Num);
-		startCounterThread();
-		//max_str=" / "+QString::number(max_value)+" ";
-	} else {
-	    setCountType(QCounterThread::Size);
-	    startCounterThread();
-	    //max_str=" / "+size2Str<double>(max_value);
+		if(_recount)  startCounterThread();
+		else setTotalSize(max_value);
 	}
+		//max_str=" / "+QString::number(max_value)+" ";
+	else {
+		setCountType(QCounterThread::Size);
+		if(_recount)  startCounterThread();
+		else setTotalSize(max_value);
+	}
+		//max_str=" / "+size2Str<double>(max_value);
 	emit maximumChanged(max_value);
+
 }
 
 #if defined(_OS_LINUX_) || defined(_OS_CYGWIN_)

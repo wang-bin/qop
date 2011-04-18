@@ -85,6 +85,15 @@ void Qop::execute(const QString &cmd)
 	} else {
 		progress->setMaximum(cmdParser.archiveUnpackSize());
 	}
+#else
+	if(!cmdParser.isCompressMode()) {
+		progress->setMaximum(cmdParser.archiveUnpackSize());
+	} else {
+		if(cmdParser.countType()==CommandParser::Size)
+			progress->setMaximum(cmdParser.filesSize());
+		else
+			progress->setMaximum(cmdParser.filesCount());
+	}
 #endif
 	if(progress->maximum()) {
 		parser->setTotalSize(progress->maximum());
@@ -177,6 +186,13 @@ void Qop::initParser()
 	}//omit -T
 
 	parser=getParser(parser_type);
+	if(!arc_path.isEmpty())
+	    parser->setRecount(false);
+	qDebug("steps: %d",steps);
+	if(steps>0) {
+		progress->setMaximum(steps);
+		parser->setTotalSize(steps);
+	}
 #if CONFIG_QT4
 	//progress->setWindowTitle("qop "+QObject::tr("Compression/Extraction progress dialog"));
 	//progress->setObjectName("QProgressDialog");
@@ -199,8 +215,6 @@ void Qop::initParser()
 	//progress->show();
 #endif
 
-	if(steps>0)
-		parser->setTotalSize(steps);
 }
 
 void Qop::initProcess()
