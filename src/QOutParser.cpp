@@ -129,6 +129,9 @@
 #include <qsocketnotifier.h>
 
 #include "util.h"
+
+#define MAX 1024
+
 QOutParser* getParser(const QString& type)
 {
 #if CONFIG_QT4
@@ -403,7 +406,7 @@ void QOutParser::slotResetUnit()
 //how to kill relative pids?
 void QOutParser::terminate()
 {
-	qDebug("signal sender: %s",
+	ZDEBUG("signal sender: %s",
 #if CONFIG_QT4
 		sender()->objectName().toLocal8Bit().data()
 #else

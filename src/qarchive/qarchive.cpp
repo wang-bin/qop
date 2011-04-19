@@ -188,7 +188,7 @@ void QArchive::setOutDir(const QString &odir)
 {
 	_outDir=odir;
 	if(!QDir(_outDir).exists()) {
-		ZDEBUG("out dir %s doesn't exist. creating...",UTIL::qstr2cstr(_outDir));
+		ZDEBUG("out dir %s doesn't exist. creating...",qstr2cstr(_outDir));
 		QDir().mkdir(odir);
 	}
 }

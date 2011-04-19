@@ -23,9 +23,6 @@
 #error "Use C++ Compiler Please..."
 #endif
 
-#define SOCKET_FILE "qop.socket"
-#define CANCEL_MSG  "cancel-process"
-
 #include <qglobal.h>
 
 #if defined(linux) || defined(__linux) || defined(__linux__)
@@ -37,21 +34,6 @@
 #elif defined(MSDOS) || defined(_MSDOS) || defined(__MSDOS__)
 #define _OS_MSDOS_
 #endif
-
-/*
-#if (__GNUC__ < 4)
-#   if QT_VERSION >= 0x040000
-#   define EZXT_QT4
-#   define NO_EZX
-#   endif
-#else
-#   define EZXT_QT4 (QT_VERSION >= 0x040000)
-#   define NO_EZX (QT_VERSION >= 0x040000)
-#endif
-*/
-#define APP_NAME "qop"
-//#define APP_VERSION 0.2.4
-#define APP_VERSION_STR "0.2.4"
 
 #include <qglobal.h>
 #if QT_VERSION >= 0x040000
@@ -149,10 +131,8 @@ typedef int Alignment;
 #include <string.h>
 #include <stdio.h>
 #include <unistd.h>
-#include <assert.h>
+//#include <assert.h>
 
-#define SIZE 1
-#define MAX 1024
 #define ZDEBUG(fmt,args...) qDebug("[%s] %s @%d: \t"fmt,__FILE__,__PRETTY_FUNCTION__,__LINE__,## args)
 //#define ZDEBUG(fmt,args...) fprintf(stdout,"[%s] %s @%d: \t"fmt" \t---%s, %s\n",__FILE__,__PRETTY_FUNCTION__,__LINE__,## args,__TIME__,__DATE__); fflush(stdout)
 
@@ -169,6 +149,28 @@ template <typename Container> inline void qDeleteAll(const Container &c)
 {
 	qDeleteAll(c.begin(), c.end());
 }
+#endif
+
+
+#if QT_VERSION < 0x040000
+//template <typename T> static inline T *qGetPtrHelper(T *ptr) { return ptr; } // \//return reinterpret_cast<Class##Private *>(qGetPtrHelper(d_ptr));
+#define Q_DECLARE_PRIVATE(Class) \
+	inline Class##Private* d_func() { return reinterpret_cast<Class##Private *>(d_ptr); } \
+	inline const Class##Private* d_func() const { return reinterpret_cast<const Class##Private *>(d_ptr); }
+//	friend class Class##Private;
+
+#define Q_DECLARE_PRIVATE_D(Dptr, Class) \
+	inline Class##Private* d_func() { return reinterpret_cast<Class##Private *>(Dptr); } \
+	inline const Class##Private* d_func() const { return reinterpret_cast<const Class##Private *>(Dptr); }
+//	friend class Class##Private;
+
+#define Q_DECLARE_PUBLIC(Class)									\
+	inline Class* q_func() { return static_cast<Class *>(q_ptr); } \
+	inline const Class* q_func() const { return static_cast<const Class *>(q_ptr); } \
+	friend class Class;
+
+#define Q_D(Class) Class##Private * const d = d_func()
+#define Q_Q(Class) Class * const q = q_func()
 #endif
 
 #endif // GLOBAL_H

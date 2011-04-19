@@ -124,8 +124,21 @@ inline void copyUShort(unsigned char *dest, const unsigned char *src)
 }
 
 namespace UTIL {
-
-char* qstr2cstr(const QString& qstr);
+/*
+inline
+const char* qstr2cstr(const QString& qstr){
+#if CONFIG_QT4
+	return qstr.toLocal8Bit().constData();
+#else
+	return qstr.local8Bit().data();
+#endif
+}
+*/
+#if CONFIG_QT4
+#define qstr2cstr(qstr) qstr.toLocal8Bit().constData()
+#else
+#define qstr2cstr(qstr) qstr.local8Bit().data()
+#endif //CONFIG_QT4
 
 //sleep和usleep都已经obsolete，建议使用nanosleep代替
 void qSleep(int ms);

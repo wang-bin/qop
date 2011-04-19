@@ -129,10 +129,10 @@ Error QTar::extract()
 			if (_outFile.isOpen()) {
 #if CONFIG_QT4
 				if(_outFile.write(buff,bytes_read)!=bytes_read) {
-					fprintf(stderr, "[%s] %s @%d: Failed to write %s\n",__FILE__,__PRETTY_FUNCTION__,__LINE__,UTIL::qstr2cstr(_outFile.fileName()));
+					fprintf(stderr, "[%s] %s @%d: Failed to write %s\n",__FILE__,__PRETTY_FUNCTION__,__LINE__,qstr2cstr(_outFile.fileName()));
 #else
 				if(_outFile.writeBlock(buff,bytes_read)!=bytes_read) {
-					fprintf(stderr, "[%s] %s @%d: Failed to write %s\n",__FILE__,__PRETTY_FUNCTION__,__LINE__,UTIL::qstr2cstr(_outFile.name()));
+					fprintf(stderr, "[%s] %s @%d: Failed to write %s\n",__FILE__,__PRETTY_FUNCTION__,__LINE__,qstr2cstr(_outFile.name()));
 #endif
 				_outFile.close();
 			    }

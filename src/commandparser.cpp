@@ -146,7 +146,7 @@ size_t CommandParser::archiveUnpackSize() const
 {
 	if(cmd_parser==0) return 0;
 	uint unx_size=Archive::QArcReader(cmd_parser->archive()).uncompressedSize();
-	ZDEBUG("Archive unpacked size: %db == %s",unx_size,UTIL::qstr2cstr(size2Str<double>(unx_size)));
+	ZDEBUG("Archive unpacked size: %db == %s",unx_size,qstr2cstr(size2Str<double>(unx_size)));
 	return unx_size;
 }
 
@@ -182,7 +182,7 @@ void TarCommandParser::init()
 	int index_end=_cmd.indexOf(" ",index_start);
 
 	_archive=_cmd.mid(index_start,index_end-index_start);
-	ZDEBUG("Archive is: %s",UTIL::qstr2cstr(_archive));
+	ZDEBUG("Archive is: %s",qstr2cstr(_archive));
 
 	int idx_archive=_cmd.indexOf(_archive);
 	//files();
@@ -227,7 +227,7 @@ void TarCommandParser::init()
 void TarCommandParser::setCommand(const QString &cmd)
 {
 	_cmd=cmd;
-	ZDEBUG("command: %d",UTIL::qstr2cstr(_cmd));
+	ZDEBUG("command: %s",qstr2cstr(_cmd));
 	init();
 }
 

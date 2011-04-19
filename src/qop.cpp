@@ -188,7 +188,7 @@ void Qop::initParser()
 	parser=getParser(parser_type);
 	if(!arc_path.isEmpty())
 	    parser->setRecount(false);
-	qDebug("steps: %d",steps);
+	ZDEBUG("steps: %d",steps);
 	if(steps>0) {
 		progress->setMaximum(steps);
 		parser->setTotalSize(steps);

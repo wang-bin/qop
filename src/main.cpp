@@ -17,22 +17,24 @@
     with this program; if not, write to the Free Software Foundation, Inc.,
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 ******************************************************************************/
-#include "qop.h"
-#include "option.h"
-#ifdef _OS_LINUX_
-#include <sys/types.h>
-#include <signal.h>
-#endif
+
+#include "global.h"
+
 #if CONFIG_EZX
 #include <ZApplication.h>
 #include <ZLanguage.h>
-#endif
+#endif //CONFIG_EZX
+
 #include <qdir.h>
 //#include <qfileinfo.h>
 #include <qtranslator.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
+
+#include "qop.h"
+#include "option.h"
+#include "version.h"
 
 static const char *appName=(char*)malloc(64);
 //static char appName[64]={};
@@ -75,25 +77,25 @@ int main(int argc, char *argv[])
 	printf("Qt %s\n",qVersion());
 #if QT_VERSION >= 0x040000
 	QString dirname=QCoreApplication::applicationDirPath();
-	qDebug()<<dirname;
 #else
 	QString dirname=QFileInfo(argv[0]).dirPath();
 	//QString dirname=getFileDir(argv[0]);//
 #endif
 	//QDir::setCurrent(dirname); //bad in windows cygwin
+	ZDEBUG("dir: %s",qstr2cstr(dirname));
 
 
 	QTranslator appTranslator(0);
 #if CONFIG_EZX
-	appTranslator.load(program+"_"+ZLanguage::getSystemLanguageCode(),dirname+"/i18n");
+	QString sysLang=ZLanguage::getSystemLanguageCode();
+	appTranslator.load(program+"_"+sysLang,dirname+"/i18n");
 	//QString(dirname)+"/i18n" will load fail, 乱码
 #else
 	QString sysLang=QLocale::system().name();
-	qDebug()<<sysLang;
 	appTranslator.load(program+"-"+sysLang,dirname+"/i18n");
 #endif //CONFIG_EZX
+	ZDEBUG("system language: %s",qstr2cstr(sysLang));
 	a.installTranslator(&appTranslator);
-
 
 
 	Qop *qop=new Qop;
