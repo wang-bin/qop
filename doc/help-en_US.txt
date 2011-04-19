@@ -26,6 +26,9 @@ If you want to extract a .tar or .tar.xxx file and set size as total steps, use 
 -d, --diy[=TARFILE]: using built-in method to extract an archive
 
 examples:
+	qop -C tar cvvf test.tar test
+	qop -C tar zcvf test.tgz test
+	qop -C tar zxvvf test.tgz -C /tmp   ##only 1 v will not show the right totalsteps and progress
 	qop tar cvvf test.tar test
 	tar zcvvf test.tgz test |qop test -m
 	tar zxvvf test.tgz |qop -T `gzip -l test.tgz |sed -n '$s/\(.*\) \(.*\)  .*/\2/p'` -tuntar -c
@@ -41,7 +44,7 @@ examples:
 
 for Version >= 0.2.2, you can omit -n and -s
 	tar zcvvf test.tgz test |qop test [-m]
-	tar zcvf test.tgz test |qop test [-m]
+	tar zcvf test.tgz test |qop test  ##no -m
 
 extracting a tar.gz file for new version(>=0.1.0):
 	tar zxvvf test.tar.gz |qop -x test.tar.gz

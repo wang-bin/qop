@@ -30,7 +30,9 @@ usage: qop [-t parserFor] [-n|s] [-chm] [-x archieve|-T totalSteps] [files...]
 
 
 例子:
-	qop tar cvvf test.tar test
+	qop -C tar cvvf test.tar test
+	qop -C tar zcvf test.tgz test
+	qop -C tar zxvvf test.tgz -C /tmp   ## 只有一个v会导致进度显示错误
 	tar zcvvf test.tgz test |qop test -m
 	tar zxvvf test.tgz |qop -T `gzip -l test.tgz |sed -n '$s/\(.*\) \(.*\)  .*/\2/p'` -tuntar -c
 	tar zxvf test.tgz |qop -T `tar -zt <test.tgz |wc -l` -n  ##slower than former
@@ -47,7 +49,7 @@ usage: qop [-t parserFor] [-n|s] [-chm] [-x archieve|-T totalSteps] [files...]
 
 版本>= 0.2.2, 可以省略 -n 和 -s
 	tar zcvvf test.tgz test |qop test [-m]
-	tar zcvf test.tgz test |qop test [-m]
+	tar zcvf test.tgz test |qop test  ##不要 -m
 
 新版(版本>=0.1.0)的解压tar.gz文件例子：
 	tar zxvvf test.tgz test |qop -x test.tgz

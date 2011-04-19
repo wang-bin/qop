@@ -26,6 +26,12 @@
 #include "qcounterthread.h"
 #include "util.h"
 
+//skip whitespace?
+#if !CONFIG_QT4
+#define indexOf find
+#define lastIndexOf findRev
+#endif
+
 
 CommandParser::CommandParser()
 	:counter(new QCounterThread),_cmd(""),_archive(""),_files(QStringList()),_compress_mode(false),_count_type(Size),cmd_parser(0)
@@ -145,11 +151,6 @@ size_t CommandParser::archiveUnpackSize() const
 }
 
 
-//skip whitespace?
-#if !CONFIG_QT4
-#define indexOf find
-#define lastIndexOf findRev
-#endif
 TarCommandParser::TarCommandParser()
 	:CommandParser()
 {
