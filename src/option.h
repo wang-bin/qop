@@ -2,7 +2,7 @@
 #define OPTION_H
 
 #include <getopt.h>
-#include "qany.h"
+//#include "qany.h"
 #include <qlist.h>
 #include <qstring.h>
 #include <string>

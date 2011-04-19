@@ -127,8 +127,7 @@ typedef int Alignment;
 #endif //QT3_SUPPORT
 #endif //NO_EZX
 
-#include <qfileinfo.h>
-#include <string.h>
+
 #include <stdio.h>
 #include <unistd.h>
 //#include <assert.h>
@@ -149,10 +148,8 @@ template <typename Container> inline void qDeleteAll(const Container &c)
 {
 	qDeleteAll(c.begin(), c.end());
 }
-#endif
 
 
-#if QT_VERSION < 0x040000
 //template <typename T> static inline T *qGetPtrHelper(T *ptr) { return ptr; } // \//return reinterpret_cast<Class##Private *>(qGetPtrHelper(d_ptr));
 #define Q_DECLARE_PRIVATE(Class) \
 	inline Class##Private* d_func() { return reinterpret_cast<Class##Private *>(d_ptr); } \
@@ -172,5 +169,24 @@ template <typename Container> inline void qDeleteAll(const Container &c)
 #define Q_D(Class) Class##Private * const d = d_func()
 #define Q_Q(Class) Class * const q = q_func()
 #endif
+
+#if CONFIG_QT4
+#define QFILENAME(path) QString(path).mid(QString(path).lastIndexOf('/')+1)
+#define qstr2cstr(qstr) qstr.toLocal8Bit().constData()
+#else
+#define QFILENAME(path) QString(path).mid(QString(path).findRev('/')+1)
+#define qstr2cstr(qstr) qstr.local8Bit().data()
+#endif
+/*
+inline
+const char* qstr2cstr(const QString& qstr){
+#if CONFIG_QT4
+	return qstr.toLocal8Bit().constData();
+#else
+	return qstr.local8Bit().data();
+#endif
+}
+*/
+
 
 #endif // GLOBAL_H

@@ -1,6 +1,7 @@
 #include "qtar.h"
 #include "TarHeader.h"
 #include <sys/stat.h>  /* For mkdir() */
+#include <qfileinfo.h>
 
 namespace Archive {
 namespace Tar {

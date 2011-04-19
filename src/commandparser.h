@@ -54,6 +54,7 @@ public:
 
 	virtual void setCommand(const QString& cmd);
 
+	//compressFiles, unpackFiles, exculde files
 	virtual QStringList files();
 	virtual QString archive();
 	virtual CountType countType();

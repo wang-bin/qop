@@ -25,14 +25,6 @@
 
 #include <qstring.h>
 #include <stdio.h>
-#include "global.h"
-
-#if CONFIG_QT4
-#define QFILENAME(path) QString(path).mid(QString(path).lastIndexOf('/')+1)
-#else
-#define QFILENAME(path) QString(path).mid(QString(path).findRev('/')+1)
-#endif
-
 
 //to speed up!
 #define KInv 1./1024
@@ -124,21 +116,7 @@ inline void copyUShort(unsigned char *dest, const unsigned char *src)
 }
 
 namespace UTIL {
-/*
-inline
-const char* qstr2cstr(const QString& qstr){
-#if CONFIG_QT4
-	return qstr.toLocal8Bit().constData();
-#else
-	return qstr.local8Bit().data();
-#endif
-}
-*/
-#if CONFIG_QT4
-#define qstr2cstr(qstr) qstr.toLocal8Bit().constData()
-#else
-#define qstr2cstr(qstr) qstr.local8Bit().data()
-#endif //CONFIG_QT4
+
 
 //sleep和usleep都已经obsolete，建议使用nanosleep代替
 void qSleep(int ms);

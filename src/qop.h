@@ -24,7 +24,6 @@
 #include <qprocess.h>
 #include "QOutParser.h"
 #include "qarchive/arcreader.h"
-#include "util.h"
 #include "qarchive/qarchive.h"
 #include "qarchive/tar/qtar.h"
 #ifndef EZPROGRESS

@@ -2,6 +2,8 @@
 
 Test scripts
 
+QTextBrowser: error viewer
+
 EZProgressDialog Q_D() etc
 
 QSocket 对qop与qprocess间进行通信。
