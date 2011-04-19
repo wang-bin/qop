@@ -85,18 +85,22 @@ protected:
 #define DECLARE_COMMANDPARSER(T) \
 	class T##CommandParser : public CommandParser { \
 	public: \
-		TarCommandParser(); \
-		TarCommandParser(const QString& cmd); \
-		virtual ~TarCommandParser(); \
-		virtual void setCommand(const QString &cmd); \
-		virtual QStringList files(); \
-		virtual QString archive(); \
-		virtual CountType countType(); \
-		virtual bool isCompressMode(); \
+		T##CommandParser(){}; \
+		T##CommandParser(const QString& cmd):CommandParser(cmd){init();} \
+		virtual ~T##CommandParser(){}; \
+		virtual void setCommand(const QString &cmd) { \
+			_cmd=cmd; init(); } \
+		virtual QStringList files() {return _files;} \
+		virtual QString archive() {return _archive;} \
+		virtual CountType countType() {return _count_type;} \
+		virtual bool isCompressMode() {return _compress_mode;} \
 	private: \
 		void init(); \
 	};
 
 DECLARE_COMMANDPARSER(Tar)
+DECLARE_COMMANDPARSER(Zip)
+DECLARE_COMMANDPARSER(Unzip)
+DECLARE_COMMANDPARSER(Unrar)
 
 #endif // COMMANDPARSER_H

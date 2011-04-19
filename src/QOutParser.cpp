@@ -174,10 +174,8 @@ QOutParser::QOutParser(uint total):QObject(0),file(""),size(0),compressed(0),val
 	//first=true;
 	_time.start();
 	connect(this,SIGNAL(finished()),SLOT(slotFinished()));
-	connect(&counter,SIGNAL(counted(uint)),SLOT(setTotalSize(uint)));
+	connect(&counter,SIGNAL(maximumChanged(int)),SLOT(setTotalSize(int)));
 	connect(this,SIGNAL(unitChanged()),SLOT(slotResetUnit()));
-	//connect(&counter,SIGNAL(counted(uint)),this,SIGNAL(maximumChanged(int)));
-	//connect(&counter,SIGNAL(done()),SLOT());
 #if NO_SOCKET
 		QSocketNotifier *stdin_notifier=new QSocketNotifier(STDIN_FILENO,QSocketNotifier::Read,this);
 		ZDEBUG("SocketNotifier is enabled: %d",socket_notifier->isEnabled());
@@ -363,7 +361,7 @@ void QOutParser::slotFinished()
 	emit textChanged(_out+_extra);
 }
 
-void QOutParser::setTotalSize(uint s)
+void QOutParser::setTotalSize(int s)
 {
 	//emit textChanged(tr("Counting...")+size2Str<double>(s));
 	emit maximumChanged(max_value=s);
@@ -573,6 +571,8 @@ Format QUntarOutParser::parse(const char *line)
 	total bytes=23479416, compressed=23432410 -> 0% savings
 
 	[processed/remaining]
+	zip 3.0 win32:
+	2/ 10 [ 31k/ 90k]	adding: core/qq	(80 bytes security) (in=7137) (out=2146) (deflated 70%)
  */
 Format QZipOutParser::parse(const char* line)
 {

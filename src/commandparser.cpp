@@ -61,12 +61,10 @@ CommandParser::~CommandParser()
 		delete cmd_parser;
 		cmd_parser=0;
 	}
-#if COUNTER_THREAD
 	if(counter) {
 		delete counter;
 		counter=0;
 	}
-#endif
 }
 
 void CommandParser::setCommand(const QString &cmd)
@@ -78,9 +76,14 @@ void CommandParser::setCommand(const QString &cmd)
 	}
 	if(_cmd.startsWith("tar")) {
 		cmd_parser=new TarCommandParser();
+	} else if(_cmd.startsWith("zip")) {
+		cmd_parser=new ZipCommandParser;
+	} else if(_cmd.startsWith("unzip")) {
+		cmd_parser=new UnzipCommandParser;
 	}
 	if(cmd_parser) {
 		//cmd_parser->_cmd=_cmd;
+		ZDEBUG("command: %s",qstr2cstr(_cmd));
 		cmd_parser->setCommand(_cmd);
 	}
 }
@@ -151,32 +154,18 @@ size_t CommandParser::archiveUnpackSize() const
 }
 
 
-TarCommandParser::TarCommandParser()
-	:CommandParser()
-{
-}
-
-TarCommandParser::TarCommandParser(const QString &cmd)
-	:CommandParser(cmd)
-{
-	init();
-}
-
-TarCommandParser::~TarCommandParser()
-{}
-
+/*!
+  Tar
+*/
 void TarCommandParser::init()
 {
-	//order!
-	//archive();
-
-	int index_start=_cmd.indexOf(".tar"); //"tar "
-	if(index_start<0) index_start=_cmd.indexOf(".tgz");
-	if(index_start<0) index_start=_cmd.indexOf(".tbz2");
-	if(index_start<0) index_start=_cmd.indexOf(".tlz");
-	if(index_start<0) index_start=_cmd.indexOf(".tlzma");
-	if(index_start<0) index_start=_cmd.indexOf(".tlzo");
-	if(index_start<0) index_start=_cmd.indexOf(".txz");
+	int index_start=_cmd.indexOf(".tar "); //"tar "
+	if(index_start<0) index_start=_cmd.indexOf(".tgz ");
+	if(index_start<0) index_start=_cmd.indexOf(".tbz2 ");
+	if(index_start<0) index_start=_cmd.indexOf(".tlz ");
+	if(index_start<0) index_start=_cmd.indexOf(".tlzma ");
+	if(index_start<0) index_start=_cmd.indexOf(".tlzo ");
+	if(index_start<0) index_start=_cmd.indexOf(".txz ");
 
 	index_start=_cmd.lastIndexOf(" ",index_start)+1;
 	int index_end=_cmd.indexOf(" ",index_start);
@@ -190,7 +179,7 @@ void TarCommandParser::init()
 
 		int idx=_cmd.indexOf(" ",idx_archive);
 		QString fs=_cmd.mid(idx);
-		fs=fs.mid(0,fs.indexOf("-C")); //-C change dir
+		fs=fs.mid(0,fs.indexOf("-C")); //??? What i was thinking about? -C change dir
 
 #if CONFIG_QT4
 		_files=fs.split(" ");
@@ -224,30 +213,118 @@ void TarCommandParser::init()
 
 }
 
-void TarCommandParser::setCommand(const QString &cmd)
+
+/*!
+  Zip
+*/
+
+void ZipCommandParser::init()
 {
-	_cmd=cmd;
-	ZDEBUG("command: %s",qstr2cstr(_cmd));
-	init();
+	int index_start=_cmd.indexOf(".zip ");
+
+	index_start=_cmd.lastIndexOf(" ",index_start)+1;
+	int index_end=_cmd.indexOf(" ",index_start);
+
+	_archive=_cmd.mid(index_start,index_end-index_start);
+	ZDEBUG("Archive is: %s",qstr2cstr(_archive));
+
+	int idx_archive=_cmd.indexOf(_archive);
+	//files();
+	if(!_archive.isEmpty()) {
+
+		int idx=_cmd.indexOf(" ",idx_archive);
+		QString fs=_cmd.mid(idx);
+		fs=fs.mid(0,fs.indexOf("-C")); //-C change dir
+
+#if CONFIG_QT4
+		_files=fs.split(" ");
+#else
+		_files=QStringList::split(" ",fs);
+#endif
+	}
+
+	//count type
+#if CONFIG_QT4
+	int v_num=_cmd.mid(0,idx_archive).count("v");
+#else
+	int v_num=_cmd.mid(0,idx_archive).contains("v");
+#endif
+	if(v_num==0) {
+		_count_type=Num;
+		counter->setCountType(QCounterThread::Num);
+	} else {
+		_count_type=Size;
+		counter->setCountType(QCounterThread::Size);
+	}
+	_compress_mode=true;
+	ZDEBUG("Compress Mode: %d",_compress_mode);
+
 }
 
-QStringList TarCommandParser::files()
+/*!
+  Unzip: unzip -ov file.zip
+*/
+
+void UnzipCommandParser::init()
 {
-	return _files;
+	//lastIndexOf(" ");
+	int index_start=_cmd.indexOf(".zip ");
+
+	index_start=_cmd.lastIndexOf(" ",index_start)+1;
+	int index_end=_cmd.indexOf(" ",index_start);
+
+	_archive=_cmd.mid(index_start,index_end-index_start);
+	ZDEBUG("Archive is: %s",qstr2cstr(_archive));
+
+	int idx_archive=_cmd.indexOf(_archive);
+	//files();
+	if(!_archive.isEmpty()) {
+
+		int idx=_cmd.indexOf(" ",idx_archive);
+		QString fs=_cmd.mid(idx);
+		//-x xlist(inside zip file) -d exdir
+#if CONFIG_QT4
+		_files=fs.split(" ");
+#else
+		_files=QStringList::split(" ",fs);
+#endif
+	}
+
+	//count type
+#if CONFIG_QT4
+	int v_num=_cmd.mid(0,idx_archive).count("v");
+#else
+	int v_num=_cmd.mid(0,idx_archive).contains("v");
+#endif
+	if(v_num==0) {
+		_count_type=Num;
+		counter->setCountType(QCounterThread::Num);
+	} else {
+		_count_type=Size;
+		counter->setCountType(QCounterThread::Size);
+	}
+	_compress_mode=false;
+	ZDEBUG("Compress Mode: %d",_compress_mode);
 }
 
+/*!
+  Unrar: unrar x -o+ -p- -y rar.rar destdir
+  //-o- not overwrite, -or rename auto, -p[pw]
+*/
 
-QString TarCommandParser::archive()
+void UnrarCommandParser::init()
 {
-	return _archive;
-}
+	int index_start=_cmd.indexOf(".rar ");
 
-CommandParser::CountType TarCommandParser::countType()
-{
-	return _count_type;
-}
+	index_start=_cmd.lastIndexOf(" ",index_start)+1;
+	int index_end=_cmd.indexOf(" ",index_start);
 
-bool TarCommandParser::isCompressMode()
-{
-	return _compress_mode;
+	_archive=_cmd.mid(index_start,index_end-index_start);
+	ZDEBUG("Archive is: %s",qstr2cstr(_archive));
+
+	_count_type=Num;
+	counter->setCountType(QCounterThread::Num);
+
+	_compress_mode=false;
+	ZDEBUG("Compress Mode: %d",_compress_mode);
 }

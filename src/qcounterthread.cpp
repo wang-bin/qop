@@ -21,8 +21,10 @@
 #include <qdir.h>
 
 QCounterThread::QCounterThread(const QStringList &f)
-	:files(f),size(0),num(0),ct(Size)
-{}
+	:files(f),ct(Size)
+{
+	maximum.size=0;
+}
 
 QCounterThread::~QCounterThread() {}
 
@@ -35,7 +37,7 @@ void QCounterThread::setCountType(CountType t) { ct=t;}
 
 void QCounterThread::run()
 {
-	size=0, num=0;
+	maximum.size=0;
 	if(ct==Size) sizeOfFiles(files);
 	else if(ct==Num) numOfFiles(files);
 	else numOfFilesNoDir(files);
@@ -54,10 +56,10 @@ uint QCounterThread::numOfFilesNoDir(const QStringList& list)
 				for(QStringList::ConstIterator it = nameList.begin();it != nameList.end(); ++it)
 					if ((*it != ".") && (*it != ".."))	pathList.append(name+"/"+*it);   //can't be root,so override
 						numOfFilesNoDir(pathList);
-			} else ++num;
+			} else ++maximum.num;
 		}
-	} emit counted(num); emit maxChanged(num);
-	return num;
+	} emit maximumChanged(maximum.num);
+	return maximum.num;
 }
 
 uint QCounterThread::numOfFiles(const QStringList& list)
@@ -72,10 +74,10 @@ uint QCounterThread::numOfFiles(const QStringList& list)
 				for(QStringList::ConstIterator it = nameList.begin();it != nameList.end(); ++it)
 					if ((*it != ".") && (*it != ".."))	pathList.append(name+"/"+*it);   //can't be root,so override
 						numOfFiles(pathList);
-			} ++num;
+			} ++maximum.num;
 		}
-	} emit counted(num); emit maxChanged(num);
-	return num;
+	} emit maximumChanged(maximum.num);
+	return maximum.num;
 }
 
 uint QCounterThread::sizeOfFiles(const QStringList& list)
@@ -92,12 +94,12 @@ uint QCounterThread::sizeOfFiles(const QStringList& list)
 					if ((*it != ".") && (*it != ".."))	pathList.append(name+"/"+*it);   //can't be root,so override
 						sizeOfFiles(pathList);
 			} else {
-				size+=QFileInfo(*it).size();  //QFileInfo()::isSymLink()
-				//emit counted(size); //too frequent. app will abort in windows
+				maximum.size+=QFileInfo(*it).size();  //QFileInfo()::isSymLink()
+				//emit maximumChanged(size); //too frequent. app will abort in windows
 			}
 		}
-	} emit counted(size); emit maxChanged(num);
-	return size;
+	} emit maximumChanged(maximum.size);
+	return maximum.size;
 }
 
 

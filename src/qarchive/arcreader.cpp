@@ -264,7 +264,7 @@ size_t QArcReader::uncompressedSize()
 #if BYTE_ORDER == LITTLE_ENDIAN
 	if(format==FormatZip) reverse<char>(reinterpret_cast<char*>(&unx_size),4);//swap_endian(reinterpret_cast<char*>(&unx_size),4);//
 #endif
-	printf("Uncompressed size=%d\n",unx_size); fflush(stdout);
+	ZDEBUG("Uncompressed size=%d",unx_size);
 
 	return unx_size;
 }

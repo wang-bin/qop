@@ -1,6 +1,6 @@
 文档，使用说明
 
--C is conflict with tar's arg, 解压的totalsetps
+Test scripts
 
 EZProgressDialog Q_D() etc
 

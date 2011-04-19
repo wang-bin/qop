@@ -52,12 +52,11 @@ public:
 	void start();
 #endif //QT_THREAD_SUPPORT
 	virtual void run();
-	//num() size()
+	//int maximum();
 
 signals:
 	void done();
-	void counted(uint); //connect to QOutParser
-	void maxChanged(int);
+	void maximumChanged(int);
 
 public:
 	uint numOfFilesNoDir(const QStringList&);
@@ -66,7 +65,10 @@ public:
 
 private:
 	QStringList files;
-	uint size, num;
+	union {
+		uint size;
+		uint num;
+	} maximum;
 	CountType ct;
 
 };

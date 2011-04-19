@@ -51,7 +51,7 @@ public:
 
 public slots:
 	void initTimer();
-	void setTotalSize(uint);
+	void setTotalSize(int);
 	void estimate();
 	void terminate();
 
@@ -73,7 +73,6 @@ protected:
 	//<H1>File: %1</H>, _out=dspFormat.arg(file);
 	//virtual void setDiaplayFormat(Format fmt=All,const QString& txt="");
 
-//private:
 	QString file; //file just compressed/extracted
 	char line[1024]; //add char name[256], ratio[4], int s? they are frequently used in parse
 	uint size, compressed, value; //outSize numbers-->value

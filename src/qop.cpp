@@ -68,6 +68,10 @@ void Qop::execute(const QString &cmd)
 	CommandParser cmdParser(cmd);
 	if(cmdParser.program()=="tar" && !cmdParser.isCompressMode())
 		parser_type="untar";
+	else if(cmdParser.program()=="zip")
+		parser_type="zip";
+	else if(cmdParser.program()=="unzip")
+		parser_type="unzip";
 
 	initParser();
 	initProcess();
@@ -79,8 +83,8 @@ void Qop::execute(const QString &cmd)
 		parser->setCountType(QCounterThread::Size);
 #if COUNTER_THREAD
 	if(cmdParser.isCompressMode()) {
-		connect(cmdParser.counterThread(),SIGNAL(maxChanged(int)),progress,SLOT(setMaximum(int)));
-		connect(cmdParser.counterThread(),SIGNAL(counted(uint)),parser,SLOT(setTotalSize(int)));
+		connect(cmdParser.counterThread(),SIGNAL(maximumChanged(int)),progress,SLOT(setMaximum(int)));
+		connect(cmdParser.counterThread(),SIGNAL(maximumChanged(int)),parser,SLOT(setTotalSize(int)));
 		cmdParser.counterThread()->start();
 	} else {
 		progress->setMaximum(cmdParser.archiveUnpackSize());
