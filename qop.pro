@@ -52,7 +52,17 @@ OTHER_FILES	+= \
 		doc/TODO.txt \
 		doc/history \
 		doc/help-zh_CN.txt \
-		doc/help-en_US.txt
+		doc/help-en_US.txt \
+    test/zip-qop.sh \
+    test/unzip-qop.sh \
+    test/unrar-zip.sh \
+    test/tar-qop.sh \
+    test/qop-zip.sh \
+    test/qop-unzip.sh \
+    test/qop-unrar.sh \
+    test/qop-tar.sh \
+    test/7z-qop.sh \
+    test/.findqop.sh
 
 
 INTERFACES	=

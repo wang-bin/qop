@@ -1,4 +1,8 @@
 =====================================2011=======================================
+04-19:
+-C option supports zip, unzip, unrar.
+
+
 04-18:
 QOutParser only change unit without recount total steps when use -x option.
 move steps calculation from Option to Qop to reduce dependency.
