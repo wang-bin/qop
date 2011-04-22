@@ -16,12 +16,14 @@ tar zcvvf /tmp/test.tgz $compress |$qop $compress -m 2>/dev/null
 
 echo "tar zcvf /tmp/test.tgz $compress |qop $compress -n -m 2>/dev/null
 	Compressing...Showing progress for number of files..."
-tar zcvf /tmp/test.tgz $compress |qop $compress -n -m 2>/dev/null
+tar zcvf /tmp/test.tgz $compress |$qop $compress -n 2>/dev/null
 
 echo "tar zxvvf /tmp/test.tgz -C /tmp |$qop -x /tmp/test.tgz 2>/dev/null
 	Extracting...Showing progress for size..."
 tar zxvvf /tmp/test.tgz -C /tmp |$qop -x /tmp/test.tgz 2>/dev/null
 
-echo "tar zxvvf /tmp/test.tgz -C /tmp |$qop -x /tmp/test.tgz 2>/dev/null
+echo "tar zxvf /tmp/test.tgz -C /tmp |$qop -x /tmp/test.tgz 2>/dev/null
 	Extracting...Showing progress for number of files..."
-tar zxvvf /tmp/test.tgz -C /tmp |$qop -x /tmp/test.tgz 2>/dev/null
+
+echo `tar -zt </tmp/test.tgz |wc -l`
+tar zxvf /tmp/test.tgz -C /tmp |$qop -T `tar -zt </tmp/test.tgz |wc -l` -n 2>/dev/null

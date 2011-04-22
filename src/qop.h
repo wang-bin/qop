@@ -43,6 +43,7 @@ public:
 	void extract(const QString& archive,const QString& outDir);
 	void execute(const QString& cmd); //execute(const QString& program,const QStringList& arg)
 	//void parseOutput();
+	//void pipeView();
 
 	void setInternal(bool);
 	void setArchive(const QString& archive_path);

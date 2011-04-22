@@ -115,10 +115,15 @@ int main(int argc, char *argv[])
 		qop->execute(QString::fromLocal8Bit(options->cmd));
 	else {
 		qop->parser_type=options->parser_type;
-		if(options->steps>0) qop->progress->setMaximum(options->steps);
+		ZDEBUG("steps %d",options->steps);
 		qop->initParser();
 		if(options->unit==0) qop->parser->setCountType(QCounterThread::Size);
 		else if(options->unit==1) qop->parser->setCountType(QCounterThread::Num);
+		if(options->steps>0) {
+			qop->parser->setRecount(false);
+			qop->parser->setTotalSize(options->steps);
+			//qop->progress->setMaximum(options->steps);
+		}
 		if(qop->steps<=0) { //compress
 			if(options->steps>0) qop->parser->setTotalSize(options->steps);
 			QStringList files=QStringList();

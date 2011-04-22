@@ -190,22 +190,18 @@ void Qop::initParser()
 	}//omit -T
 
 	parser=getParser(parser_type);
-	if(!arc_path.isEmpty())
-	    parser->setRecount(false);
+	if(!arc_path.isEmpty()) {
+		parser->setRecount(false);
+	}
 	ZDEBUG("steps: %d",steps);
 	if(steps>0) {
 		progress->setMaximum(steps);
 		parser->setTotalSize(steps);
 	}
 #if CONFIG_QT4
-	//progress->setWindowTitle("qop "+QObject::tr("Compression/Extraction progress dialog"));
-	//progress->setObjectName("QProgressDialog");
 	QObject::connect(parser,SIGNAL(valueChanged(int)),progress,SLOT(setValue(int)));
-	//QObject::connect(progress,SIGNAL(canceled()),qApp,SLOT(quit())); //does not work. Will send sig aboutToQuit()
 	QObject::connect(progress,SIGNAL(canceled()),parser,SLOT(terminate()));
 #else
-	//progress->setCaption("qop "+QObject::tr("Compression/Extraction progress dialog"));
-	//a.setMainWidget(progress);
 	QObject::connect(parser,SIGNAL(valueChanged(int)),progress,SLOT(setProgress(int)));
 	QObject::connect(progress,SIGNAL(cancelled()),parser,SLOT(terminate())); //to canceled
 #endif //CONFIG_EZX
@@ -226,7 +222,6 @@ void Qop::initProcess()
 #if CONFIG_QT4 || CONFIG_QT3
 	process=new QProcess(this);
 	process->setWorkingDirectory(QDir::currentPath());
-	//ZDEBUG("working dir: %s",process->workingDirectory().toLocal8Bit().constData());
 	connect(process, SIGNAL(readyReadStandardOutput()), SLOT(readStdOut()));
 	connect(process,SIGNAL(readyReadStandardError()),SLOT(readStdErr()));
 	//connect(process, SIGNAL(finished(int,QProcess::ExitStatus)), SIGNAL(finished(int,QProcess::ExitStatus)));

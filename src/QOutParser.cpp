@@ -302,7 +302,7 @@ void QOutParser::setCountType(QCounterThread::CountType ct)
 
 void QOutParser::setRecount(bool rc)
 {
-    _recount=rc;
+	_recount=rc;
 }
 
 void QOutParser::setMultiThread(bool mt)
@@ -312,7 +312,7 @@ void QOutParser::setMultiThread(bool mt)
 
 void QOutParser::startCounterThread()
 {
-	ZDEBUG();
+	if(!_recount) return;
 	emit textChanged(tr("Calculating..."));
 	qApp->processEvents();
 	if(multi_thread) counter.start();
@@ -375,10 +375,10 @@ void QOutParser::setTotalSize(int s)
 }
 
 void QOutParser::slotResetUnit()
-{	ZDEBUG();
+{
 	if(res==Simple)	 {
 		setCountType(QCounterThread::Num);
-		if(_recount)  startCounterThread();
+		if(_recount) startCounterThread();
 		else setTotalSize(max_value);
 	}
 		//max_str=" / "+QString::number(max_value)+" ";
@@ -388,6 +388,7 @@ void QOutParser::slotResetUnit()
 		else setTotalSize(max_value);
 	}
 		//max_str=" / "+size2Str<double>(max_value);
+	ZDEBUG("steps: %d",max_value);
 	emit maximumChanged(max_value);
 
 }
