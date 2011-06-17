@@ -53,6 +53,7 @@ uint QTar::unpackedSize()
 
 Error QTar::extract()
 {
+	//ifstream ofstream to seekg()
 	QArchive::extract();
 
 	if(!_archiveFile.exists()) return OpenError;
@@ -86,7 +87,12 @@ Error QTar::extract()
 			return ReadError;
 		}
 		if (isEndBuff(buff)) {
+#if USE_SLOT
 			emit byteProcessed(_processedSize+=Header::RecordSize);  //header;
+#else
+			estimate();
+			progressHandler->Progress(_current_fileName,size,_processedSize+=Header::RecordSize,_totalSize,_speed,_elapsed,_left);
+#endif
 			finishMessage();
 			return End;
 		}
@@ -113,8 +119,9 @@ Error QTar::extract()
 
 		++_numFiles;
 		size=filesize;
+#if USE_SLOT
 		updateMessage();
-
+#endif
 		while (filesize > 0) {
 			checkTryPause();
 #if ARCREADER_QT4
@@ -130,10 +137,10 @@ Error QTar::extract()
 			if (_outFile.isOpen()) {
 #if CONFIG_QT4
 				if(_outFile.write(buff,bytes_read)!=bytes_read) {
-					fprintf(stderr, "[%s] %s @%d: Failed to write %s\n",__FILE__,__PRETTY_FUNCTION__,__LINE__,qstr2cstr(_outFile.fileName()));
+					fprintf(stderr, "[%s] %s @%d: Failed to write %s\n",__FILE__,__PRETTY_FUNCTION__,__LINE__,qPrintable(_outFile.fileName()));
 #else
 				if(_outFile.writeBlock(buff,bytes_read)!=bytes_read) {
-					fprintf(stderr, "[%s] %s @%d: Failed to write %s\n",__FILE__,__PRETTY_FUNCTION__,__LINE__,qstr2cstr(_outFile.name()));
+					fprintf(stderr, "[%s] %s @%d: Failed to write %s\n",__FILE__,__PRETTY_FUNCTION__,__LINE__,qPrintable(_outFile.name()));
 #endif
 				_outFile.close();
 			    }
@@ -143,9 +150,13 @@ Error QTar::extract()
 					f = NULL;
 				}*/
 			}
-
+#if USE_SLOT
 			forceShowMessage(1000);
 			emit byteProcessed(_processedSize+=Header::RecordSize);//bytes_read);
+#else
+			estimate();
+			progressHandler->Progress(_current_fileName,size,_processedSize+=Header::RecordSize,_totalSize,_speed,_elapsed,_left);
+#endif
 			filesize -= bytes_read;
 		}
 		//emit byteProcessed(_processedSize+=size);

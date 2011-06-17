@@ -22,7 +22,7 @@
 #ifndef __cplusplus
 #error "Use C++ Compiler Please..."
 #endif
-
+/* Change to qtcompatible.h*/
 #include <qglobal.h>
 
 #if defined(linux) || defined(__linux) || defined(__linux__)
@@ -53,15 +53,22 @@
 #	error Qt 2, Qt 3 or Qt 4 is required!
 #endif
 
+
+/*
+class A;
+typedef A B;
+*/
 #if CONFIG_QT4
 #include <Qt>
 #include <QtGui/QApplication>
 #include <QColorGroup>
 #include <QDebug>
-#include <QtGui/QProgressDialog>
-#include <QtGui/QMessageBox>
+//#include <QtGui/QProgressDialog>
+//#include <QtGui/QMessageBox>
 #include <QDesktopWidget> //QApplication::desktop()
 #include <QMouseEvent>
+//class QMessageBox;
+//class QProgressDialog;
 using Qt::WindowFlags;
 using Qt::Alignment;
 #define Q_EXPORT
@@ -132,10 +139,14 @@ typedef int Alignment;
 #include <unistd.h>
 //#include <assert.h>
 
+//use stdarg.h, see apue.h
 #define ZDEBUG(fmt,args...) qDebug("[%s] %s @%d: \t"fmt,__FILE__,__PRETTY_FUNCTION__,__LINE__,## args)
 //#define ZDEBUG(fmt,args...) fprintf(stdout,"[%s] %s @%d: \t"fmt" \t---%s, %s\n",__FILE__,__PRETTY_FUNCTION__,__LINE__,## args,__TIME__,__DATE__); fflush(stdout)
 
 #if !CONFIG_QT4
+
+#define qPrintable(qstr) qstr.local8Bit().data()
+
 template <typename ForwardIterator> void qDeleteAll(ForwardIterator begin, ForwardIterator end)
 {
 	while (begin != end) {
@@ -151,6 +162,7 @@ template <typename Container> inline void qDeleteAll(const Container &c)
 
 
 //template <typename T> static inline T *qGetPtrHelper(T *ptr) { return ptr; } // \//return reinterpret_cast<Class##Private *>(qGetPtrHelper(d_ptr));
+//protected: ?
 #define Q_DECLARE_PRIVATE(Class) \
 	inline Class##Private* d_func() { return reinterpret_cast<Class##Private *>(d_ptr); } \
 	inline const Class##Private* d_func() const { return reinterpret_cast<const Class##Private *>(d_ptr); }
@@ -172,10 +184,8 @@ template <typename Container> inline void qDeleteAll(const Container &c)
 
 #if CONFIG_QT4
 #define QFILENAME(path) QString(path).mid(QString(path).lastIndexOf('/')+1)
-#define qstr2cstr(qstr) qstr.toLocal8Bit().constData()
 #else
 #define QFILENAME(path) QString(path).mid(QString(path).findRev('/')+1)
-#define qstr2cstr(qstr) qstr.local8Bit().data()
 #endif
 /*
 inline

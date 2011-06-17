@@ -83,7 +83,7 @@ void CommandParser::setCommand(const QString &cmd)
 	}
 	if(cmd_parser) {
 		//cmd_parser->_cmd=_cmd;
-		ZDEBUG("command: %s",qstr2cstr(_cmd));
+		ZDEBUG("command: %s",qPrintable(_cmd));
 		cmd_parser->setCommand(_cmd);
 	}
 }
@@ -149,7 +149,7 @@ size_t CommandParser::archiveUnpackSize() const
 {
 	if(cmd_parser==0) return 0;
 	uint unx_size=Archive::QArcReader(cmd_parser->archive()).uncompressedSize();
-	ZDEBUG("Archive unpacked size: %db == %s",unx_size,qstr2cstr(size2Str<double>(unx_size)));
+	ZDEBUG("Archive unpacked size: %db == %s",unx_size,qPrintable(size2Str<double>(unx_size)));
 	return unx_size;
 }
 
@@ -171,7 +171,7 @@ void TarCommandParser::init()
 	int index_end=_cmd.indexOf(" ",index_start);
 
 	_archive=_cmd.mid(index_start,index_end-index_start);
-	ZDEBUG("Archive is: %s",qstr2cstr(_archive));
+	ZDEBUG("Archive is: %s",qPrintable(_archive));
 
 	int idx_archive=_cmd.indexOf(_archive);
 	//files();
@@ -226,7 +226,7 @@ void ZipCommandParser::init()
 	int index_end=_cmd.indexOf(" ",index_start);
 
 	_archive=_cmd.mid(index_start,index_end-index_start);
-	ZDEBUG("Archive is: %s",qstr2cstr(_archive));
+	ZDEBUG("Archive is: %s",qPrintable(_archive));
 
 	int idx_archive=_cmd.indexOf(_archive);
 	//files();
@@ -274,7 +274,7 @@ void UnzipCommandParser::init()
 	int index_end=_cmd.indexOf(" ",index_start);
 
 	_archive=_cmd.mid(index_start,index_end-index_start);
-	ZDEBUG("Archive is: %s",qstr2cstr(_archive));
+	ZDEBUG("Archive is: %s",qPrintable(_archive));
 
 	int idx_archive=_cmd.indexOf(_archive);
 	//files();
@@ -320,7 +320,7 @@ void UnrarCommandParser::init()
 	int index_end=_cmd.indexOf(" ",index_start);
 
 	_archive=_cmd.mid(index_start,index_end-index_start);
-	ZDEBUG("Archive is: %s",qstr2cstr(_archive));
+	ZDEBUG("Archive is: %s",qPrintable(_archive));
 
 	_count_type=Num;
 	counter->setCountType(QCounterThread::Num);

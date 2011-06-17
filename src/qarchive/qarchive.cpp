@@ -75,6 +75,9 @@ namespace Archive {
 QArchive::QArchive(const QString &archive,IODev idev,IODev odev)
 	:_output(odev),_input(idev),_outDir("."),_totalSize(0),_processedSize(0),size(0),_current_fileName("") \
 	,_out_msg(""),_extra_msg(tr("Calculating...")),_elapsed(0),_left(0),_numFiles(0),_pause(false)
+#if !USE_SLOT
+	,progressHandler(new IProgressHandler)
+#endif
 {
 	setArchive(archive);
 	_time.start();
@@ -84,7 +87,12 @@ QArchive::~QArchive()
 {
 }
 
-
+#if !USE_SLOT
+void QArchive::setProgressHandler(IProgressHandler *ph)
+{
+	progressHandler=ph;
+}
+#endif
 void QArchive::createDir(const QString& pathname, int mode)
 {
 	QDir(_outDir).mkdir(pathname);
@@ -188,7 +196,7 @@ void QArchive::setOutDir(const QString &odir)
 {
 	_outDir=odir;
 	if(!QDir(_outDir).exists()) {
-		ZDEBUG("out dir %s doesn't exist. creating...",qstr2cstr(_outDir));
+		ZDEBUG("out dir %s doesn't exist. creating...",qPrintable(_outDir));
 		QDir().mkdir(odir);
 	}
 }

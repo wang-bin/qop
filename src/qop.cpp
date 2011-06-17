@@ -30,6 +30,21 @@
 //using X::QApplication;
 #endif
 
+#if !USE_SLOT
+static EZProgressDialog *progressDlg;
+void DoProgress(const QString& _current_fileName, size_t current_size, size_t processed, size_t total_size, int speed, int time_elapsed, int time_remain)
+{
+	QString _out_msg=_current_fileName+"\n"+QObject::tr("Size: ")+size2Str<double>(current_size)+"\n"+QObject::tr("Processed: ")+size2Str<double>(processed)+" / "+size2Str<double>(total_size)+"\n";
+	QString _extra_msg=QObject::tr("Speed: ")+size2Str<double>(speed)+"/s\n"+QObject::tr("Elapsed: %1s Remaining: %2s").arg(time_elapsed/1000.,0,'f',1).arg(time_remain,0,'f',1);
+	progressDlg->setValue(processed);
+	progressDlg->setLabelText(_out_msg+_extra_msg);
+	//qApp->processEvents();
+}
+
+static IProgressHandler progressHandler = { &DoProgress };
+
+#endif
+
 // vv :archiveSize(). v: filesCount()
 Qop::Qop()
 	:archive(0),parser(0),process(0)
@@ -41,6 +56,9 @@ Qop::Qop()
   ,steps(-1),parser_type("tar"),internal(false)
 {
 	initGui();
+#if !USE_SLOT
+	progressDlg=progress;
+#endif
 }
 
 Qop::~Qop()
@@ -149,7 +167,10 @@ void Qop::initArchive()
 		archive=0;
 	}
 	archive=new Archive::Tar::QTar(arc_path);
-	ezDebug("archive: "+arc_path);
+#if !USE_SLOT
+	archive->setProgressHandler(&progressHandler);
+#endif
+	ZDEBUG("archive: %s",qPrintable(arc_path));
 	progress->setMaximum(archive->unpackedSize());
 	progress->addButton(QObject::tr("Pause"),1);
 #if CONFIG_QT4
@@ -158,8 +179,10 @@ void Qop::initArchive()
 	progress->button(1)->setToggleButton(true);
 #endif
 	QObject::connect(progress->button(1),SIGNAL(clicked()),archive,SLOT(pauseOrContinue()));
+#if USE_SLOT
 	QObject::connect(archive,SIGNAL(byteProcessed(int)),progress,SLOT(setValue(int)));
 	QObject::connect(archive,SIGNAL(textChanged(const QString&)),progress,SLOT(setLabelText(const QString&)));
+#endif
 	QObject::connect(progress,SIGNAL(canceled()),archive,SLOT(terminate()));
 	QObject::connect(archive,SIGNAL(finished()),progress,SLOT(showNormal()));
 

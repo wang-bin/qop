@@ -45,7 +45,7 @@ SOURCES		= src/QOutParser.cpp \
 		src/commandparser.cpp
 
 INCLUDEPATH	+= src
-LIBS		+= -Llib -lz
+LIBS		+= #-Llib -lz
 TRANSLATIONS+= i18n/qop_zh-cn.ts
 
 OTHER_FILES	+= \

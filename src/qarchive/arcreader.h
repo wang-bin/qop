@@ -107,16 +107,17 @@ struct RAR20_archive_entry
   UDWORD FileAttr;
 };
 */
-
+//extern const  Magic magics[];
 const Magic magics[]={
 	{"gzip",FormatGzip,{ 0x1f, 0x8b },0},
 	{"zip",FormatZip,{ 0x50, 0x4b, 0x03, 0x04 },0}, //PK
 	{"zip-outdated",FormatZip,{ 0x50, 0x40, 0x30, 0x30 },0},
 	{"rar",FormatRar,{ 0x52, 0x61, 0x72, 0x21 },0},//{"rar",Rar,{'R','a','r','!'},0},
 	{"bzip2",FormatBzip2,{ 0x42, 0x5A, 0x68 },0}, //{"bzip2",Bzip2,{'B','Z','h'},0},
-	{"7-zip",Format7zip,{ 0x37, 0x7A, 0xBC, 0xAF, 0x27, 0x1C },0},//{"7-zip",_7zip,{'7','z','集','''},0},
+	{"7-zip",Format7zip,{ 0x37, 0x7A, 0xBC, 0xAF, 0x27, 0x1C },0},//{"7-zip",_7zip,{'7','z','集','''},0}, //0x377ABCAF271CLL) //"7z...."
 	{"xz",FormatXz,{ 0xfd, 0x37, 0x7A, 0x58, 0x5A },0}, //{"xz",Xz,{0xfd,'7','z','X','Z'},0},
 	{"lzip",FormatLzip,{'L','Z','I','P'},0},
+	//{"lzma",FormatLzma,{'L','Z','I','P'},0},
 	{"lzo",FormatLzop,{ 0x00, 0xe9, 0x4c, 0x5a, 0x4f, 0xff, 0x1a },0},
 	{"arj",FormatArj,{ 0x06, 0xEA },0},
 	{"lha-lh0",FormatLha,{'-','l','h','0','-'},2},

@@ -5,9 +5,9 @@ Wang Bin <wbsecg1@gmail.com>
 
 EOF
 
-qop="qop"; type -p $qop &>/dev/null
-[ $? -ne 0 ] && qop="qop.exe"; type -p $qop &>/dev/null
-[ $? -ne 0 ] && qop="qop-maemo5"; type -p $qop &>/dev/null
-[ $? -ne 0 ] && qop="qop-ezx"; type -p $qop &>/dev/null
+qop="qop"; type -p $qop 2>/dev/null
+[ $? -ne 0 ] && qop="qop.exe"; type -p $qop 2>/dev/null
+[ $? -ne 0 ] && qop="qop-maemo5"; type -p $qop 2>/dev/null
+[ $? -ne 0 ] && qop="qop-ezx"; type -p $qop 2>/dev/null
 [ $? -ne 0 ] && echo 'qop not found. Please set the PATH' && exit
 

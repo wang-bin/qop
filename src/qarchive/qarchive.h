@@ -51,6 +51,14 @@ extern unsigned int permissionsToMode(QFile::Permissions perms);
 extern QFile::Permissions modeToPermissions(unsigned int mode);
 #endif
 */
+
+#define USE_SLOT 1
+
+typedef struct
+{
+  void (*Progress)(const QString&, size_t current_size, size_t processed, size_t total_size, int speed, int time_elapsed, int time_remain);
+} IProgressHandler;
+
 namespace Archive {
 
 	enum IODev {
@@ -68,6 +76,7 @@ public:
 	QArchive(const QString& file="",IODev idev=File,IODev odev=File);
 	virtual ~QArchive()=0;
 
+	void setProgressHandler(IProgressHandler* ph);
 	void setInput(IODev idev);
 	void setOutput(IODev odev);
 	void setOutDir(const QString& odir);
@@ -121,6 +130,7 @@ protected:
 	int time_passed;
 
 	volatile bool _pause;
+	IProgressHandler *progressHandler;
 };
 
 }

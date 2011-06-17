@@ -42,7 +42,7 @@ struct opts_s {
 	int auto_close;
 	int hide;
 	const char* x_file;
-	char* out_dir; //default is ./
+	const char* out_dir; //default is ./
 	int help;
 	int optind;
 

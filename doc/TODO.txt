@@ -1,8 +1,22 @@
 -T does not work
 
+in another program:
+compressProcess->setOutputProcess(qopProcess)
+connect(qopProcess, SIGNAL(finished(int, QProcess::ExitStatus)), compressProcess, SLOT(terminate()));
+//terminate() gui on windows
+connect(qopProcess, SIGNAL(finished(int, QProcess::ExitStatus)), compressProcess, SLOT(kill()));
+
+
+Qt2 QThread
+ezlog
+Like 7zG, Show Dir and filename in seperated lines
+
 文档，使用说明
 Help system
 Test scripts
+
+QArchiveInfo :QFileInfo
+callBack
 
 QTextBrowser: error viewer
 
@@ -21,7 +35,7 @@ file permisson
 
 FIXME:
 -C command: sometimes taroutparser unit error
-
+timer stop when paused
 
 class CommadParser --- version 0.2.0
 

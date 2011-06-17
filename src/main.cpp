@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
 	//QString dirname=getFileDir(argv[0]);//
 #endif
 	//QDir::setCurrent(dirname); //bad in windows cygwin
-	ZDEBUG("dir: %s",qstr2cstr(dirname));
+	ZDEBUG("dir: %s",qPrintable(dirname));
 
 
 	QTranslator appTranslator(0);
@@ -94,46 +94,46 @@ int main(int argc, char *argv[])
 	QString sysLang=QLocale::system().name();
 	appTranslator.load(program+"-"+sysLang,dirname+"/i18n");
 #endif //CONFIG_EZX
-	ZDEBUG("system language: %s",qstr2cstr(sysLang));
+	ZDEBUG("system language: %s",qPrintable(sysLang));
 	a.installTranslator(&appTranslator);
 
 
-	Qop *qop=new Qop;
+	Qop qop;
 #if !CONFIG_QT4
-	a.setMainWidget(qop->progress);
+	a.setMainWidget(qop.progress);
 #endif //CONFIG_QT4
 	ZDEBUG("Steps from options: %d",options->steps);
 	if(!options->hide)
-		qop->progress->show();
+		qop.progress->show();
 	//order is important
-	//qop->parser_type=options->parser_type;
-	qop->setArchive(options->x_file);
+	//qop.parser_type=options->parser_type;
+	qop.setArchive(options->x_file);
 
 	if(options->diy || argc<2) //internal method
-		qop->extract(options->x_file,options->out_dir);
+		qop.extract(options->x_file,options->out_dir);
 	else if(!options->cmd==0)
-		qop->execute(QString::fromLocal8Bit(options->cmd));
+		qop.execute(QString::fromLocal8Bit(options->cmd));
 	else {
-		qop->parser_type=options->parser_type;
+		qop.parser_type=options->parser_type;
 		ZDEBUG("steps %d",options->steps);
-		qop->initParser();
-		if(options->unit==0) qop->parser->setCountType(QCounterThread::Size);
-		else if(options->unit==1) qop->parser->setCountType(QCounterThread::Num);
+		qop.initParser();
+		if(options->unit==0) qop.parser->setCountType(QCounterThread::Size);
+		else if(options->unit==1) qop.parser->setCountType(QCounterThread::Num);
 		if(options->steps>0) {
-			qop->parser->setRecount(false);
-			qop->parser->setTotalSize(options->steps);
-			//qop->progress->setMaximum(options->steps);
+			qop.parser->setRecount(false);
+			qop.parser->setTotalSize(options->steps);
+			//qop.progress->setMaximum(options->steps);
 		}
-		if(qop->steps<=0) { //compress
-			if(options->steps>0) qop->parser->setTotalSize(options->steps);
+		if(qop.steps<=0) { //compress
+			if(options->steps>0) qop.parser->setTotalSize(options->steps);
 			QStringList files=QStringList();
 		//why is optind?
 			for(int i=options->optind;i<argc;++i) files<<argv[i];
-			qop->parser->setFiles(files);
-			qop->parser->setMultiThread(options->multi_thread);
-			qop->parser->startCounterThread();
+			qop.parser->setFiles(files);
+			qop.parser->setMultiThread(options->multi_thread);
+			qop.parser->startCounterThread();
 		}
-		qop->parser->start();
+		qop.parser->start();
 	}
 #if CONFIG_EZX
 	a.processEvents();
