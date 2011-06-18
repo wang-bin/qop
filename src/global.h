@@ -33,6 +33,8 @@
 #define _OS_WIN32_
 #elif defined(MSDOS) || defined(_MSDOS) || defined(__MSDOS__)
 #define _OS_MSDOS_
+#elif defined(__APPLE__) && (defined(__GNUC__) || defined(__xlC__) || defined(__xlc__))
+#define _OS_MAC_
 #endif
 
 #include <qglobal.h>

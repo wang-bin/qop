@@ -1,5 +1,6 @@
 -T does not work
 
+KArchive
 in another program:
 compressProcess->setOutputProcess(qopProcess)
 connect(qopProcess, SIGNAL(finished(int, QProcess::ExitStatus)), compressProcess, SLOT(terminate()));

@@ -56,7 +56,7 @@ Error QTar::extract()
 	//ifstream ofstream to seekg()
 	QArchive::extract();
 
-	if(!_archiveFile.exists()) return OpenError;
+	if(!_archiveFile.exists()) return Archive::OpenError;
 	char buff[Header::RecordSize];
 	//QFile _outFile;
 	//FILE* f;
@@ -70,7 +70,7 @@ Error QTar::extract()
 	if(_archiveFile.open(IO_ReadOnly)) {
 		qDebug("open error");
 #endif //ARCREADER_QT4
-		return OpenError;
+		return Archive::OpenError;
 	}
 	for (;;) {
 #if ARCREADER_QT4
@@ -84,7 +84,7 @@ Error QTar::extract()
 
 		if (bytes_read < Header::RecordSize) {
 			fprintf(stderr,"Short read. expected 512, got %d\n", bytes_read);
-			return ReadError;
+			return Archive::ReadError;
 		}
 		if (isEndBuff(buff)) {
 #if USE_SLOT
@@ -131,7 +131,7 @@ Error QTar::extract()
 #endif //ARCREADER_QT4
 			if (bytes_read < Header::RecordSize) {
 				fprintf(stderr,"Short read. Expected 512, got %d\n",bytes_read);
-				return ReadError;
+				return Archive::ReadError;
 			}
 			if (filesize < Header::RecordSize) bytes_read = filesize;
 			if (_outFile.isOpen()) {

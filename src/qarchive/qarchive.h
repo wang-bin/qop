@@ -69,7 +69,11 @@ namespace Archive {
 		OpenError, ReadError, WriteError, ChecksumError, End, NoError
 	};
 
-class QArchive :public QObject
+class QArchive :
+#if !(QT_VERSION >= 0x040000)
+	public QObject,
+#endif
+	public QFile
 {
 	Q_OBJECT
 public:
@@ -109,6 +113,7 @@ public slots:
 	void terminate();
 
 protected:
+	void init();
 	virtual void timerEvent(QTimerEvent *);
 
 	IODev _output, _input;

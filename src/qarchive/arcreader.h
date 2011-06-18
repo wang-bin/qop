@@ -22,7 +22,7 @@
 
 //default is Qt
 //#define ARCREADER_QT
-//#define ARCREADER_STL
+#define ARCREADER_STL
 #if defined(ARCREADER_QT)
 #	ifdef ARCREADER_STL
 #		undef ARCREADER_STL
@@ -142,7 +142,7 @@ typedef std::map<std::string,Format> FormatMap;
 class ArcReader
 {
 public:
-    ArcReader(const std::string& file=0);
+	ArcReader(const std::string& file=0);
 	~ArcReader();
 
 	void setFile(const std::string& file);
@@ -158,6 +158,7 @@ private:
 
 };
 
+typedef ArcReader QArcReader;
 /*struct extention_map {
 	std::string ext;
 	Format format;
@@ -190,6 +191,6 @@ private:
 typedef QArcReader ArcReader;
 
 #endif //ARCREADER_STL
-}
+} //namespace Archive
 
 #endif // ARCREADER_H

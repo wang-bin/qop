@@ -21,7 +21,7 @@
 
 // added for Crystal Space to avoid a lot of compiler warnings
 //#include "cssysdef.h"
-#if !__GNUC__
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -885,4 +885,3 @@ getopt_long_only (int argc, char *const *argv, const char *options,
   return _getopt_internal (argc, argv, options, long_options, opt_index, 1);
 }
 
-#endif //!__GNUC__

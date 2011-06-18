@@ -224,11 +224,11 @@ uint QArchive::unpackedSize()
 	return _totalSize;
 }
 
-Error QArchive::extract()
+Archive::Error QArchive::extract()
 {
 	_time.restart();
 	tid=startTimer(300); //startTimer(0) error in ezx
-	return NoError;
+	return Archive::NoError;
 }
 }
 //}

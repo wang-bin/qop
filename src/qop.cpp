@@ -202,7 +202,7 @@ void Qop::initParser()
 			ezDebug("file: "+arc_path+ " does not exists\n");
 			fflush(stdout);
 		}
-		Archive::ArcReader ar(arc_path);
+		Archive::ArcReader ar(qPrintable(arc_path));
 		switch(ar.formatByBuf()) {
 		case Archive::FormatRar:	parser_type="unrar";	break;
 		case Archive::FormatZip:	parser_type="unzip";	break;
