@@ -69,6 +69,7 @@ namespace Archive {
 		OpenError, ReadError, WriteError, ChecksumError, End, NoError
 	};
 
+class QArchivePrivate;
 class QArchive :
 #if !(QT_VERSION >= 0x040000)
 	public QObject,
@@ -113,28 +114,13 @@ public slots:
 	void terminate();
 
 protected:
-	void init();
+	Q_DECLARE_PRIVATE(QArchive)
+#if !INHERIT_PRIVATE || (QT_VERSION < 0x040000)
+	QArchivePrivate* d_ptr;
+#endif
 	virtual void timerEvent(QTimerEvent *);
 
-	IODev _output, _input;
-	QString _archiveName, _outDir;
-	//QStringList _inFiles;
-	QFile _archiveFile, _outFile;
-	uint _totalSize, _processedSize;
-	uint size;
-
-	QString _current_fileName;
-	QTime _time;
-	QString _out_msg, _extra_msg;
-	uint _elapsed, _speed; //ms
-	double  _left;
-	QString max_str;
-	int tid;
-
-	int _numFiles;
-	int time_passed;
-
-	volatile bool _pause;
+	Archive::IODev _output, _input;
 	IProgressHandler *progressHandler;
 };
 

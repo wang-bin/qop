@@ -21,7 +21,7 @@
 #include "../util.h"
 #include "../global.h"
 #include <stdio.h>
-
+#include <qfile.h>
 
 namespace Archive {
 

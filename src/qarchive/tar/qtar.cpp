@@ -2,6 +2,7 @@
 #include "TarHeader.h"
 #include <sys/stat.h>  /* For mkdir() */
 #include <qfileinfo.h>
+#include "../qarchive_p.h"
 
 namespace Archive {
 namespace Tar {
@@ -13,7 +14,7 @@ QTar::QTar(const QString &archive, IODev idev, IODev odev)
 
 QTar::~QTar()
 {
-	if(_archiveFile.isOpen()) _archiveFile.close();
+	if(isOpen()) close();
 }
 /*
   //slower ?
@@ -48,7 +49,8 @@ int QTar::verifyChecksum(const char* p)
 
 uint QTar::unpackedSize()
 {
-	return _totalSize;
+	Q_D(QArchive);
+	return d->totalSize;
 }
 
 Error QTar::extract()
@@ -56,31 +58,32 @@ Error QTar::extract()
 	//ifstream ofstream to seekg()
 	QArchive::extract();
 
-	if(!_archiveFile.exists()) return Archive::OpenError;
+	if(!exists()) return Archive::OpenError;
 	char buff[Header::RecordSize];
-	//QFile _outFile;
+	//QFile outFile;
 	//FILE* f;
 	size_t bytes_read;
 	unsigned int filesize;
 
 #if ARCREADER_QT4
-	if(!_archiveFile.open(QIODevice::ReadOnly)) {
-		_archiveFile.error();
+	if(!open(QIODevice::ReadOnly)) {
+		error();
 #else
-	if(_archiveFile.open(IO_ReadOnly)) {
+	if(open(IO_ReadOnly)) {
 		qDebug("open error");
 #endif //ARCREADER_QT4
 		return Archive::OpenError;
 	}
+	Q_D(QArchive);
 	for (;;) {
 #if ARCREADER_QT4
-		bytes_read = _archiveFile.read(buff,Header::RecordSize);
+		bytes_read = read(buff,Header::RecordSize);
 #else
-		bytes_read = _archiveFile.readBlock(buff,Header::RecordSize);
+		bytes_read = readBlock(buff,Header::RecordSize);
 #endif //ARCREADER_QT4
 		//put them here
-		emit byteProcessed(_processedSize+=Header::RecordSize);
-		_current_fileName=QFileInfo(buff).fileName();
+		emit byteProcessed(d->processedSize+=Header::RecordSize);
+		d->current_fileName=QFileInfo(buff).fileName();
 
 		if (bytes_read < Header::RecordSize) {
 			fprintf(stderr,"Short read. expected 512, got %d\n", bytes_read);
@@ -88,10 +91,10 @@ Error QTar::extract()
 		}
 		if (isEndBuff(buff)) {
 #if USE_SLOT
-			emit byteProcessed(_processedSize+=Header::RecordSize);  //header;
+			emit byteProcessed(d->processedSize+=Header::RecordSize);  //header;
 #else
 			estimate();
-			progressHandler->Progress(_current_fileName,size,_processedSize+=Header::RecordSize,_totalSize,_speed,_elapsed,_left);
+			progressHandler->Progress(d->current_fileName, d->size, d->processedSize+=Header::RecordSize, d->totalSize, d->speed, d->elapsed, d->left);
 #endif
 			finishMessage();
 			return End;
@@ -117,33 +120,33 @@ Error QTar::extract()
 			break;
 		}
 
-		++_numFiles;
-		size=filesize;
+		++d->numFiles;
+		d->size = filesize;
 #if USE_SLOT
 		updateMessage();
 #endif
 		while (filesize > 0) {
 			checkTryPause();
 #if ARCREADER_QT4
-			bytes_read = _archiveFile.read(buff,Header::RecordSize);
+			bytes_read = read(buff,Header::RecordSize);
 #else
-			bytes_read = _archiveFile.readBlock(buff,Header::RecordSize);
+			bytes_read = readBlock(buff,Header::RecordSize);
 #endif //ARCREADER_QT4
 			if (bytes_read < Header::RecordSize) {
 				fprintf(stderr,"Short read. Expected 512, got %d\n",bytes_read);
 				return Archive::ReadError;
 			}
 			if (filesize < Header::RecordSize) bytes_read = filesize;
-			if (_outFile.isOpen()) {
+			if (d->outFile.isOpen()) {
 #if CONFIG_QT4
-				if(_outFile.write(buff,bytes_read)!=bytes_read) {
-					fprintf(stderr, "[%s] %s @%d: Failed to write %s\n",__FILE__,__PRETTY_FUNCTION__,__LINE__,qPrintable(_outFile.fileName()));
+				if(d->outFile.write(buff,bytes_read)!=bytes_read) {
+					fprintf(stderr, "[%s] %s @%d: Failed to write %s\n",__FILE__,__PRETTY_FUNCTION__,__LINE__,qPrintable(d->outFile.fileName()));
 #else
-				if(_outFile.writeBlock(buff,bytes_read)!=bytes_read) {
-					fprintf(stderr, "[%s] %s @%d: Failed to write %s\n",__FILE__,__PRETTY_FUNCTION__,__LINE__,qPrintable(_outFile.name()));
+				if(d->outFile.writeBlock(buff,bytes_read)!=bytes_read) {
+					fprintf(stderr, "[%s] %s @%d: Failed to write %s\n",__FILE__,__PRETTY_FUNCTION__,__LINE__,qPrintable(d->outFile.name()));
 #endif
-				_outFile.close();
-			    }
+					d->outFile.close();
+				}
 				/*if (fwrite(buff, 1, bytes_read, f)!= bytes_read) {
 					fprintf(stderr, "Failed write\n");
 					fclose(f);
@@ -152,21 +155,21 @@ Error QTar::extract()
 			}
 #if USE_SLOT
 			forceShowMessage(1000);
-			emit byteProcessed(_processedSize+=Header::RecordSize);//bytes_read);
+			emit byteProcessed(d->processedSize+=Header::RecordSize);//bytes_read);
 #else
 			estimate();
-			progressHandler->Progress(_current_fileName,size,_processedSize+=Header::RecordSize,_totalSize,_speed,_elapsed,_left);
+			progressHandler->Progress(d->current_fileName, d->size, d->processedSize+=Header::RecordSize, d->totalSize, d->speed, d->elapsed, d->left);
 #endif
 			filesize -= bytes_read;
 		}
-		//emit byteProcessed(_processedSize+=size);
-		if(_outFile.isOpen()) _outFile.close();
+		//emit byteProcessed(processedSize+=size);
+		if(d->outFile.isOpen()) d->outFile.close();
 		/*if (f != NULL) {
 			fclose(f);
 			f = NULL;
 		}*/
 	}
-	_archiveFile.close();
+	close();
 }
 
 Error QTar::extract(const QString& archive,const QString& dir)

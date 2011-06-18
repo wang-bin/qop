@@ -1,4 +1,5 @@
 #include "qarchive.h"
+#include "qarchive_p.h"
 #include <qdir.h>
 #if defined(linux) || defined(__linux) || defined(__linux__)
 #include <sys/stat.h>
@@ -73,18 +74,23 @@ unsigned int permissionsToMode(QFile::Permissions perms)
 namespace Archive {
 
 QArchive::QArchive(const QString &archive,IODev idev,IODev odev)
-	:_output(odev),_input(idev),_outDir("."),_totalSize(0),_processedSize(0),size(0),_current_fileName("") \
-	,_out_msg(""),_extra_msg(tr("Calculating...")),_elapsed(0),_left(0),_numFiles(0),_pause(false)
+:d_ptr(new QArchivePrivate),_output(odev),_input(idev)
 #if !USE_SLOT
-	,progressHandler(new IProgressHandler)
+	progressHandler(new IProgressHandler)
 #endif
 {
 	setArchive(archive);
-	_time.start();
+	Q_D(QArchive);
+	d->time.start();
 }
 
 QArchive::~QArchive()
 {
+	if(d_ptr) {
+		delete d_ptr;
+		d_ptr = 0;
+	}
+	if(isOpen()) close();
 }
 
 #if !USE_SLOT
@@ -95,26 +101,28 @@ void QArchive::setProgressHandler(IProgressHandler *ph)
 #endif
 void QArchive::createDir(const QString& pathname, int mode)
 {
-	QDir(_outDir).mkdir(pathname);
+	Q_D(QArchive);
+	QDir(d->outDir).mkdir(pathname);
 }
 
 /* Create a file, including parent directory as necessary. */
 void QArchive::createFile(const QString& pathname, int /*mode*/)
 {
+	Q_D(QArchive);
 #if CONFIG_QT4
-	_outFile.setFileName(_outDir+"/"+pathname);
-	if(!_outFile.open(QIODevice::ReadWrite)) {
+	d->outFile.setFileName(d->outDir+"/"+pathname);
+	if(!d->outFile.open(QIODevice::ReadWrite)) {
 #else
-	_outFile.setName(_outDir+"/"+pathname);
-	if(!_outFile.open(IO_ReadWrite)) {
+	d->outFile.setName(outDir+"/"+pathname);
+	if(!d->outFile.open(IO_ReadWrite)) {
 #endif
-		ezDebug(_outDir+"/"+pathname);
+		ezDebug(d->outDir+"/"+pathname);
 		if(pathname.left(1)=="/") {
-			QDir(_outDir).mkdir(pathname.mid(1));
-		} else	QDir(_outDir).mkdir(pathname);
+			QDir(d->outDir).mkdir(pathname.mid(1));
+		} else	QDir(d->outDir).mkdir(pathname);
 	} else {
 #if CONFIG_QT4
-		//_outFile.setPermissions();
+		//d->outFile.setPermissions();
 #endif
 	}
 }
@@ -127,9 +135,10 @@ void QArchive::timerEvent(QTimerEvent *)
 
 void QArchive::estimate()
 {
-	_elapsed=_time.elapsed()+1;
-	_speed=_processedSize/(1+_elapsed)*1000; //>0
-	_left= (_totalSize-_processedSize)/(1+_speed);
+	Q_D(QArchive);
+	d->elapsed=d->time.elapsed()+1;
+	d->speed=d->processedSize/(1+d->elapsed)*1000; //>0
+	d->left= (d->totalSize-d->processedSize)/(1+d->speed);
 #ifndef NO_EZX
 	qApp->processEvents();
 #endif //NO_EZX
@@ -144,90 +153,101 @@ void QArchive::terminate()
 
 void QArchive::pauseOrContinue()
 {
-	_pause=!_pause;
+	Q_D(QArchive);
+	d->pause = !d->pause;
 }
 
 void QArchive::updateMessage()
 {
+	Q_D(QArchive);
 	estimate();
-	_out_msg=_current_fileName+"\n"+QObject::tr("Size: ")+size2Str<double>(size)+"\n"+QObject::tr("Processed: ")+size2Str<double>(_processedSize)+max_str+"\n";
-	_extra_msg=QObject::tr("Speed: ")+size2Str<double>(_speed)+"/s\n"+QObject::tr("Elapsed: %1s Remaining: %2s").arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1);
-	emit textChanged(_out_msg+_extra_msg);
+	d->out_msg=d->current_fileName+"\n"+QObject::tr("Size: ")+size2Str<double>(d->size)+"\n"+QObject::tr("Processed: ")+size2Str<double>(d->processedSize)+d->max_str+"\n";
+	d->extra_msg=QObject::tr("Speed: ")+size2Str<double>(d->speed)+"/s\n"+QObject::tr("Elapsed: %1s Remaining: %2s").arg(d->elapsed/1000.,0,'f',1).arg(d->left,0,'f',1);
+	emit textChanged(d->out_msg+d->extra_msg);
 	qApp->processEvents();
 }
 
 void QArchive::finishMessage()
 {
 	estimate();
-	_out_msg=QObject::tr("Finished: ")+QString::number(_numFiles)+" "+QObject::tr("files")+"\n"+size2Str<double>(_processedSize)+max_str+"\n";
-	_extra_msg=QObject::tr("Speed: ")+size2Str<double>(_processedSize/(1+_elapsed)*1000)+"/s\n"+QObject::tr("Elapsed: %1s Remaining: %2s").arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1);
-	killTimer(tid);
+	Q_D(QArchive);
+	d->out_msg=QObject::tr("Finished: ")+QString::number(d->numFiles)+" "+QObject::tr("files")+"\n"+size2Str<double>(d->processedSize)+d->max_str+"\n";
+	d->extra_msg=QObject::tr("Speed: ")+size2Str<double>(d->processedSize/(1+d->elapsed)*1000)+"/s\n"+QObject::tr("Elapsed: %1s Remaining: %2s").arg(d->elapsed/1000.,0,'f',1).arg(d->left,0,'f',1);
+	killTimer(d->tid);
 	emit finished();
-	emit textChanged(_out_msg+_extra_msg);
+	emit textChanged(d->out_msg+d->extra_msg);
 	qApp->processEvents();
 }
 
 void QArchive::forceShowMessage(int interval)
 {
-	if(_time.elapsed()-time_passed>interval) {
-		time_passed=_time.elapsed();
+	Q_D(QArchive);
+	if(d->time.elapsed()-d->time_passed>interval) {
+		d->time_passed = d->time.elapsed();
 		updateMessage();
 	}
 }
 
 void QArchive::checkTryPause()
 {
-	while(_pause) {
+	Q_D(QArchive);
+	while(d->pause) {
 		UTIL::qWait(100);
 	}
 }
 
 void QArchive::setInput(IODev idev)
 {
-	_input=idev;
+	_input = idev;
 }
 
 void QArchive::setOutput(IODev odev)
 {
-	_output=odev;
+	_output = odev;
 }
 
 void QArchive::setOutDir(const QString &odir)
 {
-	_outDir=odir;
-	if(!QDir(_outDir).exists()) {
-		ZDEBUG("out dir %s doesn't exist. creating...",qPrintable(_outDir));
-		QDir().mkdir(odir);
+	Q_D(QArchive);
+	d->outDir = odir;
+	if(!QDir(d->outDir).exists()) {
+		ZDEBUG("out dir %s doesn't exist. creating...",qPrintable(d->outDir));
+		QDir().mkdir(d->outDir);
 	}
 }
 
 QString QArchive::outDir() const
 {
-	return _outDir;
+	//Q_D(QArchive);
+	return d_ptr->outDir;
 }
 
 void QArchive::setArchive(const QString &name)
 {
-	_archiveName=name;//QFileInfo(name).absoluteFilePath();
-	if(_archiveFile.isOpen()) _archiveFile.close();
+	//QFileInfo(name).absoluteFilePath();
+	if(isOpen())
+		close();
 #if (QT_VERSION >= 0x040000)
-	_archiveFile.setFileName(_archiveName);
+		setFileName(name);
 #else
-	_archiveFile.setName(_archiveName);
+		setName(name);
 #endif
-	_totalSize=_archiveFile.size();
-	max_str=" / "+size2Str<double>(_totalSize);
+	Q_D(QArchive);
+	d->totalSize = size();
+	d->max_str=" / "+size2Str<double>(d->totalSize);
 }
 
 uint QArchive::unpackedSize()
 {
-	return _totalSize;
+	Q_D(QArchive);
+	return d->totalSize;
 }
 
 Archive::Error QArchive::extract()
 {
-	_time.restart();
-	tid=startTimer(300); //startTimer(0) error in ezx
+	Q_D(QArchive);
+	d->time.restart();
+	d->tid = startTimer(300); //startTimer(0) error in ezx
 	return Archive::NoError;
 }
 }

@@ -22,7 +22,7 @@
 
 //default is Qt
 //#define ARCREADER_QT
-#define ARCREADER_STL
+//#define ARCREADER_STL
 #if defined(ARCREADER_QT)
 #	ifdef ARCREADER_STL
 #		undef ARCREADER_STL
@@ -43,7 +43,6 @@
 #else
 #include <qstring.h>
 #include <qmap.h>
-#include <qfile.h>
 #if QT_VERSION >= 0x040000
 #	define ARCREADER_QT4 1
 #else

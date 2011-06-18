@@ -26,7 +26,8 @@ HEADERS		= src/QOutParser.h \
 		src/Compress/BitlDecoder.h \
 		src/qop.h \
 		src/commandparser.h \
-		src/version.h
+		src/version.h \
+    src/qarchive/qarchive_p.h
 
 SOURCES		= src/QOutParser.cpp \
 		src/gui/ezprogressdialog.cpp \

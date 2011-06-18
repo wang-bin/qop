@@ -68,7 +68,7 @@ void printHelp()
 int main(int argc, char *argv[])
 {
 	appName=getFileName(argv[0]);
-	printf("%s %s (%s, %s)\n",APP_NAME,APP_VERSION_STR,__DATE__,__TIME__);
+	qDebug("%s %s (%s, %s)",APP_NAME,APP_VERSION_STR,__DATE__,__TIME__);
 
 	opts_t options=opts_parse(argc,argv);
 
