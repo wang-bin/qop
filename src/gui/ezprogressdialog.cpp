@@ -350,9 +350,9 @@ int EZProgressDialog::maximum()
 {
 	Q_D(EZProgressDialog);
 #if CONFIG_QT4
-	d->bar->maximum();
+	return d->bar->maximum();
 #else
-	d->bar->totalSteps();
+	return d->bar->totalSteps();
 #endif //CONFIG_QT4
 }
 

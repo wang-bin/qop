@@ -26,7 +26,7 @@ HEADERS		= src/QOutParser.h \
 		src/Compress/BitlDecoder.h \
 		src/qop.h \
 		src/commandparser.h \
-    src/version.h
+		src/version.h
 
 SOURCES		= src/QOutParser.cpp \
 		src/gui/ezprogressdialog.cpp \
@@ -42,7 +42,13 @@ SOURCES		= src/QOutParser.cpp \
 		src/qarchive/gzip/GzipItem.cpp \
 		src/Compress/BitlDecoder.cpp \
 		src/qop.cpp \
-		src/commandparser.cpp
+		src/commandparser.cpp \
+    src/getopt.cpp
+
+win32 {
+	HEADERS += src/getopt.h
+	SOURCES +=
+}
 
 INCLUDEPATH	+= src
 LIBS		+= #-Llib -lz
@@ -53,19 +59,18 @@ OTHER_FILES	+= \
 		doc/history \
 		doc/help-zh_CN.txt \
 		doc/help-en_US.txt \
-    test/zip-qop.sh \
-    test/unzip-qop.sh \
-    test/unrar-zip.sh \
-    test/tar-qop.sh \
-    test/qop-zip.sh \
-    test/qop-unzip.sh \
-    test/qop-unrar.sh \
-    test/qop-tar.sh \
-    test/7z-qop.sh \
-    test/.findqop.sh
+		test/zip-qop.sh \
+		test/unzip-qop.sh \
+		test/unrar-zip.sh \
+		test/tar-qop.sh \
+		test/qop-zip.sh \
+		test/qop-unzip.sh \
+		test/qop-unrar.sh \
+		test/qop-tar.sh \
+		test/7z-qop.sh \
+		test/.findqop.sh
 
-
-INTERFACES	=
+FORMS	=
 
 CONFIG(ezx) {
 	 TARGET =	qop-ezx

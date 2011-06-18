@@ -57,7 +57,7 @@ public slots:
 
 private slots:
 	void slotFinished();
-	void readFromFile(int fd);
+	void readFromFile(FILE* fp);
 	void slotResetUnit();
 
 signals:
@@ -96,7 +96,7 @@ protected:
 
 };
 
-const float KInvMath=1./1000; //to speed up
+const double KInvMath=1./1000; //to speed up
 inline void QOutParser::estimate()
 {
 	/*

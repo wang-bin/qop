@@ -251,13 +251,14 @@ void QOutParser::initTimer()
 	tid=startTimer(300); //startTimer(0) error in ezx
 }
 
-void QOutParser::readFromFile(int fd)
+void QOutParser::readFromFile(FILE* fp)
 {
-	if(fd!=STDIN_FILENO) {
+	if(fp!=stdin) {
 		ZDEBUG("Data not from stdin...");
 		return;
 	}
-	read(STDIN_FILENO, line, 1024);
+	fread(line, 1024, 1, stdin);
+	//read(STDIN_FILENO, line, 1024);
 	//ZDEBUG("stdout: %s",line);
 	//parseLineByLine(line);
 }
@@ -405,13 +406,12 @@ void QOutParser::slotResetUnit()
 //how to kill relative pids?
 void QOutParser::terminate()
 {
-	ZDEBUG("signal sender: %s",
 #if CONFIG_QT4
-		sender()->objectName().toLocal8Bit().data()
+	char * senderName = sender()->objectName().toLocal8Bit().data();
 #else
-		sender()->name()
+	char * senderName = sender()->name();
 #endif
-		);
+	ZDEBUG("signal sender: %s", senderName);
 #if defined(_OS_LINUX_)
 	ZDEBUG("OS LINUX");
 	//bash: ppid!=pid==pgid==..., qpkg:pid!=ppid==pgid, tar,this,etc:ppid!=pid!=pgid

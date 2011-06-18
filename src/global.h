@@ -123,24 +123,28 @@ typedef int Alignment;
 #   define EZ_Dialog(dt,hastitle,parent,name,modal,flag) UTIL_Dialog(parent,flag)
 #   define EZ_ListView(parent,...) Q3ListView(parent)
 //#   define EZ_ListViewItem(parent,x) Q3ListViewItem(parent)
-#   define EZ_ListViewItem(parent,afterOrLabel,x,labels...) Q3ListViewItem(parent,afterOrLabel,## labels)
+#   define EZ_ListViewItem(parent,afterOrLabel,x,/*labels*/...) Q3ListViewItem(parent,afterOrLabel,##__VA_ARGS__)
 #   define EZ_UPushButton(act_pix,nor_pix,text,parent,name,w,h) UTIL_PushButton(parent)
 #   define EZ_PushButton(sid_icon,text,parent,...) ZPushButton(text,parent)
 #ifndef QT3_SUPPORT
 #   define insertStringList(strList) addItems(strList)
 #   define setMaxValue(max) setMaximum(max)
-#   define addMultiCellWidget(widget,fr,tor,fc,toc,align...) addWidget(widget,fr,fc,tor-fr+1,toc-fc+1,## align)
-#   define addMultiCell(item,fr,tor,fc,toc,align...) addItem(item,fr,fc,tor-fr+1,toc-fc+1,## align)
+#   define addMultiCellWidget(widget,fr,tor,fc,toc,/*align*/...) addWidget(widget,fr,fc,tor-fr+1,toc-fc+1,##__VA_ARGS__)
+#   define addMultiCell(item,fr,tor,fc,toc,/*align*/...) addItem(item,fr,fc,tor-fr+1,toc-fc+1,##__VA_ARGS__)
 #endif //QT3_SUPPORT
 #endif //NO_EZX
 
-
 #include <stdio.h>
-#include <unistd.h>
-//#include <assert.h>
+#if __GNUC__
+#else
+#define __PRETTY_FUNCTION__ __FUNCTION__
+#define STDIN_FILENO 0
+#define STDOUT_FILENO 1
+#define STDERR_FILENO 2
+#endif //__GNUC__
 
 //use stdarg.h, see apue.h
-#define ZDEBUG(fmt,args...) qDebug("[%s] %s @%d: \t"fmt,__FILE__,__PRETTY_FUNCTION__,__LINE__,## args)
+#define ZDEBUG(fmt, ...) qDebug("[%s] %s @%d: \t"#fmt, __FILE__, __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
 //#define ZDEBUG(fmt,args...) fprintf(stdout,"[%s] %s @%d: \t"fmt" \t---%s, %s\n",__FILE__,__PRETTY_FUNCTION__,__LINE__,## args,__TIME__,__DATE__); fflush(stdout)
 
 #if !CONFIG_QT4
@@ -186,17 +190,6 @@ template <typename Container> inline void qDeleteAll(const Container &c)
 #define QFILENAME(path) QString(path).mid(QString(path).lastIndexOf('/')+1)
 #else
 #define QFILENAME(path) QString(path).mid(QString(path).findRev('/')+1)
-#endif
-/*
-inline
-const char* qstr2cstr(const QString& qstr){
-#if CONFIG_QT4
-	return qstr.toLocal8Bit().constData();
-#else
-	return qstr.local8Bit().data();
-#endif
-}
-*/
-
+#endif //CONFIG_QT4
 
 #endif // GLOBAL_H
