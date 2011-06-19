@@ -85,7 +85,7 @@ struct Magic {
 	size_t offset;
 
 	//a const object can only call const/static functions. checkData(const Magic&,uchar*);
-	const size_t size() const {	return strlen((const char*)data)/sizeof(unsigned char);}
+	size_t size() const {	return strlen((const char*)data)/sizeof(unsigned char);}
 };
 
 /*!

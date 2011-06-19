@@ -1,11 +1,11 @@
 #ifndef OPTION_H
 #define OPTION_H
 
-#include <getopt.h>
 //#include "qany.h"
 #include <qlist.h>
 #include <qstring.h>
 #include <string>
+#include <getopt.h>
 
 struct opts_s;
 typedef struct opts_s *opts_t;

@@ -27,7 +27,7 @@ HEADERS		= src/QOutParser.h \
 		src/qop.h \
 		src/commandparser.h \
 		src/version.h \
-    src/qarchive/qarchive_p.h
+		src/qarchive/qarchive_p.h
 
 SOURCES		= src/QOutParser.cpp \
 		src/gui/ezprogressdialog.cpp \
@@ -43,12 +43,11 @@ SOURCES		= src/QOutParser.cpp \
 		src/qarchive/gzip/GzipItem.cpp \
 		src/Compress/BitlDecoder.cpp \
 		src/qop.cpp \
-		src/commandparser.cpp \
-    src/getopt.cpp
+		src/commandparser.cpp
 
 win32 {
 	HEADERS += src/getopt.h
-	SOURCES +=
+	SOURCES += src/getopt.cpp
 }
 
 INCLUDEPATH	+= src
@@ -144,7 +143,7 @@ unix:maemo5 {
 	icon64.path  = $$DATADIR/icons/hicolor/64x64/apps
 	icon64.files  = data/64x64/$${TARGET}.png
 
-	sources.files = src/* $$FORMS $$RESOURCES $${TARGET}.pro *.ico *.icns *.rc *.plist
+	sources.files = $$HEADERS $$SOURCES $$FORMS $$RESOURCES $${TARGET}.pro *.ico *.icns *.rc *.plist
 	sources.path = /opt/usr/src/$${TARGET}
 
 #

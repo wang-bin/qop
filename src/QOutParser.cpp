@@ -409,7 +409,7 @@ void QOutParser::terminate()
 #if CONFIG_QT4
 	char * senderName = sender()->objectName().toLocal8Bit().data();
 #else
-	char * senderName = sender()->name();
+	const char * senderName = sender()->name();
 #endif
 	ZDEBUG("signal sender: %s", senderName);
 #if defined(_OS_LINUX_)

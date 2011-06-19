@@ -113,7 +113,7 @@ void QArchive::createFile(const QString& pathname, int /*mode*/)
 	d->outFile.setFileName(d->outDir+"/"+pathname);
 	if(!d->outFile.open(QIODevice::ReadWrite)) {
 #else
-	d->outFile.setName(outDir+"/"+pathname);
+	d->outFile.setName(d->outDir+"/"+pathname);
 	if(!d->outFile.open(IO_ReadWrite)) {
 #endif
 		ezDebug(d->outDir+"/"+pathname);
@@ -230,7 +230,7 @@ void QArchive::setArchive(const QString &name)
 #if (QT_VERSION >= 0x040000)
 		setFileName(name);
 #else
-		setName(name);
+		this->QFile::setName(name);
 #endif
 	Q_D(QArchive);
 	d->totalSize = size();
