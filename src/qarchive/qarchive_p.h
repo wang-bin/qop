@@ -9,18 +9,17 @@ namespace Archive {
 class QArchivePrivate
 {
 public:
-	QArchivePrivate():outDir("."),totalSize(0),processedSize(0),size(0) \
-	,extra_msg(QObject::tr("Calculating...")),elapsed(0),left(0),numFiles(0),pause(false)
-	{}
+	QArchivePrivate():outDir("."),totalSize(0),processedSize(0),size(0),extra_msg(QObject::tr("Calculating...")) \
+	,last_elapsed(1),elapsed(0),time_passed(0),pause(false),numFiles(0),left(0)
+	{
+	/*last_elapsed=1 ensures that elpased = last_elapsed+time.elapsed>0*/
+	}
 	~QArchivePrivate() {
 		if(outFile.isOpen())
 			outFile.close();
 	}
 
-	void init();
-
 	QString outDir;
-	//QStringList _inFiles;
 	QFile outFile;
 	uint totalSize, processedSize;
 	uint size;
@@ -28,12 +27,11 @@ public:
 	QString current_fileName;
 	QString out_msg, extra_msg;
 	QString max_str;
-	uint elapsed, speed; //ms
-	double  left;
-
-	int numFiles;
+	uint last_elapsed, elapsed, speed; //ms
 	int time_passed;
 	volatile bool pause;
+	int numFiles;
+	double left;
 
 	int tid;
 	QTime time;

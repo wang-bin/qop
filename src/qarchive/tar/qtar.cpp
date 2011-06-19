@@ -164,10 +164,6 @@ Error QTar::extract()
 		}
 		//emit byteProcessed(processedSize+=size);
 		if(d->outFile.isOpen()) d->outFile.close();
-		/*if (f != NULL) {
-			fclose(f);
-			f = NULL;
-		}*/
 	}
 	close();
 }

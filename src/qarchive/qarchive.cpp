@@ -136,9 +136,9 @@ void QArchive::timerEvent(QTimerEvent *)
 void QArchive::estimate()
 {
 	Q_D(QArchive);
-	d->elapsed=d->time.elapsed()+1;
-	d->speed=d->processedSize/(1+d->elapsed)*1000; //>0
-	d->left= (d->totalSize-d->processedSize)/(1+d->speed);
+	if(!d->pause) d->elapsed = d->last_elapsed+d->time.elapsed();
+	d->speed = d->processedSize/(1+d->elapsed)*1000; //>0
+	d->left = (d->totalSize-d->processedSize)/(1+d->speed);
 #ifndef NO_EZX
 	qApp->processEvents();
 #endif //NO_EZX
@@ -146,8 +146,7 @@ void QArchive::estimate()
 
 void QArchive::terminate()
 {
-	printf("terminated!\n");
-	fflush(stdout);
+	ZDEBUG("terminated!");
 	exit(0);
 }
 
@@ -155,6 +154,10 @@ void QArchive::pauseOrContinue()
 {
 	Q_D(QArchive);
 	d->pause = !d->pause;
+	if(!d->pause) {
+		d->last_elapsed = d->elapsed;
+		d->time.restart();
+	}
 }
 
 void QArchive::updateMessage()
