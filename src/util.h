@@ -26,9 +26,14 @@
 #include <qstring.h>
 #include <stdio.h>
 
+
+QString size2str(unsigned int a);
+/*
 //to speed up!
 #define KInv 1./1024
+
 //const float KInv=1./1024;
+
 extern QString size2Str(unsigned int a);
 template<typename T> QString size2Str(unsigned int s)
 {
@@ -48,7 +53,7 @@ template<typename T> QString size2Str(unsigned int s)
 	}
 	return QString().sprintf("%.2f",(double)v)+unit;
 }
-
+*/
 //extern int isBigEndian();
 //extern int isLittleEndian();
 extern void swap_endian(char* buf,int type_bytes);

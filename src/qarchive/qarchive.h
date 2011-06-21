@@ -90,7 +90,7 @@ public:
 
 	virtual Error extract(const QString& archive,const QString& dir=".")=0;
 	virtual Error extract();
-	virtual int verifyChecksum(const char*)=0;
+	virtual bool verifyChecksum(const char*)=0;
 
 	virtual uint unpackedSize();
 

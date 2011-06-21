@@ -1,10 +1,18 @@
 TEMPLATE	= app
 #CONFIG		= qt warn_on release #for EZX
-#CONFIG		+= static #ezx
+CONFIG		+= #ezx#static ezx
+CONFIG		+= profile
 DESTDIR		= bin
 MOC_DIR		= .moc
 OBJECTS_DIR	= .obj
 DEFINES		+= QT_THREAD_SUPPORT
+
+#profiling
+debug:profile {
+	QMAKE_CXXFLAGS_DEBUG += -pg
+	QMAKE_LFLAGS_DEBUG += -pg
+}
+
 HEADERS		= src/QOutParser.h \
 		src/gui/ezprogressdialog.h \
 		src/gui/ezprogressdialog_p.h \
@@ -27,7 +35,8 @@ HEADERS		= src/QOutParser.h \
 		src/qop.h \
 		src/commandparser.h \
 		src/version.h \
-		src/qarchive/qarchive_p.h
+		src/qarchive/qarchive_p.h \
+		src/msgdef.h
 
 SOURCES		= src/QOutParser.cpp \
 		src/gui/ezprogressdialog.cpp \
@@ -68,7 +77,9 @@ OTHER_FILES	+= \
 		test/qop-unrar.sh \
 		test/qop-tar.sh \
 		test/7z-qop.sh \
-		test/.findqop.sh
+		test/.findqop.sh \
+		configure \
+		config.in
 
 FORMS	=
 
@@ -103,21 +114,6 @@ unix:!symbian {
 	}
 	INSTALLS += target
 }
-
-message(Qt version: $$[QT_VERSION])
-message(Qt is installed in $$[QT_INSTALL_PREFIX])
-message(Qt resources can be found in the following locations:)
-message(Documentation: $$[QT_INSTALL_DOCS])
-message(Header files: $$[QT_INSTALL_HEADERS])
-message(Libraries: $$[QT_INSTALL_LIBS])
-message(Binary files (executables): $$[QT_INSTALL_BINS])
-message(Plugins: $$[QT_INSTALL_PLUGINS])
-message(Data files: $$[QT_INSTALL_DATA])
-message(Translation files: $$[QT_INSTALL_TRANSLATIONS])
-message(Settings: $$[QT_INSTALL_SETTINGS])
-message(Examples: $$[QT_INSTALL_EXAMPLES])
-message(Demonstrations: $$[QT_INSTALL_DEMOS])
-
 
 
 unix:maemo5 {

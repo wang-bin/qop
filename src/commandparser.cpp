@@ -149,7 +149,7 @@ size_t CommandParser::archiveUnpackSize() const
 {
 	if(cmd_parser==0) return 0;
 	uint unx_size=Archive::ArcReader(qPrintable(cmd_parser->archive())).uncompressedSize();
-	ZDEBUG("Archive unpacked size: %db == %s",unx_size,qPrintable(size2Str<double>(unx_size)));
+	ZDEBUG("Archive unpacked size: %db == %s",unx_size,qPrintable(size2str(unx_size)));
 	return unx_size;
 }
 

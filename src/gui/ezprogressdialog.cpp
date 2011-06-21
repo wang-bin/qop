@@ -197,7 +197,8 @@ void EZProgressDialog::setButtonText(int index, const QString &text)
 
 ZPushButton* EZProgressDialog::button(int index) const
 {
-	EZProgressDialogPrivate *d=d_ptr;//Q_D(const EZProgressDialog);
+	Q_D(const EZProgressDialog);
+	//EZProgressDialogPrivate *d=d_ptr;
 	//if(index>=(int)d->buttons.count()) index=-1;
 	return d->buttons.at(index % d->buttons.count());//index<0 ? d->buttons.count()+index : index); //index%d->buttons.count()
 }
@@ -234,7 +235,8 @@ void EZProgressDialog::setLabelText(int index, const QString &text)
 
 QLabel* EZProgressDialog::label(int index) const
 {
-	EZProgressDialogPrivate *d=d_ptr;//Q_D(const EZProgressDialog);
+	Q_D(const EZProgressDialog);
+	//EZProgressDialogPrivate *d=d_ptr;
 	//if(index>=(int)d->buttons.count()) index=-1;
 	return d->labels.at(index % d->buttons.count());//index<0 ? d->buttons.count()+index : index);
 }
@@ -361,13 +363,9 @@ void EZProgressDialog::setLabelText(const QString &text)
 	Q_D(EZProgressDialog);
 	d->content->setText(text);
 	if(isHidden()) {
-		QString str=text;
+		QString str(text);
 		str.replace(QRegExp("\n"),"  \r");
-#if CONFIG_QT4
-		printf("\r%s",str.toLocal8Bit().constData());
-#else
-		printf("\r%s",str.latin1());
-#endif
+		fprintf(stdout, "\r%s", qPrintable(str));
 		fflush(stdout);
 		return;
 	}
@@ -392,13 +390,15 @@ void EZProgressDialog::setValue(int progress)
 	int max=d->bar->totalSteps();
 #endif //CONFIG_QT4
 	if (progress > max) {
-		if(d->autoClose) hide();
-		if(d->autoReset)
+		if(d->autoClose) hide(); //? why not close?
+		if(d->autoReset) {
+			int r = progress%max;
 #if CONFIG_QT4
-			d->bar->setValue(progress%max==0 ?max :progress%max);
+			d->bar->setValue(r==0?max:r);
 #else
-			d->bar->setProgress(progress%max==0 ?max :progress%max);
+			d->bar->setProgress(r==0?max:r);
 #endif //CONFIG_QT4
+		}
 	}
 }
 
@@ -441,8 +441,8 @@ void EZProgressDialog::timerEvent(QTimerEvent *)
 #if CONFIG_EZX
 	if(!isHidden()) adjustSize(); //for Qt2.x
 	move(pos()+qApp->desktop()->rect().center()-mapToGlobal(rect().center()));
+	//qApp->processEvents();
 #endif
-	qApp->processEvents();
 }
 
 /*void EZProgressDialog::hideEvent(QHideEvent *)

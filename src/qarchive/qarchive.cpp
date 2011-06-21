@@ -164,8 +164,8 @@ void QArchive::updateMessage()
 {
 	Q_D(QArchive);
 	estimate();
-	d->out_msg=d->current_fileName+"\n"+QObject::tr("Size: ")+size2Str<double>(d->size)+"\n"+QObject::tr("Processed: ")+size2Str<double>(d->processedSize)+d->max_str+"\n";
-	d->extra_msg=QObject::tr("Speed: ")+size2Str<double>(d->speed)+"/s\n"+QObject::tr("Elapsed: %1s Remaining: %2s").arg(d->elapsed/1000.,0,'f',1).arg(d->left,0,'f',1);
+	d->out_msg=d->current_fileName+"\n"+QObject::tr("Size: ")+size2str(d->size)+"\n"+QObject::tr("Processed: ")+size2str(d->processedSize)+d->max_str+"\n";
+	d->extra_msg=QObject::tr("Speed: ")+size2str(d->speed)+"/s\n"+QObject::tr("Elapsed: %1s Remaining: %2s").arg(d->elapsed/1000.,0,'f',1).arg(d->left,0,'f',1);
 	emit textChanged(d->out_msg+d->extra_msg);
 	qApp->processEvents();
 }
@@ -174,8 +174,8 @@ void QArchive::finishMessage()
 {
 	estimate();
 	Q_D(QArchive);
-	d->out_msg=QObject::tr("Finished: ")+QString::number(d->numFiles)+" "+QObject::tr("files")+"\n"+size2Str<double>(d->processedSize)+d->max_str+"\n";
-	d->extra_msg=QObject::tr("Speed: ")+size2Str<double>(d->processedSize/(1+d->elapsed)*1000)+"/s\n"+QObject::tr("Elapsed: %1s Remaining: %2s").arg(d->elapsed/1000.,0,'f',1).arg(d->left,0,'f',1);
+	d->out_msg=QObject::tr("Finished: ")+QString::number(d->numFiles)+" "+QObject::tr("files")+"\n"+size2str(d->processedSize)+d->max_str+"\n";
+	d->extra_msg=QObject::tr("Speed: ")+size2str(d->processedSize/(1+d->elapsed)*1000)+"/s\n"+QObject::tr("Elapsed: %1s Remaining: %2s").arg(d->elapsed/1000.,0,'f',1).arg(d->left,0,'f',1);
 	killTimer(d->tid);
 	emit finished();
 	emit textChanged(d->out_msg+d->extra_msg);
@@ -237,7 +237,7 @@ void QArchive::setArchive(const QString &name)
 #endif
 	Q_D(QArchive);
 	d->totalSize = size();
-	d->max_str=" / "+size2Str<double>(d->totalSize);
+	d->max_str=" / "+size2str(d->totalSize);
 }
 
 uint QArchive::unpackedSize()

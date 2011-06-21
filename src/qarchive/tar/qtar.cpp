@@ -35,7 +35,7 @@ bool QTar::isEndBuff(const char *buff)
 	return true;
 }
 
-int QTar::verifyChecksum(const char* p)
+bool QTar::verifyChecksum(const char* p)
 {
 	int n, u = 0;
 	for (n = 0; n < 512; ++n) {
@@ -104,7 +104,6 @@ Error QTar::extract()
 			return ChecksumError;
 		}
 
-		filesize = parseOct(buff + 124, 12);
 		switch (buff[156]) {
 		case Header::LinkFlag::kLink :			printf(" Ignoring hardlink %s\n", buff); break;
 		case Header::LinkFlag::kSymbolicLink :	printf(" Ignoring symlink %s\n", buff); break; /////////////////////////
@@ -121,6 +120,7 @@ Error QTar::extract()
 		}
 
 		++d->numFiles;
+		filesize = parseOct(buff + 124, 12);
 		d->size = filesize;
 #if USE_SLOT
 		updateMessage();

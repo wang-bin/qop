@@ -16,7 +16,7 @@ public:
 	bool isEndBuff(const char*);
 	Error extract(const QString& archive,const QString& dir=".");
 	Error extract();
-	int verifyChecksum(const char*);
+	bool verifyChecksum(const char*);
 	uint unpackedSize();
 
 };

@@ -54,3 +54,11 @@ extracting a tar.gz file for new version(>=0.1.0):
 	tar zxvvf test.tar.gz |qop -x test.tar.gz
 
 
+How To Compile:
+1.Desktop and Maemo: Just use QtCreator.
+2.EZX: Use tmake. Or use my configure script. Type
+./configure
+make
+make pkg
+More information about configue script can be got by ./configure --help
+

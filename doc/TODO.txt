@@ -1,5 +1,9 @@
 -T does not work
 
+BUG: EZProgressDialog::resizeButtons() is called for many times
+Profiling
+减少QString::operator+(), add macros for msg, extra_msg, using QString().sprintf()// or QString::arg() return &
+
 KArchive
 in another program:
 compressProcess->setOutputProcess(qopProcess)
@@ -36,9 +40,6 @@ file permisson
 
 FIXME:
 -C command: sometimes taroutparser unit error
-timer stop when paused
-
-class CommadParser --- version 0.2.0
 
 libqop.so
 
@@ -62,7 +63,6 @@ Change macros to typedef!
 
 ISO Edit (ISOMaster)
 Archieve Mounter
-Pause
 
 Endian: busybox/include/platform.h
 kill 7z in Windows

@@ -59,5 +59,12 @@ usage: qop [-t parserFor] [-n|s] [-chm] [-x archieve|-T totalSteps] [files...]
 	tar zxvvf test.tgz test |qop -x test.tgz
 
 
+如何编译:
+1.桌面或Maemo: 使用QtCreator
+2.EZX: 使用tmake或我写的configure脚本。输入
+./configure
+make
+make pkg
+configure更多的使用方法请./configure --help
 
 大家觉得好用的话给我的qt-apps project点下good! thx!

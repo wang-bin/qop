@@ -278,8 +278,7 @@ void Qop::readStdOut()
 */
 #if CONFIG_QT4 || CONFIG_QT3
 	while(process->canReadLine()) {
-		const char* line = process->readLine().constData();
-		parser->parseLine(line);
+		parser->parseLine(process->readLine().constData());
 		//qDebug("stdout: %s",line);
 	}
 #endif

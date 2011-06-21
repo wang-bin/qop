@@ -26,20 +26,43 @@
 	a=h*b+r, b=2^(10*i)=2^n, r=a-h*b=a-(h<<n)
 	(int)r*10^k/b,t=(100*(a-(h<<n)))>>n;
 */
-//slower
-const QString unit[3]={"b","Kb","Mb"};
-QString size2Str(uint a)
+//slower ?
+const double K2Ki = 1000.0/1024.0;
+const char* const unit[]={"b", "Kb", "Mb", "Gb"};
+//static char ss[11]; //abcd.efg Mb
+//snprintf is not supported in MSVC, use _snprintf
+#define KiMask ((~0)^(0x400-1)) //0x400==1024, 0x400-1==111111111, KiMask==111...11000000000
+const unsigned int kMask[] = {0, (~0)^0x3ff, (~0)^((1<<20)-1), (~0)^((1<<30)-1)};
+const unsigned int iMask[] = { 0, (1<<10)-1, (1<<20)-1, (1<<30)-1};//, (1<<40)-1}; //To large
+const unsigned int iShift[] = { 0, 10, 20, 30, 40};
+/*!
+	a = a0+a1*1024+a2*1024^2+...+an*1024^n
+	q = an, r = a-an*1024^n
+	rr = (a&iMask[n])/(1024^n)*1000 == (a&iMask[n])/(1024^(n-1))*(1000/1024) ==(a&iMask[n])>>iShift[n-1]*K2Ki;
+*/
+
+QString size2str(unsigned int a)
 {
-	uint h=a;
-	int n=0,i=0;
-	while(h>=1024) {
-		h>>=10;
-		n+=10;
-		++i;
-	}
-	return QString("%1.%2 ").arg(h).arg((100*(a-(h<<n)))>>n)+unit[i];
+	int i=0;
+#if 1
+	//unsigned int q=a;
+	//for(;q&KiMask;q>>=10,++i); //for(;q>=1024;q>>=10,++i);
+	while(a&kMask[++i]); --i;
+#else
+	while(a>>ishift[++i]); --i;//q>>=iShift[--i];
+#endif
+	unsigned int r = ((a&iMask[i])>>iShift[i-1])*K2Ki; //(unsigned int)((a&iMask[i])*K2Ki)>>iShift[i-1];
+	static char ss[11];
+	if(r>100)
+		_snprintf(ss, 11, "%d.%d%s", a>>iShift[i], r, unit[i]);
+	else if(r>10)
+		_snprintf(ss, 11, "%d.0%d%s", a>>iShift[i], r, unit[i]);
+	else if(r>0)
+		_snprintf(ss, 11, "%d.00%d%s", a>>iShift[i], r, unit[i]);
+	else
+		_snprintf(ss, 11, "%d%s", a>>iShift[i], unit[i]);
+	return ss;
 }
-//faster
 
 
 

@@ -1,0 +1,313 @@
+#! /bin/sh
+##auther wangbin
+#todo: destdir
+version=1.7.0
+show_help(){
+cat <<_ACEOF
+\`configure' configures EZX programming project in simply.
+writed by wangbin. Version $version, 2011-06-19
+
+Usage: $0 [OPTION]... [VAR=VALUE]...
+
+Configuration:
+  --help                  display this help and exit
+  --version               display version information and exit
+  --target=TARGET             app name to be created
+  --destdir=DESTDIR		  app's dir
+  --mocdir=MOC_DIR		  moc_xxx.cpp dir (defalut is .moc/ezx)
+  --objdir=OBJECTS_DIR		  object dir (defalut is .obj/ezx)
+  --pro=PROJ              project name ( e.g. player.pro). default is the same as TARGET
+  --appversion=APPVERSION app version to be write into TARGET.desktop
+  --language+=langs   append translations in project file to generare ts files.
+  --i18ndir=I18N_DIR        ts and qm files' dir. (default is i18n)
+  --platform=[e6,a1200]      Platform that this app support. default is e6.
+                          (.e.g. --language+=en-us.ts,zh-cn.ts). zh-cn is default.
+  --lupdate=[yes,no]      run lupdate when after run make. default is yes
+  --lib+=LIBADD           add LIBADD in Make file. ( .e.g --lib+=jpeg
+                          or mutil-libs like --lib+=jpeg,png )
+  --libdir+=LIBDIR		  add lib dirs
+  --incdir+=INCDIR       add include dirs (e.g. --incdir+=libjpeg,libmad)
+  --def+=DEF
+
+WARBING: dir can not contain "/" in this version
+_ACEOF
+
+exit
+}
+
+##setup default value
+sed -i "s/\(^LUPDATE=\).*/\1yes/" config.in
+
+##load the vars
+. ./config.in
+oldproj=$PROJ
+olddest=$TARGET
+langs=$LANGS
+addedlibs=$LIBSNEW
+addedlibdirs=$LIBDIRNEW
+addedincdirs=$INCLUDE
+adddefs=$DEFINES
+platform=
+
+##parse the arguments
+for opt in $@
+do
+  [ -z $optset ] && optset=`expr "$opt" : '\(.*\)=.*'`
+  [ -z $optset ] && optset=$opt && optarg=yes
+
+  case $opt in
+  *=*)
+  	optarg=`expr "X$opt" : '[^=]*=\(.*\)'`
+  	;;
+  esac
+
+##  echo $optset
+  case $optset in
+  --target)
+	sed -i "s/\(^TARGET=\).*/\1$optarg/" config.in
+    ;;
+	
+  --destdir)
+	sed -i "s/\(^DESTDIR=\).*/\1$optarg/" config.in
+    ;;
+	
+  --mocdir)
+	sed -i "s/\(^MOC_DIR=\).*/\1$optarg/" config.in
+    ;;
+	
+  --objdir)
+	sed -i "s/\(^OBJECTS_DIR=\).*/\1$optarg/" config.in
+    ;;
+
+  --pro)
+    sed -i "s/\(^PROJ=\).*/\1$optarg/" config.in
+    ;;
+
+  --appversion)
+    sed -i "s/\(^APPVERSION=\).*/\1$optarg/" config.in
+    ;;
+
+  --lib+)
+    addedlibs=$addedlibs,$optarg
+    ;;
+
+ --libdir+)
+    [ -z $addedlibdirs ] && addedlibdirs=$optarg || addedlibdirs="$addedlibdirs,$optarg"
+    ;;
+
+ --incdir+)
+    addedincdirs="$addedincdirs,$optarg"
+    ;;
+
+ --def+)
+    [ -z $adddefs ] && adddefs=$optarg ||adddefs="$adddefs,$optarg"
+    ;;
+
+  --language+)
+    [ -z $LANGS ] && addedlangs=$optarg ||addedlangs=$addedlangs,$optarg
+    echo $addedlangs
+    langs="$langs,$addedlangs"
+    sed -i "s/\(^LANGS=\).*/\1$addedlangs/" config.in
+    ;;
+  --i18ndir)
+    sed -i "s/\(^I18N_DIR=\).*/\1$optarg/" config.in
+    ;;
+  --lupdate)
+    sed -i "s/\(^LUPDATE=\).*/\1$optarg/" config.in
+    ;;
+
+  --help)
+    show_help
+    ;;
+
+  --version)
+    echo configure Version: "$version"
+    exit
+   ;;
+   
+  --platform)
+  	platform=$optarg
+  	sed -i "s/\(^PLATFORM=\).*/\1$optarg/" config.in
+    ;;
+    
+  --lib)
+  	addedlibs=$optarg
+    ;;
+    
+  --language)
+    addedlangs=$optarg
+    langs=$addedlangs
+    sed -i "s/\(^LANGS=\).*/\1$addedlangs/" config.in
+    ;;
+
+esac
+optset=
+done
+
+
+##load vars again 载入变量
+. ./config.in
+
+
+rm -f `find ./ -name \*~`
+
+
+###global setting header file for the project -f needed
+:<<BLOCK
+test -e config.h && rm -f config.h
+
+echo creating config.h...
+cat >>config.h<<EOF
+//#define EZX
+#define APP "$TARGET"
+
+EOF
+BLOCK
+
+if [ ! -d mpkg ]; then
+	echo creating mpkg directory...
+	mkdir -p mpkg
+fi
+
+test -d mpkg/$TARGET || echo "creating mpkg/$TARGET" && mkdir -p mpkg/$TARGET
+test -d mpkg/$TARGET/i18n || mkdir -p mpkg/$TARGET/i18n
+
+if [ ! -f mpkg/$TARGET/$TARGET.desktop ]; then
+echo creating desktop needed by mpkg...
+
+cat >>mpkg/$TARGET/$TARGET.desktop<<EOF
+[Desktop Entry]
+BigIcon = icon-big.png
+Category = Office
+Comment = $TARGET `date`
+Description =  $TARGET
+Distributor = R
+Domain = T
+Exec = $TARGET
+EzXApp-Certificate-1-1 =
+Icon = icon-sm.png
+MimeType = Application
+Name = $TARGET
+OsVersion = 1.0
+Region = prc
+Shared = 1
+Size =
+Type = Application
+Vendor = Wangbin
+Version = $APPVERSION
+Name[en_US] = $TARGET
+
+EOF
+fi
+
+
+echo creating projectfile...
+rm -f $oldproj
+progen -o $PROJ
+
+echo $adddefs
+if [ "$platform" = "a1200" ];then
+	adddefs="$adddefs,EZX_A1200"
+elif [ "$platform" = "e6" ];then
+	adddefs="$adddefs,EZX_E6"
+fi
+
+[ -z $DESTDIR ] && DESTDIR=bin
+echo "DESTDIR = $DESTDIR"
+echo "DESTDIR = $DESTDIR" >>$PROJ
+[ -z $MOC_DIR ] && MOC_DIR=.moc/ezx
+echo "MOC_DIR = $MOC_DIR"
+echo "MOC_DIR = $MOC_DIR" >>$PROJ
+[ -z $OBJECTS_DIR ] && OBJECTS_DIR=.obj/ezx
+echo "OBJECTS_DIR = $OBJECTS_DIR"
+echo "OBJECTS_DIR = $OBJECTS_DIR" >>$PROJ
+#echo "added defs are: " $adddefs
+if [ ! -z $adddefs ];then
+  adddefs=`echo $adddefs |sed 's/,/ /g'`
+  echo adding defines... $adddefs
+  echo DEFINES			+= $adddefs >>$PROJ
+fi
+if [ ! -z $addedincdirs ];then
+  addedincdirs=`echo $addedincdirs |sed 's/,/ -I/g'`
+  echo adding include dirs... $addedincdirs
+  echo INCLUDEPATH	+= $addedincdirs >>$PROJ
+fi
+
+if [ ! -z $addedlibs ];then
+  addedlibs=`echo -l$addedlibs |sed 's/,/ -l/g'`
+  echo adding librarys...  $addedlibs
+  [ ! -z $addedlibdirs ] && addedlibdirs=`echo -L$addedlibdirs |sed 's/,/ -L/g'` && echo adding library dirs...  $addedlibdirs
+  echo LIBS            += $addedlibdirs $addedlibs >>$PROJ
+fi
+
+
+##echo TRANSLATIONS += $TARGET"_zh-cn.ts" >>$PROJ
+##[ -n $addedlangs ] is wrong
+
+echo adding languages...
+langs=`echo $I18N_DIR\/$TARGET\_$langs |sed "s/,/\.ts $I18N_DIR\/$TARGET"_"/g"`
+langs=$langs\.ts
+echo $langs
+echo TRANSLATIONS += $langs >>$PROJ
+#echo TRANSLATIONS += $TARGET"_zh-cn.ts" $TARGET"_zh-hk.ts" $addedlangs >>$PROJ
+:<<EOF
+echo creating Makefile...
+if [ "$platform" = "a1200" ];then
+export TMAKEPATH=/home/ezxsdk/tmake-1.8/lib/qws/linux-montavista-a1200-g++
+else
+export TMAKEPATH=/home/ezxsdk/tmake-1.8/lib/qws/linux-montavista-g++
+fi
+EOF
+tmake $PROJ  -o Makefile
+
+if [ $LUPDATE = yes ]; then
+  sed -i 's/all: \$(TARGET)$/all: \$(TARGET) strip ts/' Makefile
+else
+  sed -i 's/all: \$(TARGET)$/all: \$(TARGET) strip/' Makefile
+fi
+
+sed -i 's/-rm -f \*~/-rm -f \`find .\/ -name \\*~\`/' Makefile
+:<<BLOCK
+
+if [ ! -z $addedlibs ];then
+  echo adding librarys...
+  addedlibs=`echo -l$addedlibs |sed 's/,/ -l/g'`
+  sed -i "s/\(^LIBS.*\)/\1 $addedlibs/" Makefile
+fi
+
+if [ ! -z $addedlibdirs ];then
+  echo adding library dirs...
+  addedlibdirs=`echo -L$addedlibdirs |sed 's/,/ -L/g'`
+  sed -i "s/\(^LIBS.*\)/\1 $addedlibdirs/" Makefile
+fi
+
+BLOCK
+
+cat >>Makefile<<EOF
+strip:
+	cp \$(TARGET) \$(TARGET)_unstripped
+	-arm-linux-strip \$(TARGET)
+backup:
+	-tar -jcvf \$(TARGET)_src.tar.bz2 \$(HEADERS) \$(SOURCES)
+
+##error why?: ! [ -d mpkg ] && 
+pkg:
+	@[ -d mpkg ] || mkdir -p mpkg
+	-cp -u \$(TARGET) mpkg/\$(TARGET)/
+	-cp -u $I18N_DIR/\$(TARGET)_*.qm mpkg/\$(TARGET)/$I18N_DIR
+	-cp -auf doc mpkg/\$(TARGET)/
+	-cp -u gpl-2.0.txt mpkg/\$(TARGET)/
+	cd mpkg; tar -zcvf \$(TARGET).mpkg \$(TARGET)
+	@echo Warning: The mpkg created on the computer might can\'t be installed correctly. Make mpkg on your phone if it happens!
+
+EOF
+
+if [ $LUPDATE = yes ]; then
+cat >>Makefile<<EOF
+ts:
+	@[ -d $I18N_DIR ] || mkdir -p $I18N_DIR
+	-lupdate $PROJ
+
+EOF
+fi
+
