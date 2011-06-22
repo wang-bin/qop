@@ -34,6 +34,7 @@
 #include "qop.h"
 #include "option.h"
 #include "version.h"
+//#include "msgdef.h"
 
 static const char *appName=(char*)malloc(64);
 //static char appName[64]={};
@@ -95,7 +96,7 @@ int main(int argc, char *argv[])
 #endif //CONFIG_EZX
 	ZDEBUG("system language: %s",qPrintable(sysLang));
 	a.installTranslator(&appTranslator);
-
+	//Need QtTranslator
 
 	Qop qop;
 #if !CONFIG_QT4

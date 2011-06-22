@@ -151,7 +151,11 @@ typedef int Alignment;
 
 #if !CONFIG_QT4
 
-#define qPrintable(qstr) qstr.local8Bit().data()
+//#define qPrintable(qstr) qstr.local8Bit().data()
+inline const char* qPrintable(const QString& qstr)
+{
+	return qstr.local8Bit().data();
+}
 
 template <typename ForwardIterator> void qDeleteAll(ForwardIterator begin, ForwardIterator end)
 {

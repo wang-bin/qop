@@ -129,6 +129,7 @@
 #include <qsocketnotifier.h>
 
 #include "util.h"
+#include "msgdef.h"
 
 #define MAX 1024
 
@@ -170,6 +171,7 @@ QOutParser::QOutParser(uint total):QObject(0),file(""),size(0),compressed(0),val
 	,_out(""),_extra(tr("Calculating...")),_elapsed(0),_left(0),max_value(total),res(Unknow) \
 	,count_type(QCounterThread::Size),multi_thread(false),_recount(true)
 {
+	initTranslations();
 	res_tmp=res;
 	//first=true;
 	_time.start();
@@ -217,27 +219,30 @@ void QOutParser::parseLine(const char* line)
 		qApp->processEvents();
 
 	if(res==Detail) {
-		_out=file+"\n"+tr("Size: ")+size2str(size)+"\n"+tr("Processed: ")+size2str(value)+max_str+"\n";
-		_extra=tr("Speed: ")+size2str(_speed)+"/s\n"+tr("Elapsed: %1s Remaining: %2s").arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1);
+		_out = g_BaseMsg_Detail(file, size, value, max_str);
+		_extra = g_ExtraMsg_Detail(_speed, _elapsed, _left);
+		//_out = file+"\n"+g_processed_tr+size2str(size)+"\n"+tr("Processed: ")+size2str(value)+max_str+"\n";
+		//_extra=tr("Speed: ")+size2str(_speed)+"/s\n"+tr("Elapsed: %1s Remaining: %2s").arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1);
 	} else if(res==Simple) {
-		_out=file+"\n"+tr("Processed: ")+QString::number(++value)+max_str+tr("files")+"\n";// .arg(_elapsed/1000.,0,'f',1).arg(++value).arg(max_str);
-		_extra=tr("Speed: ")+QString::number(_speed)+"/s\n"+tr("Elapsed: %1s Remaining: %2s").arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1);
+		_out = g_BaseMsg_Simple(file, ++value, max_str);
+		_extra = g_ExtraMsg_Simple(_speed, _elapsed, _left);
+		//_out=file+"\n"+tr("Processed: ")+QString::number(++value)+max_str+tr("files")+"\n";// .arg(_elapsed/1000.,0,'f',1).arg(++value).arg(max_str);
+		//_extra=tr("Speed: ")+QString::number(_speed)+"/s\n"+tr("Elapsed: %1s Remaining: %2s").arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1);
 		//_extra=tr("Elapsed: %1s Processed: %2%3 files").arg(_elapsed/1000.,0,'f',1).arg(++value).arg(max_str);
 	} else if(res==DetailWithRatio) {
-		_out=file+"\n"+tr("Size: ")+size2str(size)+"  "+tr("Ratio: ")+ratio+"\n"+tr("Processed: ")+size2str(value)+max_str+"\n";
-		_extra=tr("Speed: ")+size2str(_speed)+"/s\n"+tr("Elapsed: %1s Remaining: %2s").arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1);
+		_out = g_BaseMsg_Zip(file, size, ratio, value, max_str);
+		_extra = g_ExtraMsg_Zip(_speed, _elapsed, _left);
+		//_out=file+"\n"+tr("Size: ")+size2str(size)+"  "+tr("Ratio: ")+ratio+"\n"+tr("Processed: ")+size2str(value)+max_str+"\n";
+		//_extra=tr("Speed: ")+size2str(_speed)+"/s\n"+tr("Elapsed: %1s Remaining: %2s").arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1);
 	} else if(res==Unknow) {
-		//res=res_tmp;
 		puts(line);
 		fflush(stdout);
-		return;//continue;
+		return;
 	} else if(res==Error) {
-	    //res=res_tmp;
 		puts(line);
 		_out=tr("Password Error!");
 		_extra="";
 	} else {
-	    //res=res_tmp;
 		_out=line;
 		_extra="";
 	}

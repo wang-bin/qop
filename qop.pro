@@ -7,7 +7,7 @@ MOC_DIR		= .moc
 OBJECTS_DIR	= .obj
 DEFINES		+= QT_THREAD_SUPPORT
 
-#profiling
+#profiling, -pg is not supported for msvc
 debug:profile {
 	QMAKE_CXXFLAGS_DEBUG += -pg
 	QMAKE_LFLAGS_DEBUG += -pg
@@ -27,7 +27,6 @@ HEADERS		= src/QOutParser.h \
 		src/qarchive/tar/qtar.h \
 		src/qarchive/tar/TarItem.h \
 		src/qarchive/tar/TarHeader.h \
-		src/algorithm/zlib_alg.h \
 		src/qarchive/zip/ZipHeader.h \
 		src/qarchive/gzip/GzipHeader.h \
 		src/qarchive/gzip/GzipItem.h \
@@ -47,7 +46,6 @@ SOURCES		= src/QOutParser.cpp \
 		src/option.cpp \
 		src/qarchive/qarchive.cpp \
 		src/qarchive/tar/qtar.cpp \
-		src/algorithm/zlib_alg.cpp \
 		src/qarchive/zip/ZipHeader.cpp \
 		src/qarchive/gzip/GzipItem.cpp \
 		src/Compress/BitlDecoder.cpp \
