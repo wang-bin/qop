@@ -197,8 +197,8 @@ void EZProgressDialog::setButtonText(int index, const QString &text)
 
 ZPushButton* EZProgressDialog::button(int index) const
 {
-	Q_D(const EZProgressDialog);
-	//EZProgressDialogPrivate *d=d_ptr;
+	//Q_D(const EZProgressDialog);  //Failed in qt2
+	EZProgressDialogPrivate *d=d_ptr;
 	//if(index>=(int)d->buttons.count()) index=-1;
 	return d->buttons.at(index % d->buttons.count());//index<0 ? d->buttons.count()+index : index); //index%d->buttons.count()
 }
@@ -235,8 +235,8 @@ void EZProgressDialog::setLabelText(int index, const QString &text)
 
 QLabel* EZProgressDialog::label(int index) const
 {
-	Q_D(const EZProgressDialog);
-	//EZProgressDialogPrivate *d=d_ptr;
+	//Q_D(const EZProgressDialog); //Failed in qt2
+	EZProgressDialogPrivate *d=d_ptr;
 	//if(index>=(int)d->buttons.count()) index=-1;
 	return d->labels.at(index % d->buttons.count());//index<0 ? d->buttons.count()+index : index);
 }

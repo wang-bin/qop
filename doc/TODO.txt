@@ -1,5 +1,6 @@
 -T does not work
 
+//todo use windows api get dir
 BUG: EZProgressDialog::resizeButtons() is called for many times
 Profiling
 减少QString::operator+(), add macros for msg, extra_msg, using QString().sprintf()// or QString::arg() return &

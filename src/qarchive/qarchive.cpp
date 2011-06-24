@@ -242,7 +242,7 @@ void QArchive::setArchive(const QString &name)
 #endif
 	Q_D(QArchive);
 	d->totalSize = size();
-	d->max_str=" / "+size2str(d->totalSize);
+	d->max_str=QString(" / %1").arg(size2str(d->totalSize));
 }
 
 uint QArchive::unpackedSize()

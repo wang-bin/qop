@@ -374,7 +374,7 @@ void QOutParser::setTotalSize(int s)
 	emit maximumChanged(max_value=s);
 	//qApp->processEvents();
 	estimate();
-	if(count_type==QCounterThread::Size) max_str=" / "+size2str(max_value);
+	if(count_type==QCounterThread::Size) max_str=QString(" / %1").arg(size2str(max_value));
 	else max_str=" / "+QString::number(max_value)+" ";
 #ifndef NO_EZX
 	//ZDEBUG("TS: %d time: %d",max_value,_time.elapsed());

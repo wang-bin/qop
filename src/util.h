@@ -23,21 +23,19 @@
 #define ROUND512(x) (((x)+0x1ff) & (~0x1ff))  // ((((x)+511)>>9)<<9)
 #define ROUND2P(x,p) ((((x)+(2<<(p))-1)>>p)<<p)
 
-#include <qstring.h>
 #include <stdio.h>
+#include <cstring>
+#include <typeinfo>
 
 
-QString size2str(unsigned int a);
-/*
+char* size2str(unsigned int a);
 //to speed up!
 #define KInv 1./1024
-
 //const float KInv=1./1024;
-
-extern QString size2Str(unsigned int a);
-template<typename T> QString size2Str(unsigned int s)
+template<typename T> inline
+char* size2str(unsigned int s)
 {
-	QString unit("b");
+	static const char *unit = "b";
 	T v=(T)s;
 	if(v>(T)1024) {
 		v*=KInv; //v/=1024;
@@ -51,9 +49,14 @@ template<typename T> QString size2Str(unsigned int s)
 		v*=KInv;
 		unit="G";
 	}
-	return QString().sprintf("%.2f",(double)v)+unit;
+	static char ss[10];
+	//if(typeid(T)==typeid(double) || typeid(T)==typeid(float))
+		sprintf(ss, "%.2f%s", v, unit);
+	//else
+		//sprintf(ss, "%d%s", v, unit);
+	return ss;
 }
-*/
+
 //extern int isBigEndian();
 //extern int isLittleEndian();
 extern void swap_endian(char* buf,int type_bytes);
@@ -121,10 +124,8 @@ inline void copyUShort(unsigned char *dest, const unsigned char *src)
 }
 
 namespace UTIL {
-
-
-//sleep和usleep都已经obsolete，建议使用nanosleep代替
-void qSleep(int ms);
-void qWait(int ms);
+	//sleep和usleep都已经obsolete，建议使用nanosleep代替
+	void qSleep(int ms);
+	void qWait(int ms);
 } //nameespace UTIL
 #endif // UTIL_H

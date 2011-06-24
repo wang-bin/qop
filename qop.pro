@@ -13,6 +13,14 @@ debug:profile {
 	QMAKE_LFLAGS_DEBUG += -pg
 }
 
+harmattan {
+warning(harmattan)
+}
+
+meego {
+warning(meego)
+}
+
 HEADERS		= src/QOutParser.h \
 		src/gui/ezprogressdialog.h \
 		src/gui/ezprogressdialog_p.h \
@@ -21,7 +29,6 @@ HEADERS		= src/QOutParser.h \
 		src/util.h \
 		src/qarchive/arcreader.h \
 		src/option.h \
-		src/qany.h \
 		src/Types.h \
 		src/qarchive/qarchive.h \
 		src/qarchive/tar/qtar.h \
@@ -77,7 +84,13 @@ OTHER_FILES	+= \
 		test/7z-qop.sh \
 		test/.findqop.sh \
 		configure \
-		config.in
+		config.in \
+    qtc_packaging/debian_harmattan/rules \
+    qtc_packaging/debian_harmattan/README \
+    qtc_packaging/debian_harmattan/copyright \
+    qtc_packaging/debian_harmattan/control \
+    qtc_packaging/debian_harmattan/compat \
+    qtc_packaging/debian_harmattan/changelog
 
 FORMS	=
 

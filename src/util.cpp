@@ -33,7 +33,7 @@ const char* const unit[]={"b", "Kb", "Mb", "Gb"};
 //snprintf is not supported in MSVC, use _snprintf
 #define KiMask ((~0)^(0x400-1)) //0x400==1024, 0x400-1==111111111, KiMask==111...11000000000
 const unsigned int kMask[] = {0, (~0)^0x3ff, (~0)^((1<<20)-1), (~0)^((1<<30)-1)};
-const unsigned int iMask[] = { 0, (1<<10)-1, (1<<20)-1, (1<<30)-1};//, (1<<40)-1}; //To large
+const unsigned int iMask[] = { 0, (1<<10)-1, (1<<20)-1, (1<<30)-1};//, (1UL<<40)-1}; //To large
 const unsigned int iShift[] = { 0, 10, 20, 30, 40};
 /*!
 	a = a0+a1*1024+a2*1024^2+...+an*1024^n
@@ -41,7 +41,10 @@ const unsigned int iShift[] = { 0, 10, 20, 30, 40};
 	rr = (a&iMask[n])/(1024^n)*1000 == (a&iMask[n])/(1024^(n-1))*(1000/1024) ==(a&iMask[n])>>iShift[n-1]*K2Ki;
 */
 
-QString size2str(unsigned int a)
+#if __GNUC__
+#define _snprintf snprintf
+#endif
+char* size2str(unsigned int a)
 {
 	int i=0;
 #if 1
