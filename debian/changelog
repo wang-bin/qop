@@ -1,0 +1,9 @@
+qop (0.2.8) stable; urgency=low
+
+  * Add uncomplete zip, unzip, unrar support for -C option. See help-en_US.txt.
+
+ -- Wang Bin <wbsecg1@gmail.com>  Thu, 19 Apr 2011 21:41:55 +0800
+
+  * Initial Release.
+
+ -- Wang Bin <wbsecg1@gmail.com>  Thu, 14 Apr 2011 10:08:20 +0800

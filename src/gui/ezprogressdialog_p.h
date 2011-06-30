@@ -92,7 +92,7 @@ public:
 		delete labelLayout;
 		delete buttonLayout;
 		delete bar;
-		delete q_ptr;
+		//delete q_ptr; //Memory error!
 	}
 
 

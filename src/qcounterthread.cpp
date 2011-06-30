@@ -46,7 +46,7 @@ void QCounterThread::run()
 
 uint QCounterThread::numOfFilesNoDir(const QStringList& list)
 {
-	QString name;
+	QString name; //static
 	for(QStringList::ConstIterator it = list.begin();it != list.end(); ++it) {
 		name=*it;
 		if ((*it != ".") && (*it != "..")) {

@@ -13,14 +13,6 @@ debug:profile {
 	QMAKE_LFLAGS_DEBUG += -pg
 }
 
-harmattan {
-warning(harmattan)
-}
-
-meego {
-warning(meego)
-}
-
 HEADERS		= src/QOutParser.h \
 		src/gui/ezprogressdialog.h \
 		src/gui/ezprogressdialog_p.h \
@@ -85,12 +77,12 @@ OTHER_FILES	+= \
 		test/.findqop.sh \
 		configure \
 		config.in \
-    qtc_packaging/debian_harmattan/rules \
-    qtc_packaging/debian_harmattan/README \
-    qtc_packaging/debian_harmattan/copyright \
-    qtc_packaging/debian_harmattan/control \
-    qtc_packaging/debian_harmattan/compat \
-    qtc_packaging/debian_harmattan/changelog
+		qtc_packaging/debian_harmattan/rules \
+		qtc_packaging/debian_harmattan/README \
+		qtc_packaging/debian_harmattan/copyright \
+		qtc_packaging/debian_harmattan/control \
+		qtc_packaging/debian_harmattan/compat \
+		qtc_packaging/debian_harmattan/changelog
 
 FORMS	=
 
@@ -120,6 +112,13 @@ unix:!symbian {
 		OBJECTS_DIR	= .obj/maemo5
 		DEFINES         += CONFIG_MAEMO
 		target.path = /opt/usr/bin
+	} else:maemo6 {
+		warning(harmattan)
+		TARGET = qop-maemo6
+		#DESTDIR		= package
+		MOC_DIR		= .moc/maemo6
+		OBJECTS_DIR	= .obj/maemo6
+		DEFINES         += CONFIG_MAEMO
 	} else {
 		target.path = /usr/local/bin
 	}
