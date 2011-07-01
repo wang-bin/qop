@@ -1,3 +1,5 @@
+pipe mode is suck!
+
 -T does not work
 
 //todo use windows api get dir
