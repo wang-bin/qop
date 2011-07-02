@@ -131,8 +131,6 @@
 #include "util.h"
 #include "msgdef.h"
 
-#define MAX 1024
-
 QOutParser* getParser(const QString& type)
 {
 #if CONFIG_QT4
@@ -178,14 +176,11 @@ QOutParser::QOutParser(uint total):QObject(0),file(""),size(0),compressed(0),val
 	connect(this,SIGNAL(finished()),SLOT(slotFinished()));
 	connect(&counter,SIGNAL(maximumChanged(int)),SLOT(setTotalSize(int)));
 	connect(this,SIGNAL(unitChanged()),SLOT(slotResetUnit()));
-#if NO_SOCKET
-		QSocketNotifier *stdin_notifier=new QSocketNotifier(STDIN_FILENO,QSocketNotifier::Read,this);
-		ZDEBUG("SocketNotifier is enabled: %d",socket_notifier->isEnabled());
-		connect(stdin_notifier,SIGNAL(activated(int)),SLOT(readFromFile(int)));
-
-		initTimer();
+#if !NO_SOCKET
+	QSocketNotifier *stdin_notifier=new QSocketNotifier(STDIN_FILENO,QSocketNotifier::Read,this);
+	connect(stdin_notifier,SIGNAL(activated(int)),SLOT(readFromSocket(int)));
+	initTimer();
 #endif
-
 }
 
 QOutParser::~QOutParser()
@@ -252,22 +247,24 @@ void QOutParser::initTimer()
 	_time.restart();
 	tid=startTimer(300); //startTimer(0) error in ezx
 }
-
-void QOutParser::readFromFile(FILE* fp)
+#if !NO_SOCKET
+#include <qfile.h>
+void QOutParser::readFromSocket(int socket)
 {
-	if(fp!=stdin) {
-		ZDEBUG("Data not from stdin...");
-		return;
-	}
-	fread(line, 1024, 1, stdin);
-	//read(STDIN_FILENO, line, 1024);
-	//parseLineByLine(line);
+	ZDEBUG();
+	QSocketNotifier *sn = qobject_cast<QSocketNotifier*>(sender());
+	sn->setEnabled(false);
+	QFile f;
+	f.open(socket, QIODevice::ReadOnly);
+	f.readLine(line, LINE_LENGTH_MAX);
+	sn->setEnabled(true);
+	parseLine(line);
 }
-
+#endif
 void QOutParser::start() {
 	initTimer();
 	//read(STDIN_FILENO,buf,SIZE))
-	while(fgets(line,MAX,stdin)) {
+	while(fgets(line,LINE_LENGTH_MAX,stdin)) {
 			res_tmp=res;
 			parseLine(line);
 			if(res!=res_tmp)

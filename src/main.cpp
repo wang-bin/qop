@@ -34,10 +34,8 @@
 #include "qop.h"
 #include "option.h"
 #include "version.h"
-//#include "msgdef.h"
 
 static const char *appName=(char*)malloc(64);
-//static char appName[64]={};
 const QString program="qop";
 
 void printHelp()
@@ -69,7 +67,7 @@ void printHelp()
 int main(int argc, char *argv[])
 {
 	appName=getFileName(argv[0]);
-	qDebug("%s %s (%s, %s)",APP_NAME,APP_VERSION_STR,__DATE__,__TIME__);
+	qDebug("%s %s (%s, %s)", APP_NAME, APP_VERSION_STR, __DATE__, __TIME__);
 
 	opts_t options=opts_parse(argc,argv);
 
@@ -133,7 +131,9 @@ int main(int argc, char *argv[])
 			qop.parser->setMultiThread(options->multi_thread);
 			qop.parser->startCounterThread();
 		}
+#if NO_SOCKET
 		qop.parser->start();
+#endif
 	}
 #if CONFIG_EZX
 	a.processEvents();

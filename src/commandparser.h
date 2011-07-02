@@ -42,9 +42,9 @@ class QCounterThread;
 class CommandParser
 {
 public:
-	enum CountType {
+	typedef enum {
 			Size=0x0, Num=0x1, NumNoDir=0x3
-	};
+	} CountType;
 
 	CommandParser();
 	CommandParser(const QString& cmd);

@@ -1,4 +1,4 @@
-pipe mode is suck!
+QSocketNotifier is suck!
 
 -T does not work
 

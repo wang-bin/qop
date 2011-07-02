@@ -21,13 +21,17 @@
 #define QOUTPARSER_H
 
 #define OP_TEMPLATE 0
+#define LINE_LENGTH_MAX 1024
+#define NO_SOCKET 1
 
 #include "global.h"
 #include "qcounterthread.h"
 #include <qobject.h>
 #include <qdatetime.h>
 
-enum Format { All,Simple, Detail, DetailWithRatio, EndZip,End7z, Error, Unknow }; //Format
+typedef enum {
+	All,Simple, Detail, DetailWithRatio, EndZip,End7z, Error, Unknow
+} Format;
 
 class QOutParser;
 extern "C" QOutParser* getParser(const QString& type="tar");
@@ -57,9 +61,10 @@ public slots:
 
 private slots:
 	void slotFinished();
-	void readFromFile(FILE* fp);
 	void slotResetUnit();
-
+#if !NO_SOCKET
+	void readFromSocket(int);
+#endif
 signals:
 	void valueChanged(int);
 	void textChanged(const QString&);
@@ -74,7 +79,7 @@ protected:
 	//virtual void setDiaplayFormat(Format fmt=All,const QString& txt="");
 
 	QString file; //file just compressed/extracted
-	char line[1024]; //add char name[256], ratio[4], int s? they are frequently used in parse
+	char line[LINE_LENGTH_MAX]; //add char name[256], ratio[4], int s? they are frequently used in parse
 	uint size, compressed, value; //outSize numbers-->value
 	QString ratio; //ratio: zip
 	QTime _time;
