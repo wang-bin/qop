@@ -26,7 +26,7 @@ static void initTranslations() {
 //	QString("%1\n%2%3\n%4%5%6\n").arg(file, g_size_tr, size2str(size), g_processed_tr, size2str(processed), max)
 //QObject::tr("%1\nSize:%2%3\n%4%5%6\n")
 #define g_ExtraMsg_Detail(speed, elapsed, left) \
-		QString("%1%2/s\n%3").arg(g_speed_tr).arg(speed).arg(g_elapsed_remain_tr.arg(elapsed/1000.,0,'f',1).arg(left,0,'f',1))
+		QString("%1%2/s\n%3").arg(g_speed_tr).arg(size2str(speed)).arg(g_elapsed_remain_tr.arg(elapsed/1000.,0,'f',1).arg(left,0,'f',1))
 //	QString("%1%2/s\n%3").arg(g_speed_tr, size2str(speed), g_elapsed_remain_tr.arg(elapsed/1000.,0,'f',1).arg(left,0,'f',1))
 
 //slower?

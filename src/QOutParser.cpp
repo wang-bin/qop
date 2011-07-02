@@ -214,27 +214,23 @@ void QOutParser::parseLine(const char* line)
 		else
 			res=DetailWithRatio;
 	}
-	//qApp->processEvents() will down the performance and may cause crash, but how many times to call is the best?
-	if(res!=res_old || detail_freq+simple_freq+detail_ratio_freq<8)
+	/*!
+		qApp->processEvents() will down the performance and may cause crash. We do it every 0x10 times.
+		if we do not call qApp->processEvents(), multi-thread counting information can't display right.
+	*/
+	if(res!=res_old || ((detail_freq+simple_freq+detail_ratio_freq)&0x10))
 		qApp->processEvents();
 
 	if(res==Detail) {
 		_out = g_BaseMsg_Detail(file, size, value, max_str);
 		_extra = g_ExtraMsg_Detail(_speed, _elapsed, _left);
-		//_out = file+"\n"+g_processed_tr+size2str(size)+"\n"+tr("Processed: ")+size2str(value)+max_str+"\n";
-		//_extra=tr("Speed: ")+size2str(_speed)+"/s\n"+tr("Elapsed: %1s Remaining: %2s").arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1);
-	} else if(res==Simple) {
+		} else if(res==Simple) {
 		_out = g_BaseMsg_Simple(file, ++value, max_str);
 		_extra = g_ExtraMsg_Simple(_speed, _elapsed, _left);
-		//_out=file+"\n"+tr("Processed: ")+QString::number(++value)+max_str+tr("files")+"\n";// .arg(_elapsed/1000.,0,'f',1).arg(++value).arg(max_str);
-		//_extra=tr("Speed: ")+QString::number(_speed)+"/s\n"+tr("Elapsed: %1s Remaining: %2s").arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1);
-		//_extra=tr("Elapsed: %1s Processed: %2%3 files").arg(_elapsed/1000.,0,'f',1).arg(++value).arg(max_str);
-	} else if(res==DetailWithRatio) {
+		} else if(res==DetailWithRatio) {
 		_out = g_BaseMsg_Zip(file, size, ratio, value, max_str);
 		_extra = g_ExtraMsg_Zip(_speed, _elapsed, _left);
-		//_out=file+"\n"+tr("Size: ")+size2str(size)+"  "+tr("Ratio: ")+ratio+"\n"+tr("Processed: ")+size2str(value)+max_str+"\n";
-		//_extra=tr("Speed: ")+size2str(_speed)+"/s\n"+tr("Elapsed: %1s Remaining: %2s").arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1);
-	} else if(res==Unknow) {
+		} else if(res==Unknow) {
 		puts(line);
 		fflush(stdout);
 		return;
@@ -265,7 +261,6 @@ void QOutParser::readFromFile(FILE* fp)
 	}
 	fread(line, 1024, 1, stdin);
 	//read(STDIN_FILENO, line, 1024);
-	//ZDEBUG("stdout: %s",line);
 	//parseLineByLine(line);
 }
 
@@ -273,29 +268,10 @@ void QOutParser::start() {
 	initTimer();
 	//read(STDIN_FILENO,buf,SIZE))
 	while(fgets(line,MAX,stdin)) {
-		/*if(first) {
-			res_tmp=parse(line);
-		//_speed=value/(1+_elapsed)*1000;
-		/// 2010-11-27
-			//set count_type when as the first available format and switch to correct mode
-			//1-thread mode will perform perfectly
-
-			if(res_tmp!=Error && res_tmp!=Unknow) {
-				res=res_tmp;
-				first=false;
-				if((res_tmp==Simple && count_type==QCounterThread::Size)||((res_tmp==Detail || res_tmp==DetailWithRatio)&&count_type!=QCounterThread::Size)) {
-					count_type= (QCounterThread::CountType)((int)~count_type&0x1);
-					setCountType(count_type);
-					//startCounterThread(); //no effect on multi-threading
-				}
-			}
-		} else {*/
 			res_tmp=res;
 			parseLine(line);
-			if(res!=res_tmp) {
+			if(res!=res_tmp)
 				emit unitChanged();
-			}
-		//}
 	}
 	emit finished();
 }
@@ -370,15 +346,17 @@ void QOutParser::slotFinished()
 
 void QOutParser::setTotalSize(int s)
 {
-	//emit textChanged(tr("Counting...")+size2str(s));
+	if(!multi_thread) {
+		if(count_type==QCounterThread::Size)
+			emit textChanged(tr("Counting...")+size2str(s));
+		else
+			emit textChanged(tr("Counting...")+QString::number(s));
+	}
 	emit maximumChanged(max_value=s);
 	//qApp->processEvents();
 	estimate();
 	if(count_type==QCounterThread::Size) max_str=QString(" / %1").arg(size2str(max_value));
 	else max_str=" / "+QString::number(max_value)+" ";
-#ifndef NO_EZX
-	//ZDEBUG("TS: %d time: %d",max_value,_time.elapsed());
-#endif
 }
 
 void QOutParser::slotResetUnit()
@@ -413,9 +391,9 @@ void QOutParser::slotResetUnit()
 void QOutParser::terminate()
 {
 #if CONFIG_QT4
-	char * senderName = sender()->objectName().toLocal8Bit().data();
+	char *senderName = sender()->objectName().toLocal8Bit().data();
 #else
-	const char * senderName = sender()->name();
+	const char *senderName = sender()->name();
 #endif
 	ZDEBUG("signal sender: %s", senderName);
 #if defined(_OS_LINUX_)

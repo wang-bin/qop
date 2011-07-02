@@ -44,6 +44,9 @@ const unsigned int iShift[] = { 0, 10, 20, 30, 40};
 #if __GNUC__
 #define _snprintf snprintf
 #endif
+#ifdef Q_OS_WIN
+#define snprintf _snprintf
+#endif
 char* size2str(unsigned int a)
 {
 	int i=0;
@@ -56,14 +59,7 @@ char* size2str(unsigned int a)
 #endif
 	unsigned int r = ((a&iMask[i])>>iShift[i-1])*K2Ki; //(unsigned int)((a&iMask[i])*K2Ki)>>iShift[i-1];
 	static char ss[11];
-	if(r>100)
-		_snprintf(ss, 11, "%d.%d%s", a>>iShift[i], r, unit[i]);
-	else if(r>10)
-		_snprintf(ss, 11, "%d.0%d%s", a>>iShift[i], r, unit[i]);
-	else if(r>0)
-		_snprintf(ss, 11, "%d.00%d%s", a>>iShift[i], r, unit[i]);
-	else
-		_snprintf(ss, 11, "%d%s", a>>iShift[i], unit[i]);
+	snprintf(ss, 11, "%4d.%03d%-2s", a>>iShift[i], r, unit[i]);
 	return ss;
 }
 
