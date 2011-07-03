@@ -27,6 +27,7 @@
 
 #include <qdir.h>
 //#include <qfileinfo.h>
+#include <qtextcodec.h>
 #include <qtranslator.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -95,6 +96,8 @@ int main(int argc, char *argv[])
 	ZDEBUG("system language: %s",qPrintable(sysLang));
 	a.installTranslator(&appTranslator);
 	//Need QtTranslator
+
+	//QTextCodec::setCodecForTr(QTextCodec::codecForName("GBK"));
 
 	Qop qop;
 #if !CONFIG_QT4

@@ -57,41 +57,5 @@ struct opts_s {
 extern opts_t opts_parse(int, char **);
 extern void opts_free(opts_t);
 
-//#define TEST_MYOPT 0
-#if TEST_MYOPT
-typedef void* (*do_func)();
-enum ArgumentFlag {
-	NoArgument=0,RequiredArgument,OptinalArgument
-};
-
-struct QOptionsPrivate
-{
-	const char* long_opt;
-	char opt;
-	QAny value;
-	ArgumentFlag arg_flag;
-	const char* description;
-	do_func func_ptr;
-
-};
-
-class QOptions
-{
-public:
-	QOptions(int argc,char** argv);
-	~QOptions();
-
-	QOptions& operator()(const char* name,const QAny& value,const char* description=0);
-	QOptions& operator()(const char* name,const char* description=0);
-	QAny& operator[](const char* name);
-
-	void readCommand(int argc,char** argv);
-	void doOptions();
-
-private:
-	QList<QOptionsPrivate*> opts, opts_in;
-
-};
-#endif //TEST_MYOPT
 
 #endif // OPTION_H

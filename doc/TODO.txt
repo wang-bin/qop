@@ -84,7 +84,148 @@ program options: -stdin -stdout - --verbose
 template QOutParser
 pthread instead of QThread
 
+//#define TEST_MYOPT 0
+#if TEST_MYOPT
+typedef void* (*do_func)();
+enum ArgumentFlag {
+	NoArgument=0,RequiredArgument,OptinalArgument
+};
 
+struct QOptionsPrivate
+{
+	const char* long_opt;
+	char opt;
+	QAny value;
+	ArgumentFlag arg_flag;
+	const char* description;
+	do_func func_ptr;
+
+};
+
+class QOptions
+{
+public:
+	QOptions(int argc,char** argv);
+	~QOptions();
+
+	QOptions& operator()(const char* name,const QAny& value,const char* description=0);
+	QOptions& operator()(const char* name,const char* description=0);
+	QAny& operator[](const char* name);
+
+	void readCommand(int argc,char** argv);
+	void doOptions();
+
+private:
+	QList<QOptionsPrivate*> opts, opts_in;
+
+};
+#endif //TEST_MYOPT
+/*!
+
+  TODO:
+	-v --verbose
+	stderr
+	input password
+  tar cvf: count the number of files, also estimate left time, speed files/s--------------X
+  need 1 more timer to estimate when time out----------------------------------------------X
+  display size/number left----------------------------------------------X
+  consol mode
+
+			_out="<H3><font color=#0000ff>"+file+"</font></H3><left>"+tr("Size: ")+size2str(size) \
+				 +"</left><br><left>"+tr("Processed: ")+size2str(value)+" / "+max_str+"</left><br>";
+			Rich text takes much more time
+
+
+	Format --> TarVerbose TarQuite ... EndZip 7zEnd
+
+	7z l archieve
+	7z counts files exclude dirs----------------------------------------------X
+	kill 7z
+
+	Processed: files/files----------------------------------------------X
+
+
+	template<typename T1,typename T2,typename T3>
+	class OutputFormat {
+	OutputFormat() {map_addr()];
+	const char* fmt,
+	char *keyword[16];
+	T1 argv1;
+	T2 argv2;
+	T3 argv3;
+
+	map_addr(void* ptr1,void* ptr2,void* ptr3);//T1, T2, T3-->&size,name,rate
+	}
+
+
+	//QMap<const QString& type,struct OutputFormat ofmt>
+
+	getParser(const QString&) {
+	new QOutParser
+	//ref to boost.any
+	setOutputFormat()
+	}
+
+	parse()
+
+	class LineFormat {
+	public:
+		virtual ~LineFormat()=0;
+		char* format;
+		QStringList keyword, keyword_unkown;
+		QString keyword_err;
+	}
+
+	template<typename T1,typename T2,typename T3>
+	class LineFormatArc :public LineFormat {
+		void map_addr(T1* ptr1,T2* ptr2,T3* ptr3) {
+			argv1=ptr1,argv2=ptr2,argv3=ptr3;
+		}
+	private:
+		T1 argv1; //ptr
+		T2 argv2;
+		T3 argv3;
+
+	}
+
+
+	class QOutParser {
+	...
+	private:
+		char name[256], r[8];
+		int s;
+		LineFormat *line_fmt;
+	}
+
+	QOutParser::setLineFormat(const QString& type)
+	{
+		if(type=="tar") { line_fmt=new LineFormatArc<int,char*,char*>();lf.map_addr(*s,name,null);
+		keyword<<""<<...;}
+		...
+
+	}
+
+	QOutParser::parse() {
+		bool kw_found=false;
+		it //keyword
+		for(it) {
+			if(line.contains(*it) {kw_found=true;break;}
+		}
+		if(!kw_found) return Unknow;
+		else { fprintf(line,line_fmt.format,line_fmt.argv1...);
+			file=...
+			...
+		}
+	}
+
+	main.cpp:
+		QOutParser *qop=new QOutParser;
+		qop->setFormat(type);
+
+		qop->parse()
+
+
+*/
 GUI:
 1.mark items to remove/extract
 2.7z Gui. Use 7z lib directly!

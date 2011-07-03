@@ -17,113 +17,7 @@
 	with this program; if not, write to the Free Software Foundation, Inc.,
 	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 ******************************************************************************/
-/*!
 
-  TODO:
-	auto detect type
-	-v --verbose
-	stderr
-	input password
-  tar cvf: count the number of files, also estimate left time, speed files/s--------------X
-  need 1 more timer to estimate when time out----------------------------------------------X
-  display size/number left----------------------------------------------X
-  consol mode
-
-			_out="<H3><font color=#0000ff>"+file+"</font></H3><left>"+tr("Size: ")+size2str(size) \
-				 +"</left><br><left>"+tr("Processed: ")+size2str(value)+" / "+max_str+"</left><br>";
-			Rich text takes much more time
-
-
-	Format --> TarVerbose TarQuite ... EndZip 7zEnd
-
-	7z l archieve
-	7z counts files exclude dirs----------------------------------------------X
-	kill 7z
-
-	Processed: files/files----------------------------------------------X
-
-
-	template<typename T1,typename T2,typename T3>
-	class OutputFormat {
-	OutputFormat() {map_addr()];
-	const char* fmt,
-	char *keyword[16];
-	T1 argv1;
-	T2 argv2;
-	T3 argv3;
-
-	map_addr(void* ptr1,void* ptr2,void* ptr3);//T1, T2, T3-->&size,name,rate
-	}
-
-
-	//QMap<const QString& type,struct OutputFormat ofmt>
-
-	getParser(const QString&) {
-	new QOutParser
-	//ref to boost.any
-	setOutputFormat()
-	}
-
-	parse()
-
-	class LineFormat {
-	public:
-		virtual ~LineFormat()=0;
-		char* format;
-		QStringList keyword, keyword_unkown;
-		QString keyword_err;
-	}
-
-	template<typename T1,typename T2,typename T3>
-	class LineFormatArc :public LineFormat {
-		void map_addr(T1* ptr1,T2* ptr2,T3* ptr3) {
-			argv1=ptr1,argv2=ptr2,argv3=ptr3;
-		}
-	private:
-		T1 argv1; //ptr
-		T2 argv2;
-		T3 argv3;
-
-	}
-
-
-	class QOutParser {
-	...
-	private:
-		char name[256], r[8];
-		int s;
-		LineFormat *line_fmt;
-	}
-
-	QOutParser::setLineFormat(const QString& type)
-	{
-		if(type=="tar") { line_fmt=new LineFormatArc<int,char*,char*>();lf.map_addr(*s,name,null);
-		keyword<<""<<...;}
-		...
-
-	}
-
-	QOutParser::parse() {
-		bool kw_found=false;
-		it //keyword
-		for(it) {
-			if(line.contains(*it) {kw_found=true;break;}
-		}
-		if(!kw_found) return Unknow;
-		else { fprintf(line,line_fmt.format,line_fmt.argv1...);
-			file=...
-			...
-		}
-	}
-
-	main.cpp:
-		QOutParser *qop=new QOutParser;
-		qop->setFormat(type);
-
-		qop->parse()
-
-
-*/
 #include "QOutParser.h"
 #include <algorithm>
 #include <qsocketnotifier.h>
@@ -171,7 +65,6 @@ QOutParser::QOutParser(uint total):QObject(0),file(""),size(0),compressed(0),val
 {
 	initTranslations();
 	res_tmp=res;
-	//first=true;
 	_time.start();
 	connect(this,SIGNAL(finished()),SLOT(slotFinished()));
 	connect(&counter,SIGNAL(maximumChanged(int)),SLOT(setTotalSize(int)));
@@ -213,31 +106,30 @@ void QOutParser::parseLine(const char* line)
 		qApp->processEvents() will down the performance and may cause crash. We do it every 0x10 times.
 		if we do not call qApp->processEvents(), multi-thread counting information can't display right.
 	*/
-	if(res!=res_old || ((detail_freq+simple_freq+detail_ratio_freq)&0x10))
+	if(res!=res_old || ((detail_freq+simple_freq+detail_ratio_freq)&0x10) ||detail_freq+simple_freq+detail_ratio_freq<4)
 		qApp->processEvents();
 
 	if(res==Detail) {
 		_out = g_BaseMsg_Detail(file, size, value, max_str);
 		_extra = g_ExtraMsg_Detail(_speed, _elapsed, _left);
-		} else if(res==Simple) {
+	} else if(res==Simple) {
 		_out = g_BaseMsg_Simple(file, ++value, max_str);
 		_extra = g_ExtraMsg_Simple(_speed, _elapsed, _left);
-		} else if(res==DetailWithRatio) {
+	} else if(res==DetailWithRatio) {
 		_out = g_BaseMsg_Zip(file, size, ratio, value, max_str);
 		_extra = g_ExtraMsg_Zip(_speed, _elapsed, _left);
-		} else if(res==Unknow) {
-		puts(line);
-		fflush(stdout);
+	} else if(res==Unknow) {
+		qDebug("%s", line);
 		return;
 	} else if(res==Error) {
-		puts(line);
+		qDebug("%s", line);
 		_out=tr("Password Error!");
 		_extra="";
 	} else {
 		_out=line;
 		_extra="";
 	}
-	emit valueChanged(value);//_value++);//inavailable lines, value not ++
+	emit valueChanged(value);
 	emit textChanged(_out+_extra);
 
 }
@@ -261,18 +153,17 @@ void QOutParser::readFromSocket(int socket)
 	parseLine(line);
 }
 #endif
+
 void QOutParser::start() {
 	initTimer();
-	//read(STDIN_FILENO,buf,SIZE))
 	while(fgets(line,LINE_LENGTH_MAX,stdin)) {
-			res_tmp=res;
-			parseLine(line);
-			if(res!=res_tmp)
-				emit unitChanged();
+		res_tmp=res;
+		parseLine(line);
+		if(res!=res_tmp)
+			emit unitChanged();
 	}
 	emit finished();
 }
-
 
 void QOutParser::setCountType(QCounterThread::CountType ct)
 {
@@ -295,8 +186,10 @@ void QOutParser::startCounterThread()
 	if(!_recount) return;
 	emit textChanged(tr("Calculating..."));
 	qApp->processEvents();
-	if(multi_thread) counter.start();
-	else counter.run();
+	if(multi_thread)
+		counter.start();
+	else
+		counter.run();
 }
 
 void QOutParser::setFiles(const QStringList &f)

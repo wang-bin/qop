@@ -1,6 +1,7 @@
 #ifndef SMGDEF_H
 #define SMGDEF_H
 
+#include <algorithm>
 #include <qobject.h>
 #include <qstring.h>
 
@@ -11,6 +12,7 @@ static QString g_speed_tr;
 static QString g_ratio_tr;
 static QString g_elapsed_remain_tr;
 static QString g_files_tr;
+static int g_align_length;
 
 static void initTranslations() {
 	g_size_tr = QObject::tr("Size: ");
@@ -19,10 +21,13 @@ static void initTranslations() {
 	g_ratio_tr = QObject::tr("Ratio: ");
 	g_elapsed_remain_tr = QObject::tr("Elapsed: %1s Remaining: %2s");
 	g_files_tr = QObject::tr("files");
+	g_align_length = -(std::max(g_size_tr.length(), g_processed_tr.length()));
 }
 
+//QString().sprintf(); alignment; %-*s: max len of g_xxx_tr
 #define g_BaseMsg_Detail(file, size, processed, max) \
-	QString("%1\n%2%3\n%4%5%6\n").arg(file).arg(g_size_tr).arg(QString(size2str(size))).arg(g_processed_tr).arg(QString(size2str(processed))).arg(max)
+	QString("%1\n%2%3\n%4%5%6\n").arg(file).arg(g_size_tr, g_align_length).arg(size2str(size)).arg(g_processed_tr, g_align_length).arg(size2str(processed)).arg(max)
+//QString().sprintf("%s\n%-6s%s\n%-6s%s%s", qPrintable(file), qPrintable(g_size_tr), size2str(size), qPrintable(g_processed_tr), size2str(processed), qPrintable(max))
 //	QString("%1\n%2%3\n%4%5%6\n").arg(file, g_size_tr, size2str(size), g_processed_tr, size2str(processed), max)
 //QObject::tr("%1\nSize:%2%3\n%4%5%6\n")
 #define g_ExtraMsg_Detail(speed, elapsed, left) \
@@ -38,7 +43,7 @@ static void initTranslations() {
 //	QString("%1%2/s\n%3").arg(g_speed_tr, QString::number(speed), g_elapsed_remain_tr.arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1))
 
 #define g_BaseMsg_Zip(file, size, ratio, processed, max) \
-	QString("%1\n%2%3 %4%5\n%6%7%8\n").arg(file).arg(g_size_tr).arg(QString(size2str(size))).arg(g_ratio_tr).arg(ratio).arg(g_processed_tr).arg(QString(size2str(processed))).arg(max)
+	QString("%1\n%2%3 %4%5\n%6%7%8\n").arg(file).arg(g_size_tr, g_align_length).arg(size2str(size)).arg(g_ratio_tr).arg(ratio).arg(g_processed_tr, g_align_length).arg(size2str(processed)).arg(max)
 //	QString("%1\n%2%3 %4%5\n%6%7%8\n").arg(file, g_size_tr, size2str(size), g_ratio_tr, ratio, g_processed_tr, size2str(processed), max)
 
 #define g_ExtraMsg_Zip(speed, elapsed, left) \

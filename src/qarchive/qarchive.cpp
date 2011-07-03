@@ -168,9 +168,7 @@ void QArchive::updateMessage()
 	Q_D(QArchive);
 	estimate();
 	d->out_msg = g_BaseMsg_Detail(d->current_fileName, d->size, d->processedSize, d->max_str);
-	//d->current_fileName+"\n"+QObject::tr("Size: ")+size2str(d->size)+"\n"+QObject::tr("Processed: ")+size2str(d->processedSize)+d->max_str+"\n";
 	d->extra_msg = g_ExtraMsg_Detail(d->speed, d->elapsed, d->left);
-	//QObject::tr("Speed: ")+size2str(d->speed)+"/s\n"+QObject::tr("Elapsed: %1s Remaining: %2s").arg(d->elapsed/1000.,0,'f',1).arg(d->left,0,'f',1);
 	emit textChanged(d->out_msg+d->extra_msg);
 	qApp->processEvents();
 }

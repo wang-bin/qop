@@ -89,7 +89,6 @@ protected:
 	volatile uint max_value;
 	QString max_str;
 	Format res, res_tmp;
-	//bool first;
 	int tid;
 
 	QCounterThread counter;

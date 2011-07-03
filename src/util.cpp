@@ -55,11 +55,11 @@ char* size2str(unsigned int a)
 	//for(;q&KiMask;q>>=10,++i); //for(;q>=1024;q>>=10,++i);
 	while(a&kMask[++i]); --i;
 #else
-	while(a>>ishift[++i]); --i;//q>>=iShift[--i];
+	while(a>>iShift[++i]); --i;//q>>=iShift[--i];
 #endif
 	unsigned int r = ((a&iMask[i])>>iShift[i-1])*K2Ki; //(unsigned int)((a&iMask[i])*K2Ki)>>iShift[i-1];
 	static char ss[11];
-	snprintf(ss, 11, "%4d.%03d%-2s", a>>iShift[i], r, unit[i]);
+	snprintf(ss, 11, "%d.%03d%-2s", a>>iShift[i], r, unit[i]);
 	return ss;
 }
 
@@ -274,7 +274,7 @@ void qSleep(int ms)
 		QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
 #elif SLEEP_WAITCONDITION
 	mutex.lock();
-	QWaitCondition wait;
+	static QWaitCondition wait;
 	wait.wait(&mutex,ms);
 	mutex.unlock();
 #else
