@@ -1,3 +1,36 @@
+VERSION 0.3 TODO List
+
+UI:
+1:(boost.any like)
+we can reuse ezprogressdialog without any change
+{
+template<typename T>
+ProgressUI(T* ui)
+..
+interfaces {hoder->interfaces}
+..
+class HolderBase {
+interfaces = 0;
+}
+template<typename T> class Holder ::public HolderBase
+{
+interfaces
+}
+private:
+	HolderBase *holder;
+}
+
+2: OPP
+AbstractProgress
+subclasses=>
+PrpgressCLI, ProgressGUI
+
+
+Parser: none-qobject like object, remove signals, ProgressUI instead (QThread is a problem)
+
+
+VERSION 0.2 TODO List
+
 QSocketNotifier is suck!
 
 -T does not work

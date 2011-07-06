@@ -41,10 +41,8 @@ const unsigned int iShift[] = { 0, 10, 20, 30, 40};
 	rr = (a&iMask[n])/(1024^n)*1000 == (a&iMask[n])/(1024^(n-1))*(1000/1024) ==(a&iMask[n])>>iShift[n-1]*K2Ki;
 */
 
-#if __GNUC__
-#define _snprintf snprintf
-#endif
-#ifdef Q_OS_WIN
+#if !__GNUC__
+#undef snprintf
 #define snprintf _snprintf
 #endif
 char* size2str(unsigned int a)
