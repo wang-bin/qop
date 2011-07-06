@@ -175,12 +175,12 @@ template <typename Container> inline void qDeleteAll(const Container &c)
 //protected: ?
 #define Q_DECLARE_PRIVATE(Class) \
 	inline Class##Private* d_func() { return reinterpret_cast<Class##Private *>(d_ptr); } \
-	inline const Class##Private* d_func() const { return reinterpret_cast<const Class##Private *>(d_ptr); }
+	inline const Class##Private* d_func() const { return reinterpret_cast<const Class##Private *>(d_ptr); } \
 	friend class Class##Private;
 
 #define Q_DECLARE_PRIVATE_D(Dptr, Class) \
 	inline Class##Private* d_func() { return reinterpret_cast<Class##Private *>(Dptr); } \
-	inline const Class##Private* d_func() const { return reinterpret_cast<const Class##Private *>(Dptr); }
+	inline const Class##Private* d_func() const { return reinterpret_cast<const Class##Private *>(Dptr); } \
 	friend class Class##Private;
 
 #define Q_DECLARE_PUBLIC(Class)									\
