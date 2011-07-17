@@ -3,8 +3,7 @@ TEMPLATE	= app
 CONFIG		+= #ezx#static ezx
 CONFIG		+= profile
 DESTDIR		= bin
-MOC_DIR		= .moc
-OBJECTS_DIR	= .obj
+MOC_DIR		= .moc/$$[QT_VERSION]
 DEFINES		+= QT_THREAD_SUPPORT
 
 #profiling, -pg is not supported for msvc
@@ -52,8 +51,15 @@ SOURCES		= src/QOutParser.cpp \
 		src/commandparser.cpp
 
 win32 {
+	OBJECTS_DIR = .obj/win32
 	HEADERS += src/getopt.h
 	SOURCES += src/getopt.cpp
+} else:unix {
+	OBJECTS_DIR = .obj/unix
+} else:macx {
+	OBJECTS_DIR = .obj/macx
+} else {
+	OBJECTS_DIR = .obj
 }
 
 INCLUDEPATH	+= src
@@ -89,27 +95,17 @@ FORMS	=
 
 CONFIG(ezx) {
 	 TARGET =	qop-ezx
-	 MOC_DIR	= .moc/ezx
 	 OBJECTS_DIR	= .obj/ezx
 	 DEFINES        += CONFIG_EZX
 	 QMAKE_CXXFLAGS.ARMCC +=
  } else {
 	 TARGET = qop
-	 unix: {
-			MOC_DIR		= .moc/unix
-			OBJECTS_DIR	= .obj/unix
-	 }
-	 win32  {
-			MOC_DIR		= .moc/win32
-			OBJECTS_DIR	= .obj/win32
-	 }
  }
 
 unix:!symbian {
 	maemo5 {
 		TARGET = qop-maemo5
 		#DESTDIR		= package
-		MOC_DIR		= .moc/maemo5
 		OBJECTS_DIR	= .obj/maemo5
 		DEFINES         += CONFIG_MAEMO
 		target.path = /opt/usr/bin
@@ -117,7 +113,6 @@ unix:!symbian {
 		warning(harmattan)
 		TARGET = qop-maemo6
 		#DESTDIR		= package
-		MOC_DIR		= .moc/maemo6
 		OBJECTS_DIR	= .obj/maemo6
 		DEFINES         += CONFIG_MAEMO
 	} else {
