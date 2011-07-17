@@ -10,7 +10,7 @@ Support platforms: windows(Qt4), Linux(Qt4, tested on ubuntu 10.04), motorola ez
 
 bug: can't kill 7z in windows.
 
-usage: qop [-t parserFor] [-n|s] [-chm] [-x archieve|-T totalSteps] [files...]
+Usage: qop [-t parserFor] [-n|s] [-chm] [-x archieve|-T totalSteps] [files...]
 
 -m, --multi-thread: create a new thread to calculate progress bar's total steps.
 -h, --help: help
