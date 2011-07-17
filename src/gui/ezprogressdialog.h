@@ -50,10 +50,10 @@ class EZProgressDialog : public ZBaseDialog {
 	Q_OBJECT
 	Q_DECLARE_PRIVATE(EZProgressDialog)
 	//Q_PROPERTY(bool wasCanceled READ wasCanceled)
-	//Q_PROPERTY(int maximum READ maximum WRITE setMaximum)
-	//Q_PROPERTY(int value READ value WRITE setValue)
-	//Q_PROPERTY(bool autoReset READ autoReset WRITE setAutoReset)
-	//Q_PROPERTY(bool autoClose READ autoClose WRITE setAutoClose)
+	Q_PROPERTY(int maximum READ maximum WRITE setMaximum)
+	Q_PROPERTY(int value READ value WRITE setValue)
+	Q_PROPERTY(bool autoReset READ autoReset WRITE setAutoReset)
+	Q_PROPERTY(bool autoClose READ autoClose WRITE setAutoClose)
 	//Q_PROPERTY(int minimumDuration READ minimumDuration WRITE setMinimumDuration)
 	//Q_PROPERTY(QString labelText READ labelText WRITE setLabelText)
 public:
@@ -84,7 +84,7 @@ public:
 	void setBar(UTIL_ProgressBar*);
 	void setLabel(QLabel*); //set the content label
 	int value() const;
-	int maximum();
+	int maximum() const;
 
 	//bool clickDo(int index,const QObject* receiver,const char* member=0);
 	//bool clickUndo(int index,const QObject* receiver,const char* member=0);

@@ -348,9 +348,9 @@ void EZProgressDialog::setMaximum(int max)
 #endif //CONFIG_QT4
 }
 
-int EZProgressDialog::maximum()
+int EZProgressDialog::maximum() const
 {
-	Q_D(EZProgressDialog);
+	Q_D(const EZProgressDialog);
 #if CONFIG_QT4
 	return d->bar->maximum();
 #else
