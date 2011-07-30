@@ -1,4 +1,4 @@
-qop (0.2.9) stable; urgency=low
+qop (0.2.14) stable; urgency=low
 
   * Add uncomplete zip, unzip, unrar support for -C option. See help-en_US.txt.
 
