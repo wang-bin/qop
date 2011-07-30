@@ -140,7 +140,9 @@ EZProgressDialog::EZProgressDialog(const QString &labelText,const QString &cance
 	b->setName("CancelButton");
 	b->setToggleButton(true);
 #endif
+#if !CONFIG_EZX
 	b->setDefault(true);  //Press Enter or Space to cancel
+#endif
 	//connect(b,SIGNAL(clicked()),SLOT(reject()));
 	connect(b,SIGNAL(clicked()),this,SIGNAL(canceled()));
 	connect(b,SIGNAL(clicked()),this,SIGNAL(cancelled()));
