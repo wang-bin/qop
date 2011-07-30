@@ -218,17 +218,17 @@ void QOutParser::slotFinished()
 	fflush(stdout);
 	//value*1000/_elapsed is not correct, why?
 	if(res==Simple || res==End7z) {
-		_out=tr("Finished: ")+QString("%1").arg(value)+max_str+tr("files")+"\n";
-		_extra=tr("Speed: ")+QString::number(_speed)+"/s\n"+tr("Elapsed time: ")+QString("%1s").arg(_elapsed/1000.,0,'f',1);
+		_out=tr("Finished: ")+QString("%1").arg(value)+max_str+tr("files")+QLatin1String("\n");
+		_extra=tr("Speed: ")+QString::number(_speed)+QLatin1String("/s\n")+tr("Elapsed time: ")+QString("%1s").arg(_elapsed/1000.,0,'f',1);
 	} else if(res==Detail) {
-		_out=tr("Finished: ")+size2str(value)+max_str+"\n";
-		_extra=tr("Speed: ")+size2str(value/(1+_elapsed)*1000)+"/s\n"+tr("Elapsed: %1s Remaining: %2s").arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1);
+		_out=tr("Finished: ")+QLatin1String(size2str(value))+max_str+QLatin1String("\n");
+		_extra=tr("Speed: ")+QLatin1String(size2str(value/(1+_elapsed)*1000))+QLatin1String("/s\n")+tr("Elapsed: %1s Remaining: %2s").arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1);
 	} else if(res==DetailWithRatio) {
-		_out=tr("Finished: ")+size2str(value)+max_str+"\n";
-		_extra=tr("Speed: ")+size2str(value/(1+_elapsed)*1000)+"/s\n"+tr("Elapsed: %1s Remaining: %2s").arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1);
+		_out=tr("Finished: ")+QLatin1String(size2str(value))+max_str+QLatin1String("\n");
+		_extra=tr("Speed: ")+QLatin1String(size2str(value/(1+_elapsed)*1000))+QLatin1String("/s\n")+tr("Elapsed: %1s Remaining: %2s").arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1);
 	} else if(res==EndZip) { //zip
-		_out=tr("Finished: ")+size2str(value)+max_str+"\n"+tr("Compressed: ")+size2str(compressed)+"\n"+tr("Compression ratio: ")+ratio+"\n";
-		_extra=tr("Speed: ")+size2str(value/(1+_elapsed)*1000)+"/s\n"+tr("Elapsed: %1s Remaining: %2s").arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1);
+		_out=tr("Finished: ")+QLatin1String(size2str(value))+max_str+QLatin1String("\n")+tr("Compressed: ")+QLatin1String(size2str(compressed))+QLatin1String("\n")+tr("Compression ratio: ")+ratio+QLatin1String("\n");
+		_extra=tr("Speed: ")+QLatin1String(size2str(value/(1+_elapsed)*1000))+QLatin1String("/s\n")+tr("Elapsed: %1s Remaining: %2s").arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1);
 	} else if(res==Error) {
 		_out=tr("Password Error!");
 		_extra="";
@@ -240,7 +240,7 @@ void QOutParser::setTotalSize(int s)
 {
 	if(!multi_thread) {
 		if(count_type==QCounterThread::Size)
-			emit textChanged(tr("Counting...")+size2str(s));
+			emit textChanged(tr("Counting...")+QLatin1String(size2str(s)));
 		else
 			emit textChanged(tr("Counting...")+QString::number(s));
 	}
@@ -619,8 +619,8 @@ Format QUpxOutParser::parse(const char* line)
 	char r[7], format[32], outName[32];
 	if(!QString(line).contains("%")) return Unknow;
 	sscanf(line,"%d%*s%d%s%s%s",&in,&out,r,format,outName);
-	_out="Name: "+QString(outName)+"\nFormate: "+QString(format)+"\n"+size2str(in)+" -> "+size2str(out) \
-		 +"\nRatio: "+QString(ratio);
+	_out = QLatin1String("Name: ")+QString(outName) + QLatin1String("\nFormate: ") + QString(format)+ QLatin1String("\n") \
+	+ QLatin1String(size2str(in)) + QLatin1String(" -> ") + QLatin1String(size2str(out)) + QLatin1String("\nRatio: ") +QString(ratio);
 	return Unknow;
 }
 /**

@@ -78,6 +78,7 @@ protected:
 	//<H1>File: %1</H>, _out=dspFormat.arg(file);
 	//virtual void setDiaplayFormat(Format fmt=All,const QString& txt="");
 
+	//use QLatin1String
 	QString file; //file just compressed/extracted
 	char line[LINE_LENGTH_MAX]; //add char name[256], ratio[4], int s? they are frequently used in parse
 	uint size, compressed, value; //outSize numbers-->value

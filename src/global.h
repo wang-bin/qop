@@ -37,6 +37,12 @@
 #define _OS_MAC_
 #endif
 
+#if QT_VERSION >= 0x040600
+//QStringBuilder
+#define QT_USE_FAST_CONCATENATION
+#define QT_USE_FAST_OPERATOR_PLUS
+#endif
+
 #include <qglobal.h>
 #if QT_VERSION >= 0x040000
 #	define CONFIG_QT4 1
@@ -96,8 +102,7 @@ using Qt::Alignment;
 #define EZ_ProgressDialog(labeltext,cancelbutton,min,max,parent,name,modal,flag) UTIL_ProgressDialog(labeltext,cancelbutton,max,parent,name,modal,flag)
 //#define setValue(v) setProgress(v)
 typedef int Alignment;
-//#define QLatin1String(str) (str)
-#define QLatin1String //speed of string comparing with const char* str: QLatin1String(str) > str > QString(str) //str: possibly hidden malloc, QString(str): temp QString
+
 #endif //EZXT_QT4
 
 
@@ -153,11 +158,16 @@ typedef int Alignment;
 
 #if !CONFIG_QT4
 
+//speed of string comparing with const char* str: QLatin1String(str) > str > QString(str) //str: possibly hidden malloc, QString(str): temp QString
+#define QLatin1String(str) (str)
+#define QLatin1String QString
+
 //#define qPrintable(qstr) qstr.local8Bit().data()
 inline const char* qPrintable(const QString& qstr)
 {
 	return qstr.local8Bit().data();
 }
+
 
 template <typename ForwardIterator> void qDeleteAll(ForwardIterator begin, ForwardIterator end)
 {
