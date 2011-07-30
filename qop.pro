@@ -1,16 +1,13 @@
 TEMPLATE	= app
 #CONFIG		= qt warn_on release #for EZX
-CONFIG		+= #ezx#static ezx
-CONFIG		+= profile
-DESTDIR		= bin
-MOC_DIR		= .moc/$$[QT_VERSION]
 DEFINES		+= QT_THREAD_SUPPORT
+TARGET		= qop
+INCLUDEPATH	+= src
+LIBS		+= #-Llib -lz
+TRANSLATIONS+= i18n/qop_zh-cn.ts
+FORMS	=
 
-#profiling, -pg is not supported for msvc
-debug:profile {
-	QMAKE_CXXFLAGS_DEBUG += -pg
-	QMAKE_LFLAGS_DEBUG += -pg
-}
+include(config.pri)
 
 HEADERS		= src/QOutParser.h \
 		src/gui/ezprogressdialog.h \
@@ -51,22 +48,10 @@ SOURCES		= src/QOutParser.cpp \
 		src/commandparser.cpp
 
 win32 {
-	OBJECTS_DIR = .obj/win32
 	HEADERS += src/getopt.h
 	SOURCES += src/getopt.cpp
-} else:unix {
-	OBJECTS_DIR = .obj/unix
-	*llvm*: OBJECTS_DIR = .obj/unix-llvm
-} else:macx {
-	OBJECTS_DIR = .obj/macx
-	*llvm*: OBJECTS_DIR = .obj/macx-llvm
-} else {
-	OBJECTS_DIR = .obj
 }
 
-INCLUDEPATH	+= src
-LIBS		+= #-Llib -lz
-TRANSLATIONS+= i18n/qop_zh-cn.ts
 
 OTHER_FILES	+= \
 		doc/TODO.txt \
@@ -91,32 +76,11 @@ OTHER_FILES	+= \
 		qtc_packaging/debian_harmattan/control \
 		qtc_packaging/debian_harmattan/compat \
 		qtc_packaging/debian_harmattan/changelog \
-    README
-
-FORMS	=
-
-CONFIG(ezx) {
-	 TARGET =	qop-ezx
-	 OBJECTS_DIR	= .obj/ezx
-	 DEFINES        += CONFIG_EZX
-	 QMAKE_CXXFLAGS.ARMCC +=
- } else {
-	 TARGET = qop
-	*llvm*: TARGET = $${TARGET}-llvm
- }
+		README
 
 unix:!symbian {
-	maemo5 {
-		TARGET = qop-maemo5
-		#DESTDIR		= package
-		OBJECTS_DIR	= .obj/maemo5
-		DEFINES         += CONFIG_MAEMO
+	maemo* {
 		target.path = /opt/usr/bin
-	} else:maemo6 {
-		warning(harmattan)
-		TARGET = qop-maemo6
-		#DESTDIR		= package
-		OBJECTS_DIR	= .obj/maemo6
 		DEFINES         += CONFIG_MAEMO
 	} else {
 		target.path = /usr/local/bin
@@ -125,7 +89,7 @@ unix:!symbian {
 }
 
 
-unix:maemo5 {
+unix:maemo* {
 	isEmpty(PREFIX) {
 	PREFIX = /opt/usr
 	}
