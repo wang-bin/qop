@@ -19,7 +19,7 @@
 ******************************************************************************/
 
 #include "util.h"
-#include "global.h"
+#include "qtcompat.h"
 #include <stdio.h>
 
 /*!
@@ -241,7 +241,7 @@ int parseOct(const char *p, size_t n)
 #define SLEEP_EVENTLOOP 0
 #endif
 
-#include "global.h"
+#include "qtcompat.h"
 #if QT_VERSION >= 0x040700
 #include <QtCore/QElapsedTimer>
 #else
@@ -304,7 +304,7 @@ void qWait(int ms)
 	timer.start();
 	do {
 #if CONFIG_QT4
-		//解决界面无法刷新的问题
+		//解决界面无法刷新的问�
 		QCoreApplication::processEvents(QEventLoop::AllEvents, ms);
 #else
 		qApp->processEvents(ms);

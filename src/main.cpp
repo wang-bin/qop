@@ -18,7 +18,7 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 ******************************************************************************/
 
-#include "global.h"
+#include "qtcompat.h"
 
 #if CONFIG_EZX
 #include <ZApplication.h>

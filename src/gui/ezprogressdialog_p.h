@@ -19,7 +19,7 @@
 ******************************************************************************/
 #ifndef EZPROGRESSDIALOG_P_H
 #define EZPROGRESSDIALOG_P_H
-#include "../global.h"
+#include "qtcompat.h"
 #define INHERIT_PRIVATE 0
 
 #include <qdatetime.h>

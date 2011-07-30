@@ -24,7 +24,7 @@
 #define LINE_LENGTH_MAX 1024
 //#define NO_SOCKET 1
 
-#include "global.h"
+#include "qtcompat.h"
 #include "qcounterthread.h"
 #include <qobject.h>
 #include <qdatetime.h>

@@ -23,7 +23,7 @@
 #ifndef QCOUNTERTHREAD_H
 #define QCOUNTERTHREAD_H
 
-#include "global.h"
+#include "qtcompat.h"
 #include <qobject.h>
 //#ifdef QT_THREAD_SUPPORT
 #include <qthread.h>

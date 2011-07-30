@@ -1,6 +1,4 @@
 TEMPLATE	= app
-#CONFIG		= qt warn_on release #for EZX
-DEFINES		+= QT_THREAD_SUPPORT
 TARGET		= qop
 INCLUDEPATH	+= src
 LIBS		+= #-Llib -lz
@@ -12,7 +10,6 @@ include(config.pri)
 HEADERS		= src/QOutParser.h \
 		src/gui/ezprogressdialog.h \
 		src/gui/ezprogressdialog_p.h \
-		src/global.h \
 		src/qcounterthread.h \
 		src/util.h \
 		src/qarchive/arcreader.h \
@@ -30,7 +27,8 @@ HEADERS		= src/QOutParser.h \
 		src/commandparser.h \
 		src/version.h \
 		src/qarchive/qarchive_p.h \
-		src/msgdef.h
+		src/msgdef.h \
+    src/qtcompat.h
 
 SOURCES		= src/QOutParser.cpp \
 		src/gui/ezprogressdialog.cpp \

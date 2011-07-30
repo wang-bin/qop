@@ -17,8 +17,8 @@
 	with this program; if not, write to the Free Software Foundation, Inc.,
 	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 ******************************************************************************/
-#ifndef GLOBAL_H
-#define GLOBAL_H
+#ifndef QTCOMPAT_H
+#define QTCOMPAT_H
 #ifndef __cplusplus
 #error "Use C++ Compiler Please..."
 #endif
@@ -210,4 +210,4 @@ template <typename Container> inline void qDeleteAll(const Container &c)
 #define QFILENAME(path) QString(path).mid(QString(path).findRev('/')+1)
 #endif //CONFIG_QT4
 
-#endif // GLOBAL_H
+#endif // QTCOMPAT_H

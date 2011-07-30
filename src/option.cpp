@@ -1,5 +1,5 @@
 #include "option.h"
-#include "global.h"
+#include "qtcompat.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

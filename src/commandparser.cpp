@@ -22,7 +22,7 @@
 #include <qfileinfo.h>
 
 #include "qarchive/arcreader.h"
-#include "global.h"
+#include "qtcompat.h"
 #include "qcounterthread.h"
 #include "util.h"
 

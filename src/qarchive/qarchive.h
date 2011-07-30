@@ -1,8 +1,8 @@
 #ifndef QARCHIVE_H
 #define QARCHIVE_H
 
-#include "../global.h"
-#include "../util.h"
+#include "qtcompat.h"
+#include "util.h"
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qfile.h>

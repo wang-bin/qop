@@ -27,7 +27,7 @@
 	Content type: QTextEdit
 */
 #include <qdialog.h>
-#include "../global.h"
+#include "qtcompat.h"
 
 #if !CONFIG_EZX
 #define ZApplication QApplication

@@ -19,7 +19,7 @@
 ******************************************************************************/
 #include "../qarchive/arcreader.h"
 #include "../util.h"
-#include "../global.h"
+#include "qtcompat.h"
 #include <stdio.h>
 #include <qfile.h>
 
