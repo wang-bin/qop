@@ -96,6 +96,8 @@ using Qt::Alignment;
 #define EZ_ProgressDialog(labeltext,cancelbutton,min,max,parent,name,modal,flag) UTIL_ProgressDialog(labeltext,cancelbutton,max,parent,name,modal,flag)
 //#define setValue(v) setProgress(v)
 typedef int Alignment;
+//#define QLatin1String(str) (str)
+#define QLatin1String //speed of string comparing with const char* str: QLatin1String(str) > str > QString(str) //str: possibly hidden malloc, QString(str): temp QString
 #endif //EZXT_QT4
 
 

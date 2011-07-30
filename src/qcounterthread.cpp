@@ -49,12 +49,12 @@ uint QCounterThread::numOfFilesNoDir(const QStringList& list)
 	QString name; //static
 	for(QStringList::ConstIterator it = list.begin();it != list.end(); ++it) {
 		name=*it;
-		if ((*it != ".") && (*it != "..")) {
+		if ((*it != QLatin1String(".")) && (*it != QLatin1String(".."))) {
 			if(QFileInfo(name).isDir()) {
 				QStringList pathList;
 				QStringList nameList=QDir(name).entryList(QDir::Files|QDir::Dirs|QDir::NoSymLinks|QDir::Hidden|QDir::Readable);
 				for(QStringList::ConstIterator it = nameList.begin();it != nameList.end(); ++it)
-					if ((*it != ".") && (*it != ".."))	pathList.append(name+"/"+*it);   //can't be root,so override
+					if ((*it != QLatin1String(".")) && (*it != QLatin1String("..")))	pathList.append(name+"/"+*it);   //can't be root,so override
 						numOfFilesNoDir(pathList);
 			} else ++maximum.num;
 		}
@@ -67,12 +67,12 @@ uint QCounterThread::numOfFiles(const QStringList& list)
 	QString name;
 	for(QStringList::ConstIterator it = list.begin();it != list.end(); ++it) {
 		name=*it;
-		if ((*it != ".") && (*it != "..")) {
+		if ((*it != QLatin1String(".")) && (*it != QLatin1String(".."))) {
 			if(QFileInfo(name).isDir()) {
 				QStringList pathList;
 				QStringList nameList=QDir(name).entryList(QDir::Files|QDir::Dirs|QDir::NoSymLinks|QDir::Hidden|QDir::Readable);
 				for(QStringList::ConstIterator it = nameList.begin();it != nameList.end(); ++it)
-					if ((*it != ".") && (*it != ".."))	pathList.append(name+"/"+*it);   //can't be root,so override
+					if ((*it != QLatin1String(".")) && (*it != QLatin1String("..")))	pathList.append(name+"/"+*it);   //can't be root,so override
 						numOfFiles(pathList);
 			} ++maximum.num;
 		}
@@ -85,13 +85,13 @@ uint QCounterThread::sizeOfFiles(const QStringList& list)
 	QString name;
 	for(QStringList::ConstIterator it = list.begin();it != list.end(); ++it) {
 		name=*it;
-		if ((*it != ".") && (*it != "..")) {
+		if ((*it != QLatin1String(".")) && (*it != QLatin1String(".."))) {
 			if(QFileInfo(name).isDir()) {
 				QStringList pathList;
 				//filter is important. if list symlinks, the target size will be added
 				QStringList nameList=QDir(name).entryList(QDir::Files|QDir::Dirs|QDir::NoSymLinks|QDir::Hidden|QDir::Readable);
 				for(QStringList::ConstIterator it = nameList.begin();it != nameList.end(); ++it)
-					if ((*it != ".") && (*it != ".."))	pathList.append(name+"/"+*it);   //can't be root,so override
+					if ((*it != QLatin1String(".")) && (*it != QLatin1String("..")))	pathList.append(name+"/"+*it);   //can't be root,so override
 						sizeOfFiles(pathList);
 			} else {
 				maximum.size+=QFileInfo(*it).size();  //QFileInfo()::isSymLink()

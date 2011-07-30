@@ -84,11 +84,11 @@ void Qop::extract(const QString& arc, const QString& outDir)
 void Qop::execute(const QString &cmd)
 {
 	CommandParser cmdParser(cmd);
-	if(cmdParser.program()=="tar" && !cmdParser.isCompressMode())
+	if(cmdParser.program()==QLatin1String("tar") && !cmdParser.isCompressMode())
 		parser_type="untar";
-	else if(cmdParser.program()=="zip")
+	else if(cmdParser.program()==QLatin1String("zip"))
 		parser_type="zip";
-	else if(cmdParser.program()=="unzip")
+	else if(cmdParser.program()==QLatin1String("unzip"))
 		parser_type="unzip";
 
 	initParser();

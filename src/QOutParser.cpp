@@ -32,23 +32,23 @@ QOutParser* getParser(const QString& type)
 #else
 	QString t=type.lower();
 #endif // CONFIG_QT4
-	if(t=="tar") {
+	if(t==QLatin1String("tar")) {
 		return new QTarOutParser;
-	} else if(t=="zip") {
+	} else if(t==QLatin1String("zip")) {
 		return new QZipOutParser;
-	} else if(t=="untar") {
+	} else if(t==QLatin1String("untar")) {
 		return new QUntarOutParser;
-	} else if(t=="unzip") {
+	} else if(t==QLatin1String("unzip")) {
 		return new QUnzipOutParser;
-	} else if(t=="unrar") {
+	} else if(t==QLatin1String("unrar")) {
 		return new QUnrarOutParser;
-	} else if(t=="7z") {
+	} else if(t==QLatin1String("7z")) {
 		QOutParser *qop=new Q7zOutParser;
 		qop->setCountType(QCounterThread::NumNoDir);
 		return qop;
-	} else if(t=="lzip") {
+	} else if(t==QLatin1String("lzip")) {
 		return new QLzipOutParser;
-	} else if(t=="upx") {
+	} else if(t==QLatin1String("upx")) {
 		return new QUpxOutParser;
 	} else {
 		return new QOutParser;
