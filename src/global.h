@@ -160,7 +160,7 @@ typedef int Alignment;
 
 //speed of string comparing with const char* str: QLatin1String(str) > str > QString(str) //str: possibly hidden malloc, QString(str): temp QString
 #define QLatin1String(str) (str)
-#define QLatin1String QString
+typedef QString QLatin1String;
 
 //#define qPrintable(qstr) qstr.local8Bit().data()
 inline const char* qPrintable(const QString& qstr)
