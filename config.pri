@@ -1,4 +1,4 @@
-CONFIG		+= #ezx#static ezx
+CONFIG += #ezx#static ezx
 CONFIG += profile
 #profiling, -pg is not supported for msvc
 debug:!*msvc*:profile {
@@ -22,6 +22,7 @@ unix {
 }
 
 ezx {
+  QT_VERSION = 2.3.8
   PLATFORM_EXT = _ezx
   DEFINES        += CONFIG_EZX
   QMAKE_CXXFLAGS.ARMCC +=
@@ -40,6 +41,7 @@ contains(QT_ARCH, arm.*) {
 DESTDIR	= bin
 TARGET	= $${TARGET}$${PLATFORM_EXT}$${ARCH_EXT}$${TOOLCHAIN_EXT}
 OBJECTS_DIR = .obj/$${PLATFORM_EXT}$${ARCH_EXT}$${TOOLCHAIN_EXT}
-MOC_DIR = .moc/$$[QT_VERSION]
-RCC_DIR = .rcc/$$[QT_VERSION]
-UI_DIR  = .ui/$$[QT_VERSION]
+ #for Qt2, Qt3 which does not have QT_VERSION. Qt4: $$[QT_VERSION]
+MOC_DIR = .moc/$${QT_VERSION}
+RCC_DIR = .rcc/$${QT_VERSION}
+UI_DIR  = .ui/$${QT_VERSION}
