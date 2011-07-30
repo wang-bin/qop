@@ -23,8 +23,9 @@ unix {
 
 ezx {
   QT_VERSION = 2.3.8
+  CONFIG += qt warn_on release
+  DEFINES += QT_THREAD_SUPPORT CONFIG_EZX
   PLATFORM_EXT = _ezx
-  DEFINES        += CONFIG_EZX
   QMAKE_CXXFLAGS.ARMCC +=
 }
 
