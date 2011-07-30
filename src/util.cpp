@@ -51,9 +51,9 @@ char* size2str(unsigned int a)
 #if 1
 	//unsigned int q=a;
 	//for(;q&KiMask;q>>=10,++i); //for(;q>=1024;q>>=10,++i);
-	while(a&kMask[++i]); --i;
+	while (a&kMask[++i]) ; --i;
 #else
-	while(a>>iShift[++i]); --i;//q>>=iShift[--i];
+	while (a>>iShift[++i]); --i;//q>>=iShift[--i];
 #endif
 	unsigned int r = ((a&iMask[i])>>iShift[i-1])*K2Ki; //(unsigned int)((a&iMask[i])*K2Ki)>>iShift[i-1];
 	static char ss[11];
@@ -172,8 +172,8 @@ const char* getFileName(const char* path)
 	char *fileName=new char[strlen(path)+1];//(char*)malloc((strlen(path)+1)*sizeof(char));
 	strcpy(fileName,path);
 	if(strchr(path,DELIMITER)!=0) {
-		while((*fileName++!='\0'));
-		while((*fileName--!=DELIMITER));
+		while ((*fileName++!='\0')) ;
+		while ((*fileName--!=DELIMITER)) ;
 		fileName+=2;
 	}
 	return fileName;
@@ -185,9 +185,9 @@ const char* getFileDir(const char* path)
 	char* dir=new char[strlen(path)+1];//(char*)malloc((strlen(path)+1)*sizeof(char));
 	strcpy(dir,path);
 	char* q=dir;
-	while((*q++!='\0'));
+	while ((*q++!='\0')) ;
 	q--;
-	while((*q--!=DELIMITER));
+	while ((*q--!=DELIMITER)) ;
 	q++;
 	*q = '\0', q=dir;
 	return q;
@@ -236,6 +236,10 @@ int parseOct(const char *p, size_t n)
 
 #define SLEEP_QTIME 0
 #define SLEEP_WAITCONDITION 1
+#define  SLEEP_EVENTLOOP 0
+#if QT_VERSION <= 0x040000
+#define SLEEP_EVENTLOOP 0
+#endif
 
 #include "global.h"
 #if QT_VERSION >= 0x040700
@@ -247,6 +251,9 @@ typedef QTime QElapsedTimer;
 
 #if SLEEP_QTIME
 #include <qdatetime.h>
+#elif SLEEP_EVENTLOOP
+#include <QtCore/QEventLoop>
+#include <QtCore/QTimer>
 #elif SLEEP_WAITCONDITION
 #if CONFIG_QT2
 #include <qthread.h>
@@ -270,6 +277,10 @@ void qSleep(int ms)
 	QTime dieTime = QTime::currentTime().addMSecs(ms);
 	while( QTime::currentTime() < dieTime )
 		QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+#elif SLEEP_EVENTLOOP
+	QEventLoop eventloop;
+	QTimer::singleShot(ms, &eventloop, SLOT(quit()));
+	eventloop.exec();
 #elif SLEEP_WAITCONDITION
 	mutex.lock();
 	static QWaitCondition wait;
