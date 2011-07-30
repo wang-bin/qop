@@ -56,8 +56,10 @@ win32 {
 	SOURCES += src/getopt.cpp
 } else:unix {
 	OBJECTS_DIR = .obj/unix
+	*llvm*: OBJECTS_DIR = .obj/unix-llvm
 } else:macx {
 	OBJECTS_DIR = .obj/macx
+	*llvm*: OBJECTS_DIR = .obj/macx-llvm
 } else {
 	OBJECTS_DIR = .obj
 }
@@ -100,6 +102,7 @@ CONFIG(ezx) {
 	 QMAKE_CXXFLAGS.ARMCC +=
  } else {
 	 TARGET = qop
+	*llvm*: TARGET = $${TARGET}-llvm
  }
 
 unix:!symbian {
@@ -162,3 +165,5 @@ unix:maemo5 {
 
 	QMAKE_EXTRA_TARGETS += debian-all debian-src debian-bin compiler_clean
 }
+
+DISTFILES = $${HEADERS} $${SOURCES} $${TRANSLATIONS} $${OTHER_FILES}
