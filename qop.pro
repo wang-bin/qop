@@ -129,3 +129,8 @@ unix:maemo* {
 }
 
 DISTFILES = $${HEADERS} $${SOURCES} $${TRANSLATIONS} $${OTHER_FILES}
+
+unix:!symbian:!maemo5 {
+    target.path = /opt/qop/bin
+    INSTALLS += target
+}
