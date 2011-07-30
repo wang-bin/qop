@@ -1,5 +1,7 @@
 VERSION 0.3 TODO List
 
+Add qmake for qt3 and mkspecs
+
 UI:
 1:(boost.any like)
 we can reuse ezprogressdialog without any change
