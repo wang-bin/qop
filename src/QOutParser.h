@@ -22,7 +22,7 @@
 
 #define OP_TEMPLATE 0
 #define LINE_LENGTH_MAX 1024
-#define NO_SOCKET 1
+//#define NO_SOCKET 1
 
 #include "global.h"
 #include "qcounterthread.h"
@@ -63,7 +63,7 @@ private slots:
 	void slotFinished();
 	void slotResetUnit();
 #if !NO_SOCKET
-	void readFromSocket(int);
+	//void readFromSocket(int);
 #endif
 signals:
 	void valueChanged(int);

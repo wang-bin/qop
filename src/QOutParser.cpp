@@ -70,9 +70,9 @@ QOutParser::QOutParser(uint total):QObject(0),file(""),size(0),compressed(0),val
 	connect(&counter,SIGNAL(maximumChanged(int)),SLOT(setTotalSize(int)));
 	connect(this,SIGNAL(unitChanged()),SLOT(slotResetUnit()));
 #if !NO_SOCKET
-	QSocketNotifier *stdin_notifier=new QSocketNotifier(STDIN_FILENO,QSocketNotifier::Read,this);
-	connect(stdin_notifier,SIGNAL(activated(int)),SLOT(readFromSocket(int)));
-	initTimer();
+	//QSocketNotifier *stdin_notifier=new QSocketNotifier(STDIN_FILENO,QSocketNotifier::Read,this);
+	//connect(stdin_notifier,SIGNAL(activated(int)),SLOT(readFromSocket(int)));
+	//initTimer();
 #endif
 }
 
@@ -140,6 +140,7 @@ void QOutParser::initTimer()
 	tid=startTimer(300); //startTimer(0) error in ezx
 }
 #if !NO_SOCKET
+/*
 #include <qfile.h>
 void QOutParser::readFromSocket(int socket)
 {
@@ -152,6 +153,7 @@ void QOutParser::readFromSocket(int socket)
 	sn->setEnabled(true);
 	parseLine(line);
 }
+*/
 #endif
 
 void QOutParser::start() {
