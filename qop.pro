@@ -22,7 +22,6 @@ HEADERS		= src/QOutParser.h \
 		src/qarchive/zip/ZipHeader.h \
 		src/qarchive/gzip/GzipHeader.h \
 		src/qarchive/gzip/GzipItem.h \
-		src/Compress/BitlDecoder.h \
 		src/qop.h \
 		src/commandparser.h \
 		src/version.h \
@@ -41,7 +40,6 @@ SOURCES		= src/QOutParser.cpp \
 		src/qarchive/tar/qtar.cpp \
 		src/qarchive/zip/ZipHeader.cpp \
 		src/qarchive/gzip/GzipItem.cpp \
-		src/Compress/BitlDecoder.cpp \
 		src/qop.cpp \
 		src/commandparser.cpp
 
