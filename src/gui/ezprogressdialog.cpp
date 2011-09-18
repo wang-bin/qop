@@ -162,11 +162,7 @@ EZProgressDialog::~EZProgressDialog()
 
 void EZProgressDialog::retranslateUi()
 {
-#if CONFIG_QT4
 	setWindowTitle(tr("EZProgressDialog"));
-#else
-	setCaption(tr("EZProgressDialog"));
-#endif //EZXT_QT4
 }
 
 void EZProgressDialog::addButton(ZPushButton *btn,int index,int stretc,Alignment align)

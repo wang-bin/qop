@@ -109,7 +109,7 @@ public:
 #else
 	QList<QLabel> labels;
 	QList<ZPushButton> buttons;
-#endif //EZXT_QT4
+#endif //CONFIG_QT4
 	QTime time;
 
 #if !INHERIT_PRIVATE || (QT_VERSION < 0x040000)
