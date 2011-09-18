@@ -102,8 +102,8 @@ using Qt::Alignment;
 #define EZ_ProgressDialog(labeltext,cancelbutton,min,max,parent,name,modal,flag) UTIL_ProgressDialog(labeltext,cancelbutton,max,parent,name,modal,flag)
 //#define setValue(v) setProgress(v)
 typedef int Alignment;
-
-#endif //EZXT_QT4
+#define setWindowTitle(s) setCaption(s)
+#endif //CONFIG_QT4
 
 
 #if CONFIG_EZX
