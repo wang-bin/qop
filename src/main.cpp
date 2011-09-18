@@ -29,8 +29,8 @@
 //#include <qfileinfo.h>
 #include <qtextcodec.h>
 #include <qtranslator.h>
-#include <stdlib.h>
-#include <stdio.h>
+#include <cstdlib>
+#include <cstdio>
 
 #include "qop.h"
 #include "option.h"
@@ -82,7 +82,6 @@ int main(int argc, char *argv[])
 #endif
 	//QDir::setCurrent(dirname); //bad in windows cygwin
 	ZDEBUG("dir: %s",qPrintable(dirname));
-
 
 	QTranslator appTranslator(0);
 #if CONFIG_EZX
