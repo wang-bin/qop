@@ -2,10 +2,10 @@ TEMPLATE	= app
 TARGET		= qop
 INCLUDEPATH	+= src
 LIBS		+= #-Llib -lz
-TRANSLATIONS+= i18n/qop_zh-cn.ts
 FORMS	=
 
 include(config.pri)
+include(i18n.pri)
 
 HEADERS		= src/QOutParser.h \
 		src/gui/ezprogressdialog.h \
@@ -27,7 +27,7 @@ HEADERS		= src/QOutParser.h \
 		src/version.h \
 		src/qarchive/qarchive_p.h \
 		src/msgdef.h \
-    src/qtcompat.h
+		src/qtcompat.h
 
 SOURCES		= src/QOutParser.cpp \
 		src/gui/ezprogressdialog.cpp \

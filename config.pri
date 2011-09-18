@@ -14,7 +14,7 @@ TOOLCHAIN_EXT =
 unix {
   PLATFORM_EXT = _unix
   *linux*: PLATFORM_EXT = _linux
-  maemo*: PLATFORM_EXT = _maemo
+  *maemo*: PLATFORM_EXT = _maemo
 } else:win32 {
   PLATFORM_EXT = _win32
 } else:macx {
@@ -39,10 +39,20 @@ contains(QT_ARCH, arm.*) {
 *llvm*: TOOLCHAIN_EXT = _llvm
 #*msvc*:
 
-DESTDIR	= bin
-TARGET	= $${TARGET}$${PLATFORM_EXT}$${ARCH_EXT}$${TOOLCHAIN_EXT}
+#before target name changed
+TRANSLATIONS += i18n/$${TARGET}_zh-cn.ts #i18n/$${TARGET}_zh_CN.ts
+
+isEqual(TEMPLATE, app) {
+  DESTDIR = bin
+  TARGET = $${TARGET}$${PLATFORM_EXT}$${ARCH_EXT}$${TOOLCHAIN_EXT}
+}
+else: DESTDIR = lib
+
 OBJECTS_DIR = .obj/$${PLATFORM_EXT}$${ARCH_EXT}$${TOOLCHAIN_EXT}
  #for Qt2, Qt3 which does not have QT_VERSION. Qt4: $$[QT_VERSION]
 MOC_DIR = .moc/$${QT_VERSION}
 RCC_DIR = .rcc/$${QT_VERSION}
 UI_DIR  = .ui/$${QT_VERSION}
+
+#unix: QMAKE_POST_LINK=strip $(TARGET)
+!build_pass:message(target: $$DESTDIR/$$TARGET)

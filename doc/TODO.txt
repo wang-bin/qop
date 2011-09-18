@@ -1,5 +1,7 @@
 VERSION 0.3 TODO List
 
+QTextBrowser for log viewing intergrated into EZProgressDialog
+
 Add qmake for qt3 and mkspecs etc
 
 UI:
