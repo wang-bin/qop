@@ -496,7 +496,7 @@ Format QZipOutParser::parse(const char* line)
 	 extracting: core/tt
 
 
-	command: unzip -ov zip.zip, do not extract
+	command: unzip -ov zip.zip -d exdir, do not extract
 		-P pw , -P- skip pw
 	output:
 	Archive:  core.zip
