@@ -75,7 +75,7 @@ void ArcReader::setFile(const std::string &file)
 	fileName=file;
 }
 
-Format ArcReader::formatByBuf()
+Format ArcReader::formatByMagic()
 {
 	format=FormatUnknow;
 	FILE *file=NULL;
@@ -110,7 +110,7 @@ Format ArcReader::formatByName()
 size_t ArcReader::uncompressedSize()
 {
 	//if(formatByName()==Unknow)
-		formatByBuf();
+		formatByMagic();
 
 	FILE *file=NULL;
 	size_t unx_size=0;
@@ -178,7 +178,7 @@ void QArcReader::setFile(const QString &file)
 	fileName=file;
 }
 
-Format QArcReader::formatByBuf()
+Format QArcReader::formatByMagic()
 {
 	format=FormatUnknow;
 	QFile file(fileName);
@@ -225,7 +225,7 @@ Format QArcReader::formatByName()
 
 size_t QArcReader::uncompressedSize()
 {
-	formatByBuf();
+	formatByMagic();
 	QFile file(fileName);
 	size_t unx_size=file.size();
 #if ARCREADER_QT4

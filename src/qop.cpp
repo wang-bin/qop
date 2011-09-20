@@ -142,8 +142,7 @@ void Qop::initGui()
 	progress->addButton(QObject::tr("Hide"),0,1,Qt::AlignRight);
 	QObject::connect(progress->button(0),SIGNAL(clicked()),progress,SLOT(hide())); //Hide the widget will be faster. not showMinimum
 	progress->setAutoClose(false);
-	progress->setAutoReset(false);  //true: 最大值时变为最小
-
+	progress->setAutoReset(false);
 #if CONFIG_EZX
 	QFont f;
 	f.setPointSize(14);
@@ -203,7 +202,7 @@ void Qop::initParser()
 			fflush(stdout);
 		}
 		Archive::ArcReader ar(qPrintable(arc_path));
-		switch(ar.formatByBuf()) {
+		switch(ar.formatByMagic()) {
 		case Archive::FormatRar:	parser_type="unrar";	break;
 		case Archive::FormatZip:	parser_type="unzip";	break;
 		case Archive::Format7zip:	parser_type="7z";		break;
