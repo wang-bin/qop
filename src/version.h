@@ -42,15 +42,30 @@ struct version {
 
 #define APP_NAME "qop"
 
-#define APP_VERSION 0x000300
+#undef APP_VERSION //0x000300
 
-#define MAJOR ((APP_VERSION&0xff0000)>>16)
-#define MINOR ((APP_VERSION&0xff00)>>8)
-#define PATCH (APP_VERSION&0xff)
+#define MAJOR 0	//((APP_VERSION&0xff0000)>>16)
+#define MINOR 3	//((APP_VERSION&0xff00)>>8)
+#define PATCH 0	//(APP_VERSION&0xff)
 
-#define APP_VERSION_STR version_str<MAJOR, MINOR, PATCH>()
+#define VERSION_CHK(major, minor, patch) \
+	(((major&0xff)<<16) | ((minor&0xff)<<8) | (patch&0xff))
+
+#define APP_VERSION VERSION_CHK(MAJOR, MINOR, PATCH)
+
+//#define APP_VERSION_STR version_str<MAJOR, MINOR, PATCH>()
 //#define APP_VERSION_STR version<APP_VERSION>::string
 
+
+/*! Stringify \a x. */
+#define _TOSTR(x)   #x
+/*! Stringify \a x, perform macro expansion. */
+#define TOSTR(x)  _TOSTR(x)
+
+const char* const version_string = TOSTR(MAJOR)"."TOSTR(MINOR)"."TOSTR(PATCH)"(" \
+		__DATE__", "__TIME__")";
+
+#define APP_VERSION_STR version_string
 
 #endif // VERSION_H
 

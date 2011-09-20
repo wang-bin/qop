@@ -37,11 +37,10 @@
 #include "version.h"
 
 static const char *appName=(char*)malloc(64);
-const QString program="qop";
 
 void printHelp()
 {
-	fprintf(stderr,	"%s %s (%s, %s)\n"
+	fprintf(stderr,	"%s %s\n"
 					"Usage: %s [-t parserFor] [-n|s] [-hmc] [-x archieve|-T totalSteps] [files...] [-C cmd]\n"
 					"  -t, --parser[=TYPE]  parser(tar,untar,zip,unzip,unrar,lzip.upx)\n"
 					"  -n, --number         count number of files as total steps\n"
@@ -62,18 +61,18 @@ void printHelp()
 					"Project:\n"
 					"    http://sourceforge.net/projects/qop/files\n"
 					"    http://qt-apps.org/content/show.php/qop?content=132430\n"
-					"Send bugreports to <wbsecg1@gmail.com>\n\n",appName,APP_VERSION_STR,__DATE__,__TIME__,appName);
+					"Send bugreports to <wbsecg1@gmail.com>\n\n"
+					, appName, APP_VERSION_STR, appName);
 }
 
 int main(int argc, char *argv[])
 {
 	appName=getFileName(argv[0]);
-	qDebug("%s %s (%s, %s)", APP_NAME, APP_VERSION_STR, __DATE__, __TIME__);
+	qDebug("%s %s\nQt %s\n", APP_NAME, APP_VERSION_STR, qVersion());
 
 	opts_t options=opts_parse(argc,argv);
 
 	ZApplication a(argc, argv, QApplication::GuiClient);
-	printf("Qt %s\n",qVersion());
 #if QT_VERSION >= 0x040000
 	QString dirname=QCoreApplication::applicationDirPath();
 #else
@@ -86,11 +85,11 @@ int main(int argc, char *argv[])
 	QTranslator appTranslator(0);
 #if CONFIG_EZX
 	QString sysLang=ZLanguage::getSystemLanguageCode();
-	appTranslator.load(program+"_"+sysLang,dirname+"/i18n");
+	appTranslator.load(APP_NAME "_" + sysLang, dirname + "/i18n");
 	//QString(dirname)+"/i18n" will load fail, 乱码
 #else
 	QString sysLang=QLocale::system().name();
-	appTranslator.load(program+"-"+sysLang,dirname+"/i18n");
+	appTranslator.load(APP_NAME "-" + sysLang, dirname + "/i18n");
 #endif //CONFIG_EZX
 	ZDEBUG("system language: %s",qPrintable(sysLang));
 	a.installTranslator(&appTranslator);
