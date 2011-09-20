@@ -22,7 +22,7 @@
 
 #define OP_TEMPLATE 0
 #define LINE_LENGTH_MAX 1024
-//#define NO_SOCKET 1
+#define NO_SOCKET 1
 
 #include "qtcompat.h"
 #include "qcounterthread.h"
