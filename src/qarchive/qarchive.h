@@ -61,10 +61,6 @@ typedef struct
 
 namespace Archive {
 
-	enum IODev {
-		File, StdOut, StdIn, StdErr
-	};
-
 	enum Error {
 		OpenError, ReadError, WriteError, ChecksumError, End, NoError
 	};
@@ -78,12 +74,10 @@ class QArchive :
 {
 	Q_OBJECT
 public:
-	QArchive(const QString& file="",IODev idev=File,IODev odev=File);
+	QArchive(const QString& file="");
 	virtual ~QArchive()=0;
 
 	void setProgressHandler(IProgressHandler* ph);
-	void setInput(IODev idev);
-	void setOutput(IODev odev);
 	void setOutDir(const QString& odir);
 	QString outDir() const;
 	void setArchive(const QString& name);
@@ -120,7 +114,6 @@ protected:
 #endif
 	virtual void timerEvent(QTimerEvent *);
 
-	Archive::IODev _output, _input;
 	IProgressHandler *progressHandler;
 };
 

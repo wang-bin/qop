@@ -7,8 +7,8 @@
 namespace Archive {
 namespace Tar {
 
-QTar::QTar(const QString &archive, IODev idev, IODev odev)
-	:QArchive(archive,idev,odev)
+QTar::QTar(const QString &archive)
+	:QArchive(archive)
 {
 }
 
@@ -168,14 +168,11 @@ Error QTar::extract()
 	close();
 }
 
-Error QTar::extract(const QString& archive,const QString& dir)
+Archive::Error QTar::extract(const QString& archive,const QString& dir)
 {
 	setArchive(archive);
-	if(dir.isEmpty()) {
-		setOutput(StdOut);
-	} else {
-		setOutDir(dir);
-	}
+	setOutDir(dir);
+
 	return extract();
 }
 }

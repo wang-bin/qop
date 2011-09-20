@@ -75,8 +75,8 @@ unsigned int permissionsToMode(QFile::Permissions perms)
 */
 namespace Archive {
 
-QArchive::QArchive(const QString &archive,IODev idev,IODev odev)
-:d_ptr(new QArchivePrivate),_output(odev),_input(idev)
+QArchive::QArchive(const QString &archive)
+:d_ptr(new QArchivePrivate)
 #if !USE_SLOT
 	progressHandler(new IProgressHandler)
 #endif
@@ -200,16 +200,6 @@ void QArchive::checkTryPause()
 	while(d->pause) {
 		UTIL::qWait(100);
 	}
-}
-
-void QArchive::setInput(IODev idev)
-{
-	_input = idev;
-}
-
-void QArchive::setOutput(IODev odev)
-{
-	_output = odev;
 }
 
 void QArchive::setOutDir(const QString &odir)
