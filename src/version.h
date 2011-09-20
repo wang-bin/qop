@@ -1,5 +1,5 @@
 /******************************************************************************
-	QOP: Qt Output Parser for tar, zip etc with a compression/extraction progress indicator
+	version.h: version information
 	Copyright (C) 2010 Wangbin <wbsecg1@gmail.com>
 	(aka. nukin in ccmove & novesky in http://forum.motorolafans.com)
 

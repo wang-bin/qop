@@ -40,7 +40,7 @@ static const char *appName=(char*)malloc(64);
 
 void printHelp()
 {
-	fprintf(stderr,	"%s %s\n"
+	fprintf(stderr,	APP_NAME " %s\n"
 					"Usage: %s [-t parserFor] [-n|s] [-hmc] [-x archieve|-T totalSteps] [files...] [-C cmd]\n"
 					"  -t, --parser[=TYPE]  parser(tar,untar,zip,unzip,unrar,lzip.upx)\n"
 					"  -n, --number         count number of files as total steps\n"
@@ -59,10 +59,11 @@ void printHelp()
 					"under the terms of the GNU General Public Licence version 2\n<http://www.gnu.org/licenses/gpl-2.0.html>.\n"
 					"\n"
 					"Project:\n"
+					"    https://github.com/wang-bin/qop\n"
 					"    http://sourceforge.net/projects/qop/files\n"
 					"    http://qt-apps.org/content/show.php/qop?content=132430\n"
 					"Send bugreports to <wbsecg1@gmail.com>\n\n"
-					, appName, APP_VERSION_STR, appName);
+					, APP_VERSION_STR, appName);
 }
 
 int main(int argc, char *argv[])

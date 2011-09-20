@@ -7,8 +7,10 @@ wbsecg1@gmail.com
 用于显示tar,zip,unzip,unrar,7z这些工具进行压缩解压时的进度，与tar结合使用的工具如gzip,xz等也可以处理。
 平台支持：windows(Qt4), Linux(Qt4, tested on ubuntu 10.04), motorola ezx(Qt2, tested on ROKR E6)和Maemo5等
 
-Project: http://sourceforge.net/projects/qop/files"
-		 http://qt-apps.org/content/show.php/qop?content=132430
+Project:
+		https://github.com/wang-bin/qop
+		http://sourceforge.net/projects/qop/files"
+		http://qt-apps.org/content/show.php/qop?content=132430
 
 原理：其实就是分析压缩解压工具的终端输出来计算进度并对其他量进行估计。暂时没有想到更好的办法。
 缺点：当前显示的是之前一个文件处理完毕时的信息，而不是正在处理的文件的信息。没办法，因为是读取一行输出后才进行显示。无法与终端进行交互
