@@ -1,9 +1,13 @@
+#Copyright (C) 2011 Wang Bin <wbsecg1@gmail.com>
+#Shanghai, China.
+#GPL v2
+
 CONFIG += #ezx#static ezx
 CONFIG += profile
 #profiling, -pg is not supported for msvc
 debug:!*msvc*:profile {
-	QMAKE_CXXFLAGS_DEBUG += -pg
-	QMAKE_LFLAGS_DEBUG += -pg
+        QMAKE_CXXFLAGS_DEBUG += -pg
+        QMAKE_LFLAGS_DEBUG += -pg
 }
 
 #$$[TARGET_PLATFORM]
@@ -35,7 +39,6 @@ contains(QT_ARCH, arm.*) {
   ARCH_EXT = $${ARCH_EXT}_$${QT_ARCH}
 }
 *64:   ARCH_EXT = $${ARCH_EXT}_x64
-
 *llvm*: TOOLCHAIN_EXT = _llvm
 #*msvc*:
 

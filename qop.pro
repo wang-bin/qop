@@ -7,7 +7,7 @@ FORMS	=
 include(config.pri)
 include(i18n.pri)
 
-HEADERS		= src/QOutParser.h \
+HEADERS		+= src/QOutParser.h \
 		src/gui/ezprogressdialog.h \
 		src/gui/ezprogressdialog_p.h \
 		src/qcounterthread.h \
@@ -29,7 +29,7 @@ HEADERS		= src/QOutParser.h \
 		src/msgdef.h \
 		src/qtcompat.h
 
-SOURCES		= src/QOutParser.cpp \
+SOURCES		+= src/QOutParser.cpp \
 		src/gui/ezprogressdialog.cpp \
 		src/main.cpp \
 		src/qcounterthread.cpp \
