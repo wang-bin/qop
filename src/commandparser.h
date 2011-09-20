@@ -39,15 +39,16 @@
 #include <qstringlist.h>
 
 class QCounterThread;
+class CommandParserPrivate;
 class CommandParser
 {
+	Q_DECLARE_PRIVATE(CommandParser)
 public:
 	typedef enum {
 			Size=0x0, Num=0x1, NumNoDir=0x3
 	} CountType;
 
-	CommandParser();
-	CommandParser(const QString& cmd);
+	CommandParser(const QString& cmd = QString());
 	//CommandParser(const QString& program, const QStringList& argv);
 
 	virtual ~CommandParser();
@@ -70,38 +71,10 @@ public:
 	size_t archiveSize() const;
 	size_t archiveUnpackSize() const;
 
-	QCounterThread* counterThread() { return counter;}
+	QCounterThread* counterThread() const;
 
 protected:
-	QCounterThread *counter;
-
-	QString _cmd;
-	QString _archive;
-	QStringList _files;
-	bool _compress_mode;
-	CountType _count_type;
-	CommandParser *cmd_parser;
+	CommandParserPrivate *d_ptr;
 };
-
-#define DECLARE_COMMANDPARSER(T) \
-	class T##CommandParser : public CommandParser { \
-	public: \
-		T##CommandParser(){}; \
-		T##CommandParser(const QString& cmd):CommandParser(cmd){init();} \
-		virtual ~T##CommandParser(){}; \
-		virtual void setCommand(const QString &cmd) { \
-			_cmd=cmd; init(); } \
-		virtual QStringList files() {return _files;} \
-		virtual QString archive() {return _archive;} \
-		virtual CountType countType() {return _count_type;} \
-		virtual bool isCompressMode() {return _compress_mode;} \
-	private: \
-		void init(); \
-	};
-
-DECLARE_COMMANDPARSER(Tar)
-DECLARE_COMMANDPARSER(Zip)
-DECLARE_COMMANDPARSER(Unzip)
-DECLARE_COMMANDPARSER(Unrar)
 
 #endif // COMMANDPARSER_H
