@@ -1,4 +1,4 @@
-source ./.findqop.sh
+. .findqop.sh
 
 if [ $# -gt 0 ]; then
 rarfile=$@
