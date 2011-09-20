@@ -90,6 +90,8 @@ void Qop::execute(const QString &cmd)
 		parser_type="zip";
 	else if(cmdParser.program()==QLatin1String("unzip"))
 		parser_type="unzip";
+	else if(cmdParser.program()==QLatin1String("unrar"))
+		parser_type="unrar";
 
 	initParser();
 	initProcess();
