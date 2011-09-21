@@ -25,17 +25,78 @@
 /* Change to qtcompatible.h*/
 #include <qglobal.h>
 
-#if defined(linux) || defined(__linux) || defined(__linux__)
-#define _OS_LINUX_
-#elif defined(__CYGWIN__)
-#define _OS_CYGWIN_
-#elif defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
-#define _OS_WIN32_
-#elif defined(MSDOS) || defined(_MSDOS) || defined(__MSDOS__)
-#define _OS_MSDOS_
-#elif defined(__APPLE__) && (defined(__GNUC__) || defined(__xlC__) || defined(__xlc__))
-#define _OS_MAC_
+#if QT_VERSION < 0x030000
+#if defined(_OS_LINUX_)
+#  define Q_OS_LINUX
+#elif defined(_OS_CYGWIN_)
+#  define Q_OS_CYGWIN
+#elif defined(_OS_WIN32_)
+#  define Q_OS_WIN32
+#elif defined(_OS_MSDOS_)
+#  define Q_OS_MSDOS
+#elif defined(_OS_MAC_)
+#  define Q_OS_DARWIN
+#  define Q_OS_BSD4
+#  define Q_OS_MAC
+#elif defined(_OS_SOLARIS_)
+#  define Q_OS_SOLARIS
+#elif defined(_OS_OS2EMX_)
+#  define Q_OS_OS2EMX
+#elif defined(_OS_OS2_)
+#  define Q_OS_OS2
+#elif defined(_OS_HPUX_)
+#  define Q_OS_HPUX
+#elif defined(_OS_ULTRIX_)
+#  define Q_OS_ULTRIX
+#elif defined(_OS_RELIANT_)
+#  define Q_OS_RELIANT
+#elif defined(_OS_FREEBSD_)
+#  define Q_OS_FREEBSD
+#elif defined(_OS_NETBSD_)
+#  define Q_OS_NETBSD
+#  define Q_OS_BSD4
+#elif defined(_OS_OPENBSD_)
+#  define Q_OS_OPENBSD
+#  define Q_OS_BSD4
+#elif defined(_OS_IRIX_)
+#  define Q_OS_IRIX
+#elif defined(_OS_OSF_)
+#  define Q_OS_OSF
+#elif defined(_OS_BSDI_)
+#  define Q_OS_BSDI
+#  define Q_OS_BSD4
+#elif defined(_OS_AIX_)
+#  define Q_OS_AIX
+#elif defined(_OS_LYNXOS_)
+#  define Q_OS_LYNXOS
+#elif defined(_OS_UNIXWARE_) || defined(_OS_UNIXWARE7_)
+#  define Q_OS_UNIXWARE
+#elif defined(_OS_GNU_)
+#  define Q_OS_HURD
+#elif defined(_OS_DGUX_)
+#  define Q_OS_DGUX
+#elif defined(_OS_QNX_) || defined(_OS_QNX6_)
+#  define Q_OS_QNX
+#elif defined(_OS_SCO_)
+#  define Q_OS_SCO
+#elif defined(_OS_DYNIX_)
+#  define Q_OS_DYNIX
+#elif defined(_OS_UNIX_)
+#  define Q_OS_UNIX
+#elif defined(VXWORKS) /* there is no "real" VxWorks define - this has to be set in the mkspec! */
+#  define Q_OS_VXWORKS
 #endif
+
+#if defined(Q_OS_WIN32) || defined(Q_OS_WIN64) || defined(Q_OS_WINCE)
+#  define Q_OS_WIN
+#endif
+
+#if defined(Q_OS_MSDOS) || defined(Q_OS_OS2) || defined(Q_OS_WIN)
+#  undef Q_OS_UNIX
+#elif !defined(Q_OS_UNIX)
+#  define Q_OS_UNIX
+#endif
+#endif //QT_VERSION < 0x030000
 
 #if QT_VERSION >= 0x040600
 //QStringBuilder

@@ -270,7 +270,7 @@ void QOutParser::slotResetUnit()
 
 }
 
-#if defined(_OS_LINUX_) || defined(_OS_CYGWIN_)
+#if defined(Q_OS_LINUX) || defined(Q_OS_CYGWIN)
 #include <sys/types.h>
 #include <signal.h>
 #include <qfileinfo.h>
@@ -288,7 +288,7 @@ void QOutParser::terminate()
 	const char *senderName = sender()->name();
 #endif
 	ZDEBUG("signal sender: %s", senderName);
-#if defined(_OS_LINUX_)
+#if defined(Q_OS_LINUX)
 	ZDEBUG("OS LINUX");
 	//bash: ppid!=pid==pgid==..., qpkg:pid!=ppid==pgid, tar,this,etc:ppid!=pid!=pgid
 	pid_t pgid=getpgrp();

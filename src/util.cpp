@@ -162,7 +162,7 @@ const char* reverse_string(const char *str)
 
 //dir and filename
 //todo use windows api
-#if defined(_OS_WIN32_) || defined(_OS_MSDOS_)
+#if defined(Q_OS_WIN32) || defined(Q_OS_MSDOS)
 #define DELIMITER '\\'
 #else
 #define DELIMITER '/'
