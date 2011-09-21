@@ -304,7 +304,7 @@ void qWait(int ms)
 	timer.start();
 	do {
 #if CONFIG_QT4
-		//解决界面无法刷新的问�
+		//解决界面无法刷新的问题
 		QCoreApplication::processEvents(QEventLoop::AllEvents, ms);
 #else
 		qApp->processEvents(ms);
