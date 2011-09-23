@@ -214,8 +214,14 @@ typedef int Alignment;
 #endif //__GNUC__
 
 //use stdarg.h, see apue.h
+#define CONFIG_DEBUG 1
+#if CONFIG_DEBUG
 #define ZDEBUG(fmt, ...) qDebug("[%s] %s @%d: \t"#fmt, __FILE__, __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
 //#define ZDEBUG(fmt,args...) fprintf(stdout,"[%s] %s @%d: \t"fmt" \t---%s, %s\n",__FILE__,__PRETTY_FUNCTION__,__LINE__,## args,__TIME__,__DATE__); fflush(stdout)
+#else
+#define ZDEBUG(fmt, ...)
+#endif //CONFIG_DEBUG
+
 
 #if !CONFIG_QT4
 
