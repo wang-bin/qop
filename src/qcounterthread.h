@@ -29,6 +29,9 @@
 #include <qthread.h>
 //#endif //QT_THREAD_SUPPORT
 
+#undef QT_THREAD_SUPPORT
+#define QT_THREAD_SUPPORT
+
 //if no thread support, inherits qobject
 class QCounterThread :
 #if !(QT_VERSION >= 0x040000)

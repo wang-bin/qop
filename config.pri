@@ -32,7 +32,7 @@ ezx {
   PLATFORM_EXT = _ezx
   QMAKE_CXXFLAGS.ARMCC +=
 }
-
+DEFINES += QT_THREAD_SUPPORT
 #*arm*: ARCH_EXT = $${ARCH_EXT}_arm
 #isEqual(QT_ARCH, arm) {
 contains(QT_ARCH, arm.*) {
