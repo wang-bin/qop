@@ -266,9 +266,9 @@ template <typename Container> inline void qDeleteAll(const Container &c)
 #endif
 
 #if CONFIG_QT4
-#define QFILENAME(path) QString(path).mid(QString(path).lastIndexOf('/')+1)
+#define QFILENAME(path) path.mid(path.lastIndexOf('/')+1)
 #else
-#define QFILENAME(path) QString(path).mid(QString(path).findRev('/')+1)
+#define QFILENAME(path) path.mid(path.findRev('/')+1)
 #endif //CONFIG_QT4
 
 #endif // QTCOMPAT_H
