@@ -44,7 +44,7 @@ public:
 	~QOutParser();
 
 	void start(); //start to parse output
-	void parseLine(const char* line);
+	void parseLine(const QString& line);
 	void setMultiThread(bool);
 	void startCounterThread(); //start a QCounterThread thread
 
@@ -74,13 +74,14 @@ signals:
 
 protected:
 	virtual void timerEvent(QTimerEvent *);
-	virtual Format parse(const char* line); //return int
+	virtual Format parse(const QString& line); //return int
 	//<H1>File: %1</H>, _out=dspFormat.arg(file);
 	//virtual void setDiaplayFormat(Format fmt=All,const QString& txt="");
 
 	//use QLatin1String
 	QString file; //file just compressed/extracted
-	char line[LINE_LENGTH_MAX]; //add char name[256], ratio[4], int s? they are frequently used in parse
+	QString line;
+	//char line[LINE_LENGTH_MAX]; //add char name[256], ratio[4], int s? they are frequently used in parse
 	uint size, compressed, value; //outSize numbers-->value
 	QString ratio; //ratio: zip
 	QTime _time;
@@ -124,8 +125,10 @@ inline void QOutParser::estimate()
 
 
 #define Q_DECLARE_OUTPARSER(T) \
-	class Q##T##OutParser :public QOutParser { \
-	protected: Format parse(const char* line); };
+	class Q##T##OutParser :public QOutParser \
+	{ \
+		protected: Format parse(const QString& line); \
+	};
 
 //NO Q_OBJECT?
 
@@ -144,7 +147,7 @@ public:
 	QUntarOutParser(uint tota_size=0);
 
 protected:
-	Format parse(const char* line);
+	Format parse(const QString& line);
 };
 
 #endif // QOUTPARSER_H
