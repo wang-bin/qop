@@ -20,9 +20,12 @@
 
 #include "QOutParser.h"
 #include <algorithm>
+#if !NO_SOCKET
 #include <qsocketnotifier.h>
-
+#endif //NO_SOCKET
+#ifndef QT_NO_TEXTSTREAM
 #include <qtextstream.h>
+#endif //QT_NO_TEXTSTREAM
 
 #include "util.h"
 #include "msgdef.h"
@@ -160,7 +163,7 @@ void QOutParser::readFromSocket(int socket)
 
 void QOutParser::start() {
 	initTimer();
-#if 1
+#ifndef QT_NO_TEXTSTREAM
 	QTextStream stream(stdin);
 	do {
 		line = stream.readLine();
@@ -178,7 +181,7 @@ void QOutParser::start() {
 		if(res!=res_tmp)
 			emit unitChanged();
 	}
-#endif //TEXTSTREAM
+#endif //QT_NO_TEXTSTREAM
 	emit finished();
 }
 
@@ -195,8 +198,15 @@ void QOutParser::setRecount(bool rc)
 
 void QOutParser::setMultiThread(bool mt)
 {
-	ZDEBUG("Multi-thread=%d", mt);
-	multi_thread=mt;
+#if !CONFIG_QT4 && !defined(QT_THREAD_SUPPORT)
+	if(mt) {
+		ZDEBUG("Multi-threading is not support!");
+		multi_thread = false;
+		return;
+	}
+#endif
+	multi_thread = mt;
+	ZDEBUG("Multi-threading enabled=%d", multi_thread);
 }
 
 void QOutParser::startCounterThread()
@@ -409,13 +419,15 @@ Format QTarOutParser::parse(const QString& line)
 		file=QFILENAME(QString(name));
 		if(file.isEmpty()) { //"./a/"
 			file=name;
-		} return Detail;
+		}
+		return Detail;
 	} else {
 		//puts(line);
 		file=QFILENAME(line);
 		if(file.isEmpty()) {
 			file=line;
-		} return Simple;
+		}
+		return Simple;
 	}
 }
 
@@ -440,13 +452,15 @@ Format QUntarOutParser::parse(const QString& line)
 		file=QFILENAME(QString(name));
 		if(file.isEmpty()) { //"./a/"
 			file=name;
-		} return Detail;
+		}
+		return Detail;
 	} else {
 		//puts(line);
 		file=QFILENAME(line);
 		if(file.isEmpty()) {
 			file=line;
-		} return Simple;
+		}
+		return Simple;
 	}
 }
 

@@ -25,19 +25,19 @@
 
 #include "qtcompat.h"
 #include <qobject.h>
-//#ifdef QT_THREAD_SUPPORT
 #include <qthread.h>
-//#endif //QT_THREAD_SUPPORT
 
-#undef QT_THREAD_SUPPORT
-#define QT_THREAD_SUPPORT
 
-//if no thread support, inherits qobject
+//if no thread support in qt2 and qt3, inherits qobject
 class QCounterThread :
-#if !(QT_VERSION >= 0x040000)
-		public QObject,
-#endif
+#if !CONFIG_QT4
+		public QObject
+#if defined(QT_THREAD_SUPPORT)
+		, public QThread
+#endif //QT_THREAD_SUPPORT
+#else
 		public QThread
+#endif //CONFIG_QT4
 {
 	Q_OBJECT
 public:
@@ -51,7 +51,7 @@ public:
 
 	void setFiles(const QStringList&);
 	void setCountType(CountType);
-#ifndef QT_THREAD_SUPPORT
+#if !CONFIG_QT4 && !defined(QT_THREAD_SUPPORT)
 	void start();
 #endif //QT_THREAD_SUPPORT
 	virtual void run();

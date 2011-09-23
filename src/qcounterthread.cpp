@@ -28,7 +28,7 @@ QCounterThread::QCounterThread(const QStringList &f)
 
 QCounterThread::~QCounterThread() {}
 
-#ifndef QT_THREAD_SUPPORT
+#if !CONFIG_QT4 && !defined(QT_THREAD_SUPPORT)
 void QCounterThread::start() { run();}
 #endif //QT_THREAD_SUPPORT
 void QCounterThread::setFiles(const QStringList &f) { files=f;}
