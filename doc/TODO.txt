@@ -4,6 +4,9 @@ QTextBrowser for log viewing intergrated into EZProgressDialog
 
 Add qmake for qt3 and mkspecs etc
 
+class QOutputParserPrivate
+Lzma
+
 UI:
 1:(boost.any like)
 we can reuse ezprogressdialog without any change
