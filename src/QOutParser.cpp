@@ -22,6 +22,8 @@
 #include <algorithm>
 #include <qsocketnotifier.h>
 
+#include <qtextstream.h>
+
 #include "util.h"
 #include "msgdef.h"
 
@@ -80,7 +82,7 @@ QOutParser::~QOutParser()
 {
 }
 
-void QOutParser::parseLine(const char* line)
+void QOutParser::parseLine(const QString& line)
 {
 	Format res_old = res;
 	res=parse(line);
@@ -119,10 +121,10 @@ void QOutParser::parseLine(const char* line)
 		_out = g_BaseMsg_Zip(file, size, ratio, value, max_str);
 		_extra = g_ExtraMsg_Zip(_speed, _elapsed, _left);
 	} else if(res==Unknow) {
-		qDebug("%s", line);
+		qDebug("%s", qPrintable(line));
 		return;
 	} else if(res==Error) {
-		qDebug("%s", line);
+		qDebug("%s", qPrintable(line));
 		_out=tr("Password Error!");
 		_extra="";
 	} else {
@@ -158,12 +160,25 @@ void QOutParser::readFromSocket(int socket)
 
 void QOutParser::start() {
 	initTimer();
-	while(fgets(line,LINE_LENGTH_MAX,stdin)) {
+#if 1
+	QTextStream stream(stdin);
+	do {
+		line = stream.readLine();
+		res_tmp=res;
+		parseLine(line);
+		if(res!=res_tmp)
+			emit unitChanged();
+	} while (!line.isNull());
+#else
+	char line_tmp[LINE_LENGTH_MAX];
+	while(fgets(line_tmp, LINE_LENGTH_MAX, stdin)) {
+		line = QString(line_tmp);
 		res_tmp=res;
 		parseLine(line);
 		if(res!=res_tmp)
 			emit unitChanged();
 	}
+#endif //TEXTSTREAM
 	emit finished();
 }
 
@@ -180,6 +195,7 @@ void QOutParser::setRecount(bool rc)
 
 void QOutParser::setMultiThread(bool mt)
 {
+	ZDEBUG("Multi-thread=%d", mt);
 	multi_thread=mt;
 }
 
@@ -199,7 +215,7 @@ void QOutParser::setFiles(const QStringList &f)
 	counter.setFiles(f);
 }
 
-Format QOutParser::parse(const char *line)
+Format QOutParser::parse(const QString& line)
 {
 	_out=line; //can remove
 	return All;
@@ -244,6 +260,7 @@ void QOutParser::setTotalSize(int s)
 		else
 			emit textChanged(tr("Counting...")+QString::number(s));
 	}
+	//ZDEBUG("Total size changes to %d", s);
 	emit maximumChanged(max_value=s);
 	//qApp->processEvents();
 	estimate();
@@ -382,14 +399,14 @@ void QOutParser::terminate()
 	core/
 	core/p
 */
-Format QTarOutParser::parse(const char* line)
+Format QTarOutParser::parse(const QString& line)
 {
 	int s=0;
 	char name[256];
-	if(QString(line).contains(" ")) {
-		sscanf(line,"%*s%*s%d%*s%*s%s",&s,name);
+	if(line.contains(" ")) {
+		sscanf(qPrintable(line),"%*s%*s%d%*s%*s%s",&s,name);
 		value+=size=s;
-		file=QFILENAME(name);
+		file=QFILENAME(QString(name));
 		if(file.isEmpty()) { //"./a/"
 			file=name;
 		} return Detail;
@@ -412,15 +429,15 @@ QUntarOutParser::QUntarOutParser(uint tota_size):QOutParser(tota_size)
 /*!
   FIXME: QFileInfo(name).fileName() is slow and cost to much;
 */
-Format QUntarOutParser::parse(const char *line)
+Format QUntarOutParser::parse(const QString& line)
 {
 	int s=0;
 	char name[256];
-	if(QString(line).contains(" ")) {
-		sscanf(line,"%*s%*s%d%*s%*s%s",&s,name);
+	if(line.contains(" ")) {
+		sscanf(qPrintable(line),"%*s%*s%d%*s%*s%s",&s,name);
 		size=s;
 		value+=512+ROUND512(s);//512+(s%512 ? s+512-s%512 :s); //sizeof(tar_header)+n*512: 512+s+512+(-s)%512
-		file=QFILENAME(name);
+		file=QFILENAME(QString(name));
 		if(file.isEmpty()) { //"./a/"
 			file=name;
 		} return Detail;
@@ -451,37 +468,37 @@ Format QUntarOutParser::parse(const char *line)
 	zip 3.0 win32:
 	2/ 10 [ 31k/ 90k]	adding: core/qq	(80 bytes security) (in=7137) (out=2146) (deflated 70%)
  */
-Format QZipOutParser::parse(const char* line)
+Format QZipOutParser::parse(const QString& line)
 {
 	int s=0;
 	char name[256],r[4];
-	if(QString(line).contains("updating:") || (QString(line).contains("adding:"))) {
-		if(QString(line).contains("in=")) {
-			sscanf(line,"%*s%s\t(in=%d)%*s%*s%[^)]",name,&s,r);
+	if(line.contains("updating:") || (line.contains("adding:"))) {
+		if(line.contains("in=")) {
+			sscanf(qPrintable(line),"%*s%s\t(in=%d)%*s%*s%[^)]",name,&s,r);
 			ratio=r;
 			value+=size=s;
-			file=QFILENAME(name);
+			file=QFILENAME(QString(name));
 			if(file.isEmpty()) { //"./a/"
 				file=name;
 			}
 			return DetailWithRatio;
 		}  else {
-			sscanf(line,"%*s%s",name);
-			file=QFILENAME(name);
+			sscanf(qPrintable(line),"%*s%s",name);
+			file=QFILENAME(QString(name));
 			if(file.isEmpty()) {
 				file=name;
 			}
 			return Simple;
 		}
-	} else if(QString(line).contains("->")) {//finished
+	} else if(line.contains("->")) {//finished
 		char in_s[32], out_s[32], r[3];
-		sscanf(line,"%*[^=]=%[^,]%*[^=]=%[^ ]%*[^>]>%[^%]",in_s,out_s,r);
+		sscanf(qPrintable(line),"%*[^=]=%[^,]%*[^=]=%[^ ]%*[^>]>%[^%]",in_s,out_s,r);
 		value=QString(in_s).toInt();
 		compressed=QString(out_s).toInt();
 		ratio=QString(r)+"%";
 		//ratio=QString().sprintf("%.2f",(double)compressed/(double)value*100.)+"%";
 		return EndZip;
-	} else if(QString(line).contains("Archive is current")) {
+	} else if(line.contains("Archive is current")) {
 		return All;
 	}
 	return Unknow;
@@ -513,30 +530,30 @@ Format QZipOutParser::parse(const char* line)
 
 //	get bytes: unzip -Z -t img.zip |sed 's/\(.*\), \(.*\) bytes \(.*\) bytes \(.*\)/\2/'
 //	get number: unzip -Z -t img.zip |sed 's/\(.*\) files.*/\1/'
-Format QUnzipOutParser::parse(const char* line)
+Format QUnzipOutParser::parse(const QString& line)
 {
-	if(QString(line).contains("Archive")) return Unknow;
-	if(QString(line).contains("--------")) return Unknow;
+	if(line.contains("Archive")) return Unknow;
+	if(line.contains("--------")) return Unknow;
 
-	if((QString(line).contains("incorrect"))) {
+	if((line.contains("incorrect"))) {
 		return Error; //not work??
 	}
 
 	int s=0;
 	char name[256],r[4];
-	if(QString(line).contains("%")) {
+	if(line.contains("%")) {
 		// change to if( extracting, inflating)
-		if(!QString(line).contains(":")) return Unknow;
-		sscanf(line,"%d%*s%*d%s%*s%*s%*s%s",&s,r,name);
+		if(!line.contains(":")) return Unknow;
+		sscanf(qPrintable(line),"%d%*s%*d%s%*s%*s%*s%s",&s,r,name);
 		value+=size=s;
-		file=QFILENAME(name);
+		file=QFILENAME(QString(name));
 		if(file.isEmpty()) { //"./a/"
 				file=name;
 		}
 		return Detail;
 	} else {
-		sscanf(line,"%*s%s",name);
-		file=QFILENAME(name);
+		sscanf(qPrintable(line),"%*s%s",name);
+		file=QFILENAME(QString(name));
 		if(file.isEmpty()) {
 				file=name;
 		}
@@ -556,14 +573,14 @@ Format QUnzipOutParser::parse(const char* line)
 	Extracting  core/p													OK
 	All OK
  */
-Format QUnrarOutParser::parse(const char* line)
+Format QUnrarOutParser::parse(const QString& line)
 {
-	if(QString(line).contains("UNRAR ")) return Unknow;
+	if(line.contains("UNRAR ")) return Unknow;
 	if(QString(line).isEmpty()) return Unknow;
 
 	char name[256];
-	sscanf(line,"%*s%s",name);
-	file=QFILENAME(name);
+	sscanf(qPrintable(line),"%*s%s",name);
+	file=QFILENAME(QString(name));
 	if(file.isEmpty()) {
 		file=name;
 	}
@@ -578,22 +595,22 @@ Format QUnrarOutParser::parse(const char* line)
 	output:
 	  gui.tar.lz: done
 ***/
-Format QLzipOutParser::parse(const char* line)
+Format QLzipOutParser::parse(const QString& line)
 {
 	int s=0;
 	char name[256],r[8];
-	if(QString(line).contains("o")) {
-		sscanf(line,"%s:%*s%*s%s%*s%d",name,r,&size);
+	if(line.contains("o")) {
+		sscanf(qPrintable(line),"%s:%*s%*s%s%*s%d",name,r,&size);
 		ratio=r;
 		value+=size=s;
-		file=QFILENAME(name);
+		file=QFILENAME(QString(name));
 		if(file.isEmpty()) { //"./a/"
 				file=name;
 		}
 		return Detail;
 	} else {
-		sscanf(line,"%*s%s",name);
-		file=QFILENAME(name);
+		sscanf(qPrintable(line),"%*s%s",name);
+		file=QFILENAME(QString(name));
 		return Simple;
 	}
 }
@@ -613,12 +630,12 @@ Packed 1 file.
 
 
 */
-Format QUpxOutParser::parse(const char* line)
+Format QUpxOutParser::parse(const QString& line)
 {
 	int in, out;
 	char r[7], format[32], outName[32];
-	if(!QString(line).contains("%")) return Unknow;
-	sscanf(line,"%d%*s%d%s%s%s",&in,&out,r,format,outName);
+	if(!line.contains("%")) return Unknow;
+	sscanf(qPrintable(line),"%d%*s%d%s%s%s",&in,&out,r,format,outName);
 	_out = QLatin1String("Name: ")+QString(outName) + QLatin1String("\nFormate: ") + QString(format)+ QLatin1String("\n") \
 	+ QLatin1String(size2str(in)) + QLatin1String(" -> ") + QLatin1String(size2str(out)) + QLatin1String("\nRatio: ") +QString(ratio);
 	return Unknow;
@@ -635,17 +652,17 @@ tar zxvf test.tgz |qop -T `tar -zt <test.tgz |wc -l` -n
 //$((files+dirs)): 7z l test.7z |sed -n '$s/\(.*\)  \(.*\)files, \(.*\) folders/$((\2+\3))/p'
 // $((`7z l test.7z |sed -n '$s/\(.*\), \(.*\)folders/\2/p'`+`7z l test.7z |sed -n '$s/\(.*\)  \(.*\)files.*/\2/p'`))
 
-Format Q7zOutParser::parse(const char *line)
+Format Q7zOutParser::parse(const QString& line)
 {
-	if(QString(line).contains("Compressing") || QString(line).contains("Extracting")) {
+	if(line.contains("Compressing") || line.contains("Extracting")) {
 		char name[256];
-		sscanf(line,"%*s%s",name);
-		file=QFILENAME(name);
+		sscanf(qPrintable(line),"%*s%s",name);
+		file=QFILENAME(QString(name));
 		if(file.isEmpty())
 			file=name;
 		return Simple;
-	} else if (QString(line).contains("Ok") ||QString(line).contains("Folders:")  ||QString(line).contains("Files:") \
-			   ||QString(line).contains("Size:") ||QString(line).contains("Compressed:")) {
+	} else if (line.contains("Ok") ||line.contains("Folders:")  ||line.contains("Files:") \
+			   ||line.contains("Size:") ||line.contains("Compressed:")) {
 		return End7z;
 	}
 	return Unknow;
