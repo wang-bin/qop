@@ -20,6 +20,8 @@
 
 #include "QOutParser.h"
 #include <algorithm>
+#include <limits>
+
 #if !NO_SOCKET
 #include <qsocketnotifier.h>
 #endif //NO_SOCKET
@@ -60,20 +62,82 @@ QOutParser* getParser(const QString& type)
 	}
 }
 
-int QOutParser::detail_freq=0;
-int QOutParser::simple_freq=0;
-int QOutParser::detail_ratio_freq=0;
 
-QOutParser::QOutParser(uint total):QObject(0),file(""),size(0),compressed(0),value(0) \
-	,_out(""),_extra(tr("Calculating...")),_elapsed(0),_left(0),max_value(total),res(Unknow) \
-	,count_type(QCounterThread::Size),multi_thread(false),_recount(true)
+class QOutParserPrivate {
+public:
+	QOutParserPrivate():file(""),size(0),compressed(0),value(0) \
+	  ,out(""),extra(QObject::tr("Calculating...")),elapsed(0),left(0),max_value(0),res(Unknow) \
+	  ,count_type(QCounterThread::Size),multi_thread(false),recount(true),update_msg_on_change(false) {
+		max_value = std::numeric_limits<uint>::max();
+		res_tmp = res;
+
+		//time.start();
+	}
+
+	void estimate();
+
+	//use QLatin1String
+	QString file; //file just compressed/extracted
+	QString line;
+	//char line[LINE_LENGTH_MAX]; //add char name[256], ratio[4], int s? they are frequently used in parse
+	uint size, compressed, value; //outSize numbers-->value
+	QString ratio; //ratio: zip
+	QTime time;
+	QString out, extra;
+	uint elapsed, speed; //ms
+	double left;
+	volatile uint max_value;
+	QString max_str;
+	Format res, res_tmp;
+	int tid;
+
+	QCounterThread counter;
+
+	QCounterThread::CountType count_type;
+	bool multi_thread;
+	static int detail_freq, simple_freq, detail_ratio_freq;
+	bool recount;
+	bool update_msg_on_change;
+};
+
+int QOutParserPrivate::detail_freq=0;
+int QOutParserPrivate::simple_freq=0;
+int QOutParserPrivate::detail_ratio_freq=0;
+
+
+const double KInvMath=1./1000; //to speed up
+void QOutParserPrivate::estimate()
+{
+	/*
+	_elapsed=_time.elapsed()+1;
+	//assert(_elapsed>0);
+	//if(count_type==Size) _speed=value/_elapsed*1000; //>0  _speed=value/(1+_elapsed)*1000
+	else _speed=value*1000/_elapsed; //>0
+	*/
+	elapsed=time.elapsed();
+	speed=value/(elapsed*KInvMath+1);
+	left= (max_value-value)/(1+speed);
+	/*
+	printf("t=%d, v=%d\n",_elapsed,_speed);
+	_left= (max_value-value)*_elapsed/(value*1000+1); //a/b ~ a/(b+1)
+	fflush(stdout);*/
+#ifndef NO_EZX
+	qApp->processEvents();
+#endif //NO_EZX
+}
+
+
+
+QOutParser::QOutParser()
+	:QObject(0),d_ptr(new QOutParserPrivate)
 {
 	initTranslations();
-	res_tmp=res;
-	_time.start();
-	connect(this,SIGNAL(finished()),SLOT(slotFinished()));
-	connect(&counter,SIGNAL(maximumChanged(int)),SLOT(setTotalSize(int)));
-	connect(this,SIGNAL(unitChanged()),SLOT(slotResetUnit()));
+
+	Q_D(QOutParser);
+
+	connect(this, SIGNAL(finished()), SLOT(slotFinished()));
+	connect(&d->counter, SIGNAL(maximumChanged(int)), SLOT(setTotalSize(int)));
+	connect(this, SIGNAL(unitChanged()), SLOT(slotResetUnit()));
 #if !NO_SOCKET
 	//QSocketNotifier *stdin_notifier=new QSocketNotifier(STDIN_FILENO,QSocketNotifier::Read,this);
 	//connect(stdin_notifier,SIGNAL(activated(int)),SLOT(readFromSocket(int)));
@@ -83,66 +147,93 @@ QOutParser::QOutParser(uint total):QObject(0),file(""),size(0),compressed(0),val
 
 QOutParser::~QOutParser()
 {
+	if (d_ptr) {
+		delete d_ptr;
+		d_ptr = 0;
+	}
 }
 
 void QOutParser::parseLine(const QString& line)
 {
-	Format res_old = res;
-	res=parse(line);
-	if(res==Detail) {
-		detail_freq++;
-	} else if(res==Simple) {
-		simple_freq++;
-	} else if(res==DetailWithRatio) {
-		detail_ratio_freq++;
+	Q_D(QOutParser);
+	Format res_old = d->res;
+	d->res = parse(line);
+	if(d->res == Detail) {
+		d->detail_freq++;
+	} else if(d->res == Simple) {
+		d->simple_freq++;
+	} else if(d->res == DetailWithRatio) {
+		d->detail_ratio_freq++;
 	}
-	if(std::max(detail_freq,simple_freq)==detail_freq) {
-		if(std::max(detail_freq,detail_ratio_freq)==detail_freq)
-			res=Detail;
+	if(std::max(d->detail_freq,d->simple_freq) == d->detail_freq) {
+		if(std::max(d->detail_freq, d->detail_ratio_freq) == d->detail_freq)
+			d->res = Detail;
 		else
-			res=DetailWithRatio;
+			d->res = DetailWithRatio;
 	} else {
-		if(std::max(simple_freq,detail_ratio_freq)==simple_freq)
-			res=Simple;
+		if(std::max(d->simple_freq, d->detail_ratio_freq) == d->simple_freq)
+			d->res = Simple;
 		else
-			res=DetailWithRatio;
+			d->res = DetailWithRatio;
 	}
 	/*!
 		qApp->processEvents() will down the performance and may cause crash. We do it every 0x10 times.
 		if we do not call qApp->processEvents(), multi-thread counting information can't display right.
 	*/
-	if(res!=res_old || ((detail_freq+simple_freq+detail_ratio_freq)&0x10) ||detail_freq+simple_freq+detail_ratio_freq<4)
+	if(d->res != res_old || ((d->detail_freq + d->simple_freq + d->detail_ratio_freq)&0x10) || (d->detail_freq + d->simple_freq + d->detail_ratio_freq<4))
 		qApp->processEvents();
 
-	if(res==Detail) {
-		_out = g_BaseMsg_Detail(file, size, value, max_str);
-		_extra = g_ExtraMsg_Detail(_speed, _elapsed, _left);
-	} else if(res==Simple) {
-		_out = g_BaseMsg_Simple(file, ++value, max_str);
-		_extra = g_ExtraMsg_Simple(_speed, _elapsed, _left);
-	} else if(res==DetailWithRatio) {
-		_out = g_BaseMsg_Zip(file, size, ratio, value, max_str);
-		_extra = g_ExtraMsg_Zip(_speed, _elapsed, _left);
-	} else if(res==Unknow) {
+	if(d->res == Detail) {
+		d->out = g_BaseMsg_Detail(d->file, d->size, d->value, d->max_str);
+		d->extra = g_ExtraMsg_Detail(d->speed, d->elapsed, d->left);
+	} else if(d->res == Simple) {
+		d->out = g_BaseMsg_Simple(d->file, ++d->value, d->max_str);
+		d->extra = g_ExtraMsg_Simple(d->speed, d->elapsed, d->left);
+	} else if(d->res == DetailWithRatio) {
+		d->out = g_BaseMsg_Zip(d->file, d->size, d->ratio, d->value, d->max_str);
+		d->extra = g_ExtraMsg_Zip(d->speed, d->elapsed, d->left);
+	} else if(d->res == Unknow) {
 		qDebug("%s", qPrintable(line));
 		return;
-	} else if(res==Error) {
+	} else if(d->res == Error) {
 		qDebug("%s", qPrintable(line));
-		_out=tr("Password Error!");
-		_extra="";
+		d->out=tr("Password Error!");
+		d->extra="";
 	} else {
-		_out=line;
-		_extra="";
+		d->out = line;
+		d->extra = "";
 	}
-	emit valueChanged(value);
-	emit textChanged(_out+_extra);
+	emit valueChanged(d->value);
+	if (d->update_msg_on_change)
+		emit textChanged(d->out + d->extra);
+}
 
+
+void QOutParser::startCounterThread()
+{
+	Q_D(QOutParser);
+	if(!d->recount)
+		return;
+	emit textChanged(tr("Calculating..."));
+	qApp->processEvents();
+	if(d->multi_thread)
+		d->counter.start();
+	else
+		d->counter.run();
+}
+
+
+void QOutParser::setUpdateMsgOnChange(bool on)
+{
+	Q_D(QOutParser);
+	d->update_msg_on_change = on;
 }
 
 void QOutParser::initTimer()
 {
-	_time.restart();
-	tid=startTimer(300); //startTimer(0) error in ezx
+	Q_D(QOutParser);
+	d->time.restart();
+	d->tid = startTimer(300); //startTimer(0) error in ezx
 }
 #if !NO_SOCKET
 /*
@@ -162,16 +253,17 @@ void QOutParser::readFromSocket(int socket)
 #endif
 
 void QOutParser::start() {
+	Q_D(QOutParser);
 	initTimer();
 #ifndef QT_NO_TEXTSTREAM
 	QTextStream stream(stdin);
 	do {
-		line = stream.readLine();
-		res_tmp=res;
-		parseLine(line);
-		if(res!=res_tmp)
+		d->line = stream.readLine();
+		d->res_tmp = d->res;
+		parseLine(d->line);
+		if(d->res != d->res_tmp)
 			emit unitChanged();
-	} while (!line.isNull());
+	} while (!d->line.isNull());
 #else
 	char line_tmp[LINE_LENGTH_MAX];
 	while(fgets(line_tmp, LINE_LENGTH_MAX, stdin)) {
@@ -187,113 +279,122 @@ void QOutParser::start() {
 
 void QOutParser::setCountType(QCounterThread::CountType ct)
 {
-	count_type=ct;
-	counter.setCountType(count_type);
+	Q_D(QOutParser);
+	d->count_type = ct;
+	d->counter.setCountType(d->count_type);
 }
 
 void QOutParser::setRecount(bool rc)
 {
-	_recount=rc;
+	Q_D(QOutParser);
+	d->recount = rc;
 }
 
 void QOutParser::setMultiThread(bool mt)
 {
+	Q_D(QOutParser);
 #if !CONFIG_QT4 && !defined(QT_THREAD_SUPPORT)
 	if(mt) {
 		ZDEBUG("Multi-threading is not support!");
-		multi_thread = false;
+		d->multi_thread = false;
 		return;
 	}
 #endif
-	multi_thread = mt;
-	ZDEBUG("Multi-threading enabled=%d", multi_thread);
-}
-
-void QOutParser::startCounterThread()
-{
-	if(!_recount) return;
-	emit textChanged(tr("Calculating..."));
-	qApp->processEvents();
-	if(multi_thread)
-		counter.start();
-	else
-		counter.run();
+	d->multi_thread = mt;
+	ZDEBUG("Multi-threading enabled=%d", d->multi_thread);
 }
 
 void QOutParser::setFiles(const QStringList &f)
 {
-	counter.setFiles(f);
+	Q_D(QOutParser);
+	d->counter.setFiles(f);
 }
 
 Format QOutParser::parse(const QString& line)
 {
-	_out=line; //can remove
+	Q_D(QOutParser);
+	d->out = line; //can remove
 	return All;
 }
 
 void QOutParser::timerEvent(QTimerEvent *)
 {
-	estimate();
+	Q_D(QOutParser);
+	d->estimate();
+	if (!d->update_msg_on_change)
+		emit textChanged(d->out + d->extra);
 }
 
 void QOutParser::slotFinished()
 {
-	killTimer(tid);
-	estimate();
-	printf("\nOut: %d b, Time: %.1f s, Speed: %d Kb/s",value,_elapsed/1000.,value/(1+_elapsed));
+	Q_D(QOutParser);
+	killTimer(d->tid);
+	d->estimate();
+	if (!d->update_msg_on_change)
+		emit textChanged(d->out + d->extra);
+
+	printf("\nOut: %d b, Time: %.1f s, Speed: %d Kb/s", d->value, d->elapsed/1000., d->value/(1+d->elapsed));
 	fflush(stdout);
 	//value*1000/_elapsed is not correct, why?
-	if(res==Simple || res==End7z) {
-		_out=tr("Finished: ")+QString("%1").arg(value)+max_str+tr("files")+QLatin1String("\n");
-		_extra=tr("Speed: ")+QString::number(_speed)+QLatin1String("/s\n")+tr("Elapsed time: ")+QString("%1s").arg(_elapsed/1000.,0,'f',1);
-	} else if(res==Detail) {
-		_out=tr("Finished: ")+QLatin1String(size2str(value))+max_str+QLatin1String("\n");
-		_extra=tr("Speed: ")+QLatin1String(size2str(value/(1+_elapsed)*1000))+QLatin1String("/s\n")+tr("Elapsed: %1s Remaining: %2s").arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1);
-	} else if(res==DetailWithRatio) {
-		_out=tr("Finished: ")+QLatin1String(size2str(value))+max_str+QLatin1String("\n");
-		_extra=tr("Speed: ")+QLatin1String(size2str(value/(1+_elapsed)*1000))+QLatin1String("/s\n")+tr("Elapsed: %1s Remaining: %2s").arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1);
-	} else if(res==EndZip) { //zip
-		_out=tr("Finished: ")+QLatin1String(size2str(value))+max_str+QLatin1String("\n")+tr("Compressed: ")+QLatin1String(size2str(compressed))+QLatin1String("\n")+tr("Compression ratio: ")+ratio+QLatin1String("\n");
-		_extra=tr("Speed: ")+QLatin1String(size2str(value/(1+_elapsed)*1000))+QLatin1String("/s\n")+tr("Elapsed: %1s Remaining: %2s").arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1);
-	} else if(res==Error) {
-		_out=tr("Password Error!");
-		_extra="";
+	if(d->res == Simple || d->res == End7z) {
+		d->out = tr("Finished: ") + QString("%1").arg(d->value) + d->max_str + tr("files")+QLatin1String("\n");
+		d->extra = tr("Speed: ") + QString::number(d->speed) + QLatin1String("/s\n") + tr("Elapsed time: ") + QString("%1s").arg(d->elapsed/1000.,0,'f',1);
+	} else if(d->res == Detail) {
+		d->out = tr("Finished: ") + QLatin1String(size2str(d->value)) + d->max_str + QLatin1String("\n");
+		d->extra = tr("Speed: ") + QLatin1String(size2str(d->value/(1+d->elapsed)*1000)) + QLatin1String("/s\n") + tr("Elapsed: %1s Remaining: %2s").arg(d->elapsed/1000.,0,'f',1).arg(d->left,0,'f',1);
+	} else if(d->res == DetailWithRatio) {
+		d->out = tr("Finished: ") + QLatin1String(size2str(d->value)) + d->max_str + QLatin1String("\n");
+		d->extra = tr("Speed: ") + QLatin1String(size2str(d->value/(1+d->elapsed)*1000)) + QLatin1String("/s\n") + tr("Elapsed: %1s Remaining: %2s").arg(d->elapsed/1000.,0,'f',1).arg(d->left,0,'f',1);
+	} else if(d->res == EndZip) { //zip
+		d->out = tr("Finished: ") + QLatin1String(size2str(d->value)) + d->max_str + QLatin1String("\n") + tr("Compressed: ") + QLatin1String(size2str(d->compressed)) + QLatin1String("\n") + tr("Compression ratio: ") + d->ratio + QLatin1String("\n");
+		d->extra = tr("Speed: ") + QLatin1String(size2str(d->value/(1+d->elapsed)*1000)) + QLatin1String("/s\n") + tr("Elapsed: %1s Remaining: %2s").arg(d->elapsed/1000.,0,'f',1).arg(d->left,0,'f',1);
+	} else if(d->res == Error) {
+		d->out = tr("Password Error!");
+		d->extra = "";
 	}
-	emit textChanged(_out+_extra);
+	emit textChanged(d->out+d->extra);
 }
 
 void QOutParser::setTotalSize(int s)
 {
-	if(!multi_thread) {
-		if(count_type==QCounterThread::Size)
-			emit textChanged(tr("Counting...")+QLatin1String(size2str(s)));
+	Q_D(QOutParser);
+	if(!d->multi_thread) {
+		if(d->count_type == QCounterThread::Size)
+			emit textChanged(tr("Counting...") + QLatin1String(size2str(s)));
 		else
-			emit textChanged(tr("Counting...")+QString::number(s));
+			emit textChanged(tr("Counting...") + QString::number(s));
 	}
 	//ZDEBUG("Total size changes to %d", s);
-	emit maximumChanged(max_value=s);
+	emit maximumChanged(d->max_value=s);
 	//qApp->processEvents();
-	estimate();
-	if(count_type==QCounterThread::Size) max_str=QString(" / %1").arg(size2str(max_value));
-	else max_str=" / "+QString::number(max_value)+" ";
+	d->estimate();
+	if(d->count_type == QCounterThread::Size)
+		d->max_str = QString(" / %1").arg(size2str(d->max_value));
+	else
+		d->max_str = " / " + QString::number(d->max_value) + " ";
 }
 
 void QOutParser::slotResetUnit()
 {
-	if(res==Simple)	 {
+	Q_D(QOutParser);
+	if(d->res == Simple)	 {
 		setCountType(QCounterThread::Num);
-		if(_recount) startCounterThread();
-		else setTotalSize(max_value);
+		if(d->recount)
+			startCounterThread();
+		else
+			setTotalSize(d->max_value);
 	}
 		//max_str=" / "+QString::number(max_value)+" ";
 	else {
 		setCountType(QCounterThread::Size);
-		if(_recount)  startCounterThread();
-		else setTotalSize(max_value);
+		if(d->recount)
+			startCounterThread();
+		else
+			setTotalSize(d->max_value);
 	}
 		//max_str=" / "+size2str(max_value);
-	ZDEBUG("steps: %d",max_value);
-	emit maximumChanged(max_value);
+	ZDEBUG("steps: %d", d->max_value);
+	emit maximumChanged(d->max_value);
 
 }
 
@@ -411,21 +512,22 @@ void QOutParser::terminate()
 */
 Format QTarOutParser::parse(const QString& line)
 {
+	Q_D(QOutParser);
 	int s=0;
 	char name[256];
 	if(line.contains(" ")) {
-		sscanf(qPrintable(line),"%*s%*s%d%*s%*s%s",&s,name);
-		value+=size=s;
-		file=QFILENAME(QString(name));
-		if(file.isEmpty()) { //"./a/"
-			file=name;
+		sscanf(qPrintable(line), "%*s%*s%d%*s%*s%s", &s, name);
+		d->value += d->size= s;
+		d->file = QFILENAME(QString(name));
+		if(d->file.isEmpty()) { //"./a/"
+			d->file = name;
 		}
 		return Detail;
 	} else {
 		//puts(line);
-		file=QFILENAME(line);
-		if(file.isEmpty()) {
-			file=line;
+		d->file = QFILENAME(line);
+		if(d->file.isEmpty()) {
+			d->file = line;
 		}
 		return Simple;
 	}
@@ -433,9 +535,11 @@ Format QTarOutParser::parse(const QString& line)
 
 
 
-QUntarOutParser::QUntarOutParser(uint tota_size):QOutParser(tota_size)
+QUntarOutParser::QUntarOutParser()
+	:QOutParser()
 {
-	value=512*2; //2*sizeof(tar_header)
+	Q_D(QOutParser);
+	d->value = 512*2; //2*sizeof(tar_header)
 }
 
 /*!
@@ -443,22 +547,23 @@ QUntarOutParser::QUntarOutParser(uint tota_size):QOutParser(tota_size)
 */
 Format QUntarOutParser::parse(const QString& line)
 {
+	Q_D(QOutParser);
 	int s=0;
 	char name[256];
 	if(line.contains(" ")) {
-		sscanf(qPrintable(line),"%*s%*s%d%*s%*s%s",&s,name);
-		size=s;
-		value+=512+ROUND512(s);//512+(s%512 ? s+512-s%512 :s); //sizeof(tar_header)+n*512: 512+s+512+(-s)%512
-		file=QFILENAME(QString(name));
-		if(file.isEmpty()) { //"./a/"
-			file=name;
+		sscanf(qPrintable(line), "%*s%*s%d%*s%*s%s", &s, name);
+		d->size = s;
+		d->value += 512+ROUND512(s);//512+(s%512 ? s+512-s%512 :s); //sizeof(tar_header)+n*512: 512+s+512+(-s)%512
+		d->file = QFILENAME(QString(name));
+		if(d->file.isEmpty()) { //"./a/"
+			d->file=name;
 		}
 		return Detail;
 	} else {
 		//puts(line);
-		file=QFILENAME(line);
-		if(file.isEmpty()) {
-			file=line;
+		d->file = QFILENAME(line);
+		if(d->file.isEmpty()) {
+			d->file = line;
 		}
 		return Simple;
 	}
@@ -484,32 +589,33 @@ Format QUntarOutParser::parse(const QString& line)
  */
 Format QZipOutParser::parse(const QString& line)
 {
+	Q_D(QOutParser);
 	int s=0;
 	char name[256],r[4];
 	if(line.contains("updating:") || (line.contains("adding:"))) {
 		if(line.contains("in=")) {
-			sscanf(qPrintable(line),"%*s%s\t(in=%d)%*s%*s%[^)]",name,&s,r);
-			ratio=r;
-			value+=size=s;
-			file=QFILENAME(QString(name));
-			if(file.isEmpty()) { //"./a/"
-				file=name;
+			sscanf(qPrintable(line), "%*s%s\t(in=%d)%*s%*s%[^)]", name, &s, r);
+			d->ratio = r;
+			d->value += d->size = s;
+			d->file = QFILENAME(QString(name));
+			if(d->file.isEmpty()) { //"./a/"
+				d->file = name;
 			}
 			return DetailWithRatio;
 		}  else {
-			sscanf(qPrintable(line),"%*s%s",name);
-			file=QFILENAME(QString(name));
-			if(file.isEmpty()) {
-				file=name;
+			sscanf(qPrintable(line), "%*s%s", name);
+			d->file = QFILENAME(QString(name));
+			if(d->file.isEmpty()) {
+				d->file = name;
 			}
 			return Simple;
 		}
 	} else if(line.contains("->")) {//finished
 		char in_s[32], out_s[32], r[3];
-		sscanf(qPrintable(line),"%*[^=]=%[^,]%*[^=]=%[^ ]%*[^>]>%[^%]",in_s,out_s,r);
-		value=QString(in_s).toInt();
-		compressed=QString(out_s).toInt();
-		ratio=QString(r)+"%";
+		sscanf(qPrintable(line), "%*[^=]=%[^,]%*[^=]=%[^ ]%*[^>]>%[^%]", in_s, out_s, r);
+		d->value = QString(in_s).toInt();
+		d->compressed = QString(out_s).toInt();
+		d->ratio = QString(r) + "%";
 		//ratio=QString().sprintf("%.2f",(double)compressed/(double)value*100.)+"%";
 		return EndZip;
 	} else if(line.contains("Archive is current")) {
@@ -553,23 +659,24 @@ Format QUnzipOutParser::parse(const QString& line)
 		return Error; //not work??
 	}
 
+	Q_D(QOutParser);
 	int s=0;
 	char name[256],r[4];
 	if(line.contains("%")) {
 		// change to if( extracting, inflating)
 		if(!line.contains(":")) return Unknow;
-		sscanf(qPrintable(line),"%d%*s%*d%s%*s%*s%*s%s",&s,r,name);
-		value+=size=s;
-		file=QFILENAME(QString(name));
-		if(file.isEmpty()) { //"./a/"
-				file=name;
+		sscanf(qPrintable(line), "%d%*s%*d%s%*s%*s%*s%s", &s, r, name);
+		d->value += d->size = s;
+		d->file = QFILENAME(QString(name));
+		if(d->file.isEmpty()) { //"./a/"
+				d->file = name;
 		}
 		return Detail;
 	} else {
-		sscanf(qPrintable(line),"%*s%s",name);
-		file=QFILENAME(QString(name));
-		if(file.isEmpty()) {
-				file=name;
+		sscanf(qPrintable(line), "%*s%s", name);
+		d->file = QFILENAME(QString(name));
+		if(d->file.isEmpty()) {
+				d->file=name;
 		}
 		return Simple;
 	}
@@ -592,11 +699,12 @@ Format QUnrarOutParser::parse(const QString& line)
 	if(line.contains("UNRAR ")) return Unknow;
 	if(QString(line).isEmpty()) return Unknow;
 
+	Q_D(QOutParser);
 	char name[256];
-	sscanf(qPrintable(line),"%*s%s",name);
-	file=QFILENAME(QString(name));
-	if(file.isEmpty()) {
-		file=name;
+	sscanf(qPrintable(line), "%*s%s", name);
+	d->file = QFILENAME(QString(name));
+	if(d->file.isEmpty()) {
+		d->file = name;
 	}
 	return Simple;
 }
@@ -611,20 +719,21 @@ Format QUnrarOutParser::parse(const QString& line)
 ***/
 Format QLzipOutParser::parse(const QString& line)
 {
+	Q_D(QOutParser);
 	int s=0;
 	char name[256],r[8];
 	if(line.contains("o")) {
-		sscanf(qPrintable(line),"%s:%*s%*s%s%*s%d",name,r,&size);
-		ratio=r;
-		value+=size=s;
-		file=QFILENAME(QString(name));
-		if(file.isEmpty()) { //"./a/"
-				file=name;
+		sscanf(qPrintable(line), "%s:%*s%*s%s%*s%d", name, r, &d->size);
+		d->ratio = r;
+		d->value += d->size = s;
+		d->file = QFILENAME(QString(name));
+		if(d->file.isEmpty()) { //"./a/"
+				d->file = name;
 		}
 		return Detail;
 	} else {
-		sscanf(qPrintable(line),"%*s%s",name);
-		file=QFILENAME(QString(name));
+		sscanf(qPrintable(line), "%*s%s", name);
+		d->file = QFILENAME(QString(name));
 		return Simple;
 	}
 }
@@ -646,12 +755,16 @@ Packed 1 file.
 */
 Format QUpxOutParser::parse(const QString& line)
 {
+	if(!line.contains("%"))
+		return Unknow;
+
+	Q_D(QOutParser);
 	int in, out;
 	char r[7], format[32], outName[32];
-	if(!line.contains("%")) return Unknow;
-	sscanf(qPrintable(line),"%d%*s%d%s%s%s",&in,&out,r,format,outName);
-	_out = QLatin1String("Name: ")+QString(outName) + QLatin1String("\nFormate: ") + QString(format)+ QLatin1String("\n") \
-	+ QLatin1String(size2str(in)) + QLatin1String(" -> ") + QLatin1String(size2str(out)) + QLatin1String("\nRatio: ") +QString(ratio);
+
+	sscanf(qPrintable(line), "%d%*s%d%s%s%s", &in, &out, r, format, outName);
+	d->out = QLatin1String("Name: ") + QString(outName) + QLatin1String("\nFormate: ") + QString(format)+ QLatin1String("\n") \
+	+ QLatin1String(size2str(in)) + QLatin1String(" -> ") + QLatin1String(size2str(out)) + QLatin1String("\nRatio: ") +QString(r);
 	return Unknow;
 }
 /**
@@ -668,12 +781,13 @@ tar zxvf test.tgz |qop -T `tar -zt <test.tgz |wc -l` -n
 
 Format Q7zOutParser::parse(const QString& line)
 {
+	Q_D(QOutParser);
 	if(line.contains("Compressing") || line.contains("Extracting")) {
 		char name[256];
-		sscanf(qPrintable(line),"%*s%s",name);
-		file=QFILENAME(QString(name));
-		if(file.isEmpty())
-			file=name;
+		sscanf(qPrintable(line), "%*s%s", name);
+		d->file = QFILENAME(QString(name));
+		if(d->file.isEmpty())
+			d->file = name;
 		return Simple;
 	} else if (line.contains("Ok") ||line.contains("Folders:")  ||line.contains("Files:") \
 			   ||line.contains("Size:") ||line.contains("Compressed:")) {

@@ -25,9 +25,9 @@
 #define NO_SOCKET 1
 
 #include "qtcompat.h"
-#include "qcounterthread.h"
 #include <qobject.h>
 #include <qdatetime.h>
+#include "qcounterthread.h"
 
 typedef enum {
 	All,Simple, Detail, DetailWithRatio, EndZip,End7z, Error, Unknow
@@ -36,27 +36,27 @@ typedef enum {
 class QOutParser;
 extern "C" QOutParser* getParser(const QString& type="tar");
 
+class QOutParserPrivate;
 class QOutParser :public QObject
 {
 	Q_OBJECT
 public:
-	QOutParser(uint tota_size=0);
+	QOutParser();
 	~QOutParser();
 
 	void start(); //start to parse output
 	void parseLine(const QString& line);
-	void setMultiThread(bool);
 	void startCounterThread(); //start a QCounterThread thread
 
+	void setUpdateMsgOnChange(bool on);
+	void setMultiThread(bool multiThread);
 	void setFiles(const QStringList&);
 	void setCountType(QCounterThread::CountType);
-
 	void setRecount(bool);
 
 public slots:
 	void initTimer();
 	void setTotalSize(int);
-	void estimate();
 	void terminate();
 
 private slots:
@@ -78,50 +78,10 @@ protected:
 	//<H1>File: %1</H>, _out=dspFormat.arg(file);
 	//virtual void setDiaplayFormat(Format fmt=All,const QString& txt="");
 
-	//use QLatin1String
-	QString file; //file just compressed/extracted
-	QString line;
-	//char line[LINE_LENGTH_MAX]; //add char name[256], ratio[4], int s? they are frequently used in parse
-	uint size, compressed, value; //outSize numbers-->value
-	QString ratio; //ratio: zip
-	QTime _time;
-	QString _out, _extra;
-	uint _elapsed, _speed; //ms
-	double  _left;
-	volatile uint max_value;
-	QString max_str;
-	Format res, res_tmp;
-	int tid;
-
-	QCounterThread counter;
-
-	QCounterThread::CountType count_type;
-	bool multi_thread;
-	static int detail_freq, simple_freq, detail_ratio_freq;
-	bool _recount;
+	Q_DECLARE_PRIVATE(QOutParser)
+	QOutParserPrivate *d_ptr;
 
 };
-
-const double KInvMath=1./1000; //to speed up
-inline void QOutParser::estimate()
-{
-	/*
-	_elapsed=_time.elapsed()+1;
-	//assert(_elapsed>0);
-	//if(count_type==Size) _speed=value/_elapsed*1000; //>0  _speed=value/(1+_elapsed)*1000
-	else _speed=value*1000/_elapsed; //>0
-	*/
-	_elapsed=_time.elapsed();
-	_speed=value/(_elapsed*KInvMath+1);
-	_left= (max_value-value)/(1+_speed);
-	/*
-	printf("t=%d, v=%d\n",_elapsed,_speed);
-	_left= (max_value-value)*_elapsed/(value*1000+1); //a/b ~ a/(b+1)
-	fflush(stdout);*/
-#ifndef NO_EZX
-	qApp->processEvents();
-#endif //NO_EZX
-}
 
 
 #define Q_DECLARE_OUTPARSER(T) \
@@ -144,7 +104,7 @@ Q_DECLARE_OUTPARSER(7z)
 class QUntarOutParser :public QOutParser
 {
 public:
-	QUntarOutParser(uint tota_size=0);
+	QUntarOutParser();
 
 protected:
 	Format parse(const QString& line);
