@@ -108,11 +108,6 @@ struct option
   int *flag;
   int val;
 };
-/**
- * Quirk: so that using the word 'option' in any doxygen comments doesn't
- * create a link to getopt.h.
- */
-#define option option
 
 /* Names for the values of the `has_arg' field of `struct option'.  */
 
