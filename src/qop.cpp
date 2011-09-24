@@ -64,9 +64,25 @@ Qop::Qop()
 Qop::~Qop()
 {
 	delete progress;
-	if(archive) delete archive;
-	if(process) delete process;
-	if(parser)  delete parser;
+	progress = 0;
+	if(archive) {
+		delete archive;
+		archive = 0;
+	}
+	if(process) {
+		delete process;
+		process = 0;
+	}
+	if(parser) {
+		delete parser;
+		parser = 0;
+	}
+}
+
+
+void Qop::setUpdateAllMessage(bool all)
+{
+	all_msg = all;
 }
 
 void Qop::extract(const QString& arc, const QString& outDir)
@@ -214,6 +230,7 @@ void Qop::initParser()
 	}//omit -T
 
 	parser=getParser(parser_type);
+	parser->setUpdateMsgOnChange(all_msg);
 	if(!arc_path.isEmpty()) {
 		parser->setRecount(false);
 	}

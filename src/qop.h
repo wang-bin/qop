@@ -40,6 +40,7 @@ public:
 	Qop();
 	~Qop();
 
+	void setUpdateAllMessage(bool all);
 	void extract(const QString& archive,const QString& outDir);
 	void execute(const QString& cmd); //execute(const QString& program,const QStringList& arg)
 	//void parseOutput();
@@ -82,6 +83,7 @@ private slots:
 private:
 	void initGui();
 
+	bool all_msg;
 	bool internal;
 	QString arc_path;
 };
