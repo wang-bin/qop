@@ -6,6 +6,8 @@ Add qmake for qt3 and mkspecs etc
 
 class QOutputParserPrivate
 Lzma
+sec2str strsec
+add long option only, --time-format, --size --count --unit=size|count
 
 UI:
 1:(boost.any like)
