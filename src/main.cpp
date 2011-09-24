@@ -41,7 +41,8 @@ static const char *appName=(char*)malloc(64);
 void printHelp()
 {
 	fprintf(stderr,	APP_NAME " %s\n"
-					"Usage: %s [-t parserFor] [-n|s] [-hmc] [-x archieve|-T totalSteps] [files...] [-C cmd]\n"
+					"Usage: %s [-t parserFor] [-n|s] [-ahmc] [-x archieve|-T totalSteps] [files...] [-C cmd]\n"
+					"  -a, --all            update all changes. default is update on timer event\n"
 					"  -t, --parser[=TYPE]  parser(tar,untar,zip,unzip,unrar,lzip.upx)\n"
 					"  -n, --number         count number of files as total steps\n"
 					"  -s, --size           count size of files as total steps\n"
@@ -103,6 +104,7 @@ int main(int argc, char *argv[])
 	a.setMainWidget(qop.progress);
 #endif //CONFIG_QT4
 	ZDEBUG("Steps from options: %d",options->steps);
+	qop.setUpdateAllMessage(options->all_msg);
 	if(!options->hide)
 		qop.progress->show();
 	//order is important

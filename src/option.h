@@ -12,6 +12,7 @@ typedef struct opts_s *opts_t;
 
 const struct option long_options[] = {
 		{"help", 0, 0, 'h'},
+		{"all", 0, 0, 'a'},
 		{"size",0,0,'s'},
 		{"number",0,0,'n'},
 		{"auto-close",0,0,'c'},
@@ -36,6 +37,7 @@ struct opts_s {
 	char* cmd;
 
 	const char* parser_type;
+	bool all_msg;
 	int unit;
 	int steps;
 	int multi_thread;

@@ -41,6 +41,7 @@ opts_t opts_parse(int argc, char **argv)
 	//opts->program_name="qop";
 	opts->steps=-1;
 	opts->unit=2;
+	opts->all_msg = false;
 
 	opts->argc = 0;
 	opts->argv = (char**)calloc(argc + 1, sizeof(char *));
@@ -55,6 +56,7 @@ opts_t opts_parse(int argc, char **argv)
 		c = getopt_long(argc, argv, short_options, long_options, &option_index);
 		if (c < 0) continue;
 			switch (c) {
+			case 'a': opts->all_msg = true; break;
 			case 't': opts->parser_type=optarg; break;
 			case 'm': opts->multi_thread=1; break;
 			case 'n': opts->unit=1; break;
