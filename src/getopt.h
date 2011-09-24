@@ -37,6 +37,10 @@
 #define optopt __optopt
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif //__cplusplus
+
 /**
    For communication from `getopt' to the caller.
    When `getopt' finds an option that takes an argument,
@@ -91,7 +95,7 @@ extern int optopt;
    value (the equivalent single-letter option character, if there is
    one).  For long options that have a zero `flag' field, `getopt'
    returns the contents of the `val' field.  */
-struct getopt_option
+struct option
 {
 #if defined (__STDC__) && __STDC__
   const char *name;
@@ -108,7 +112,7 @@ struct getopt_option
  * Quirk: so that using the word 'option' in any doxygen comments doesn't
  * create a link to getopt.h.
  */
-#define option getopt_option
+#define option option
 
 /* Names for the values of the `has_arg' field of `struct option'.  */
 
@@ -119,16 +123,13 @@ struct getopt_option
 extern int getopt (int argc, char *const *argv,
 	const char *shortopts);
 extern int getopt_long (int argc, char *const *argv,
-	const char *shortopts, const struct getopt_option *longopts,
+	const char *shortopts, const struct option *longopts,
 	int *longind);
 extern int getopt_long_only (int argc,
 	char *const *argv, const char *shortopts,
-	const struct getopt_option *longopts, int *longind);
+	const struct option *longopts, int *longind);
 
-/* Internal only.  Users should not call this directly.  */
-extern int _getopt_internal (int argc, char *const *argv,
-	const char *shortopts,
-	const struct getopt_option *longopts, int *longind,
-	int long_only);
-
+#ifdef __cplusplus
+}
+#endif //__cplusplus
 #endif
