@@ -50,7 +50,7 @@ char* size2str(unsigned int s)
 		unit="G";
 	}
 	static char ss[10];
-	//if(typeid(T)==typeid(double) || typeid(T)==typeid(float))
+	//if(typeid(T)==typeid(double) || typeid(T)==typeid(float)) //typeof
 		sprintf(ss, "%.2f%s", v, unit);
 	//else
 		//sprintf(ss, "%d%s", v, unit);
@@ -109,6 +109,7 @@ inline void writeUShort(unsigned char *data, unsigned short i)
 	data[1] = (i>>8) & 0xff;
 }
 
+//expression template
 inline void copyUInt(unsigned char *dest, const unsigned char *src)
 {
 	dest[0] = src[0];
