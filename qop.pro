@@ -43,7 +43,7 @@ SOURCES		+= src/QOutParser.cpp \
 		src/qop.cpp \
 		src/commandparser.cpp
 
-win32 {
+!*g++* {
 	HEADERS += src/getopt.h
 	SOURCES += src/getopt.cpp
 }
