@@ -47,7 +47,7 @@ char* size2str(unsigned int);
 //QString("%1\n%2%3%4\n").arg(file).arg(g_processed_tr).arg(value).arg(max_str).arg(g_files_tr)
 
 #define g_ExtraMsg_Simple(speed, elapsed, left) \
-	g_speed_tr + QString::number(speed) + QLatin1String("/s\n") + g_elapsed_remain_tr.arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1)
+	g_speed_tr + QString::number(speed) + QLatin1String("/s\n") + g_elapsed_remain_tr.arg(elapsed/1000.,0,'f',1).arg(left,0,'f',1)
 //QString("%1%2/s\n%3").arg(g_speed_tr).arg(speed).arg(g_elapsed_remain_tr.arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1))
 
 #define g_BaseMsg_Zip(file, size, ratio, processed, max_str) \
