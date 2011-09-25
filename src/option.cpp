@@ -21,7 +21,7 @@ void opts_free(opts_t opts)
 opts_t opts_parse(int argc, char **argv)
 {
 	int option_index = 0;
-	const char *short_options = "t:mnshHT:x:o:cd::C:";
+	const char *short_options = "ai:t:mnshHT:x:o:cd::C:";
 	int c;
 	opts_t opts;
 
