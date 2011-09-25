@@ -340,8 +340,8 @@ void QOutParser::slotFinished()
 	if (!d->update_msg_on_change)
 		emit textChanged(d->out + d->extra);
 
-	printf("\nOut: %d b, Time: %.1f s, Speed: %d Kb/s", d->value, d->elapsed/1000., d->value/(1+d->elapsed));
-	fflush(stdout);
+	printf("\nOut: %d b, Time: %.1f s, Speed: %d Kb/s\n", d->value, d->elapsed/1000., d->value/(1+d->elapsed));
+	fflush(NULL);
 	//value*1000/_elapsed is not correct, why?
 	if(d->res == Simple || d->res == End7z) {
 		d->out = tr("Finished: ") + QString("%1").arg(d->value) + d->max_str + tr("files")+QLatin1String("\n");

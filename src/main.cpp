@@ -66,6 +66,7 @@ void printHelp()
 					"    http://qt-apps.org/content/show.php/qop?content=132430\n"
 					"Send bugreports to <wbsecg1@gmail.com>\n\n"
 					, APP_VERSION_STR, appName);
+	fflush(NULL);
 }
 
 int main(int argc, char *argv[])
