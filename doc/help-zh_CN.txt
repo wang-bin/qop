@@ -16,7 +16,9 @@ Project:
 缺点：当前显示的是之前一个文件处理完毕时的信息，而不是正在处理的文件的信息。没办法，因为是读取一行输出后才进行显示。无法与终端进行交互
 bug: windows 下取消后7z进程无法结束
 
-usage: qop [-t parserFor] [-n|s] [-chm] [-x archieve|-T totalSteps] [files...]
+usage: qop [-interval=Nunit] [--all] [-t parserFor] [-n|s] [-chm] [-x archieve|-T totalSteps] [files...]
+-a, --all: 立即更新所有压缩解压信息。默认为定时器时间间隔到了更新。
+-i, --interval=Nunit: 每N(豪)秒更新一次进度. unit可以是 s, sec[s],seconds(N可以为小数)或msec[s](N为整数)
 -m, --multi-thread: 另开一个进程来计算进度条总步长.
 -h, --help: help
 -n, --number: 设置总步长为文件数.
