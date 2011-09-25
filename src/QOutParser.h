@@ -48,6 +48,7 @@ public:
 	void parseLine(const QString& line);
 	void startCounterThread(); //start a QCounterThread thread
 
+	void setInterval(unsigned int interval);
 	void setUpdateMsgOnChange(bool on);
 	void setMultiThread(bool multiThread);
 	void setFiles(const QStringList&);

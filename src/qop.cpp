@@ -53,7 +53,7 @@ Qop::Qop()
   #else
 	  ,progress(new EZProgressDialog(QObject::tr("Calculating..."),QObject::tr("Cancel"),0,100,0,FLAG))
   #endif //EZPROGRESS
-  ,steps(-1),parser_type("tar"),internal(false)
+	,steps(-1),parser_type("tar"),all_msg(false),internal(false),interval(300)
 {
 	initGui();
 #if !USE_SLOT
@@ -230,6 +230,7 @@ void Qop::initParser()
 	}//omit -T
 
 	parser=getParser(parser_type);
+	parser->setInterval(interval);
 	parser->setUpdateMsgOnChange(all_msg);
 	if(!arc_path.isEmpty()) {
 		parser->setRecount(false);
@@ -275,6 +276,11 @@ void Qop::initProcess()
 void Qop::setInternal(bool bi)
 {
 	internal=bi;
+}
+
+void Qop::setInterval(unsigned int interval)
+{
+	this->interval = interval;
 }
 
 void Qop::setArchive(const QString& archive_path)

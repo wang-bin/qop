@@ -68,6 +68,7 @@ public:
 	QOutParserPrivate():file(""),size(0),compressed(0),value(0) \
 	  ,out(""),extra(QObject::tr("Calculating...")),elapsed(0),left(0),max_value(0),res(Unknow) \
 	  ,count_type(QCounterThread::Size),multi_thread(false),recount(true),update_msg_on_change(false) {
+		interval = 300;
 		max_value = std::numeric_limits<uint>::max();
 		res_tmp = res;
 
@@ -89,7 +90,7 @@ public:
 	volatile uint max_value;
 	QString max_str;
 	Format res, res_tmp;
-	int tid;
+	int tid, interval;
 
 	QCounterThread counter;
 
@@ -223,6 +224,12 @@ void QOutParser::startCounterThread()
 }
 
 
+void QOutParser::setInterval(unsigned int interval)
+{
+	Q_D(QOutParser);
+	d->interval = interval;
+}
+
 void QOutParser::setUpdateMsgOnChange(bool on)
 {
 	Q_D(QOutParser);
@@ -233,7 +240,7 @@ void QOutParser::initTimer()
 {
 	Q_D(QOutParser);
 	d->time.restart();
-	d->tid = startTimer(300); //startTimer(0) error in ezx
+	d->tid = startTimer(d->interval); //startTimer(0) error in ezx
 }
 #if !NO_SOCKET
 /*

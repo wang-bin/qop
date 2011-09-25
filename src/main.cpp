@@ -43,6 +43,7 @@ void printHelp()
 	fprintf(stderr,	APP_NAME " %s\n"
 					"Usage: %s [-t parserFor] [-n|s] [-ahmc] [-x archieve|-T totalSteps] [files...] [-C cmd]\n"
 					"  -a, --all            update all changes. default is update on timer event\n"
+					"  -i, --interval=Nunit update the progress every N seconds/mseconds. unit can be s, sec[s],seconds(N can be float) or msec[s](N is int)\n"
 					"  -t, --parser[=TYPE]  parser(tar,untar,zip,unzip,unrar,lzip.upx)\n"
 					"  -n, --number         count number of files as total steps\n"
 					"  -s, --size           count size of files as total steps\n"
@@ -104,6 +105,7 @@ int main(int argc, char *argv[])
 	a.setMainWidget(qop.progress);
 #endif //CONFIG_QT4
 	ZDEBUG("Steps from options: %d",options->steps);
+	qop.setInterval(options->interval);
 	qop.setUpdateAllMessage(options->all_msg);
 	if(!options->hide)
 		qop.progress->show();

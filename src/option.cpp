@@ -5,6 +5,8 @@
 #include <string.h>
 #include <errno.h>
 
+#include <qstring.h>
+
 void printHelp();
 
 void opts_free(opts_t opts)
@@ -39,6 +41,7 @@ opts_t opts_parse(int argc, char **argv)
 	opts->help=0;
 	opts->multi_thread=0;
 	//opts->program_name="qop";
+	opts->interval = 300;
 	opts->steps=-1;
 	opts->unit=2;
 	opts->all_msg = false;
@@ -57,6 +60,30 @@ opts_t opts_parse(int argc, char **argv)
 		if (c < 0) continue;
 			switch (c) {
 			case 'a': opts->all_msg = true; break;
+			case 'i': {
+				//QRegExp exp("(\\d+)(s|sec|secs|seconds)"); //qt2 is much different
+				QString t(optarg);
+				bool ok = false;
+				if (t.endsWith("msec") || t.endsWith("msecs")) {
+					t.remove(t.indexOf("msec"), 5);
+					int msec = t.toInt(&ok);
+					if (ok)
+						opts->interval = msec;
+				} else if (t.endsWith("s") || t.endsWith("sec") || t.endsWith("secs") || t.endsWith("seconds")) {
+					t.remove(t.indexOf("s"), 7);
+					float s = t.toFloat(&ok);
+					if (ok)
+						opts->interval = s*1000;
+				} else {
+					int msec = t.toInt(&ok);
+					if (ok)
+						opts->interval = msec;
+				}
+				qDebug("interval=%s", qPrintable(t));
+				if (!ok)
+					fprintf(stderr, "Wrong time format!\nUse Ns, Nsec, Nsecs, Nseconds, Nmsec, Nmsecs, N");
+				break;
+			}
 			case 't': opts->parser_type=optarg; break;
 			case 'm': opts->multi_thread=1; break;
 			case 'n': opts->unit=1; break;

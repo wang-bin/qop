@@ -10,6 +10,7 @@
 struct opts_s;
 typedef struct opts_s *opts_t;
 
+//getopt_long_only
 const struct option long_options[] = {
 		{"help", 0, 0, 'h'},
 		{"all", 0, 0, 'a'},
@@ -17,6 +18,7 @@ const struct option long_options[] = {
 		{"number",0,0,'n'},
 		{"auto-close",0,0,'c'},
 		{"cmd",0,0,'C'},
+		{"interval", 1, 0, 'i'},
 		{"multi-thread",0,0,'m'},
 		{"extract",1,0,'x'},
 		{"steps",1,0,'T'},
@@ -38,6 +40,7 @@ struct opts_s {
 
 	const char* parser_type;
 	bool all_msg;
+	int interval;
 	int unit;
 	int steps;
 	int multi_thread;

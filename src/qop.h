@@ -47,6 +47,7 @@ public:
 	//void pipeView();
 
 	void setInternal(bool);
+	void setInterval(unsigned int interval);
 	void setArchive(const QString& archive_path);
 
 //union!!
@@ -85,6 +86,7 @@ private:
 
 	bool all_msg;
 	bool internal;
+	unsigned int interval;
 	QString arc_path;
 };
 
