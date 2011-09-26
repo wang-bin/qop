@@ -12,6 +12,7 @@ public:
 	QArchivePrivate():outDir("."),totalSize(0),processedSize(0),size(0),extra_msg(QObject::tr("Calculating...")) \
 	,last_elapsed(1),elapsed(0),time_passed(0),pause(false),numFiles(0),left(0)
 	{
+		interval = 300;
 	/*last_elapsed=1 ensures that elpased = last_elapsed+time.elapsed>0*/
 	}
 	~QArchivePrivate() {
@@ -22,7 +23,7 @@ public:
 	QString outDir;
 	QFile outFile;
 	uint totalSize, processedSize;
-	uint size;
+	uint size, interval;
 
 	QString current_fileName;
 	QString out_msg, extra_msg;

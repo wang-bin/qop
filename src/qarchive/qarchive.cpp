@@ -203,6 +203,12 @@ void QArchive::checkTryPause()
 	}
 }
 
+void QArchive::setInterval(unsigned int interval)
+{
+	Q_D(QArchive);
+	d->interval = interval;
+}
+
 void QArchive::setOutDir(const QString &odir)
 {
 	Q_D(QArchive);
@@ -244,7 +250,7 @@ Archive::Error QArchive::extract()
 {
 	Q_D(QArchive);
 	d->time.restart();
-	d->tid = startTimer(300); //startTimer(0) error in ezx
+	d->tid = startTimer(d->interval); //startTimer(0) error in ezx
 	return Archive::NoError;
 }
 }

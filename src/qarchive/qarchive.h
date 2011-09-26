@@ -77,6 +77,7 @@ public:
 	virtual ~QArchive()=0;
 
 	void setProgressHandler(IProgressHandler* ph);
+	void setInterval(unsigned int interval);
 	void setOutDir(const QString& odir);
 	QString outDir() const;
 	void setArchive(const QString& name);

@@ -90,6 +90,7 @@ void Qop::extract(const QString& arc, const QString& outDir)
 	setInternal(true);
 	setArchive(arc);
 	initArchive();
+	archive->setInterval(interval);
 	archive->setOutDir(outDir);
 	archive->extract();
 }
