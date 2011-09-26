@@ -2,7 +2,7 @@
 #Shanghai, China.
 #GPL v2
 
-CONFIG += #ezx#static ezx
+#CONFIG += ezx#static ezx
 CONFIG += profile
 #profiling, -pg is not supported for msvc
 debug:!*msvc*:profile {
@@ -28,11 +28,11 @@ unix {
 ezx {
   QT_VERSION = 2.3.8
   CONFIG += qt warn_on release
-  DEFINES += QT_THREAD_SUPPORT CONFIG_EZX
+  DEFINES *= QT_THREAD_SUPPORT CONFIG_EZX
   PLATFORM_EXT = _ezx
   QMAKE_CXXFLAGS.ARMCC +=
 }
-DEFINES += QT_THREAD_SUPPORT
+DEFINES *= QT_THREAD_SUPPORT
 #*arm*: ARCH_EXT = $${ARCH_EXT}_arm
 #isEqual(QT_ARCH, arm) {
 contains(QT_ARCH, arm.*) {
@@ -45,7 +45,8 @@ contains(QT_ARCH, arm.*) {
 #before target name changed
 TRANSLATIONS += i18n/$${TARGET}_zh-cn.ts #i18n/$${TARGET}_zh_CN.ts
 
-isEqual(TEMPLATE, app) {
+#isEquel(var, value) is equals(var, value) in qt3
+contains(TEMPLATE, app) {
   DESTDIR = bin
   TARGET = $${TARGET}$${PLATFORM_EXT}$${ARCH_EXT}$${TOOLCHAIN_EXT}
 }
