@@ -2,7 +2,6 @@
 #define QARCHIVE_H
 
 #include "qtcompat.h"
-#include "util.h"
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qfile.h>

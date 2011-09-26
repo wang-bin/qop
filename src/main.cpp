@@ -35,6 +35,7 @@
 #include "qop.h"
 #include "option.h"
 #include "version.h"
+#include "utils/util.h"
 
 static const char *appName=(char*)malloc(64);
 

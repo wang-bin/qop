@@ -24,7 +24,7 @@
 #include "qarchive/arcreader.h"
 #include "qtcompat.h"
 #include "qcounterthread.h"
-#include "util.h"
+#include "utils/convert.h"
 
 //skip whitespace?
 #if !CONFIG_QT4

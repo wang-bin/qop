@@ -3,6 +3,7 @@
 #include <sys/stat.h>  /* For mkdir() */
 #include <qfileinfo.h>
 #include "../qarchive_p.h"
+#include "utils/util.h"
 
 namespace Archive {
 namespace Tar {

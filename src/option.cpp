@@ -4,41 +4,8 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <math.h> //HUGE_VAL
-#include <string>
 
-inline bool str_starts_with(const std::string& str, const std::string& substr)
-{
-	size_t pos = str.find(substr);
-	if (pos==std::string::npos || pos!=0)
-		return false;
-	return true;
-}
-
-inline bool str_ends_with(const std::string& str, const std::string& substr)
-{
-	size_t pos = str.find(substr);
-	if (pos==std::string::npos)
-		return false;
-	return str.compare(pos, str.size()-pos, substr)==0;
-}
-
-inline bool cstr_starts_with(const char* str, const char* substr)
-{
-	const char * pos = strstr(str, substr);
-	if (pos==NULL || pos!=str)
-		return false;
-	return true;
-}
-
-inline bool cstr_ends_with(const char* str, const char* substr)
-{
-	const char * pos = strstr(str, substr);
-	if (pos==NULL)
-		return false;
-	return strcmp(pos, substr)==0;
-}
-
-
+#include "utils/strutil.h"
 
 void printHelp();
 

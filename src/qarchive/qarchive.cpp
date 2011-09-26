@@ -5,7 +5,8 @@
 #include <sys/stat.h>
 #include <stdlib.h>
 #endif
-#include "util.h"
+#include "utils/convert.h"
+#include "utils/qt_util.h"
 #include "msgdef.h"
 
 //namespace Archive {
@@ -198,7 +199,7 @@ void QArchive::checkTryPause()
 {
 	Q_D(QArchive);
 	while(d->pause) {
-		UTIL::qWait(100);
+		QT_UTIL::qWait(100);
 	}
 }
 

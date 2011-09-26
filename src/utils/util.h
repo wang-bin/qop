@@ -23,47 +23,8 @@
 #define ROUND512(x) (((x)+0x1ff) & (~0x1ff))  // ((((x)+511)>>9)<<9)
 #define ROUND2P(x,p) ((((x)+(2<<(p))-1)>>p)<<p)
 
-#include <stdio.h>
-#include <cstring>
-#include <typeinfo>
 
-
-char* size2str(unsigned int a);
-//to speed up!
-#define KInv 1./1024
-//const float KInv=1./1024;
-template<typename T> inline
-char* size2str(unsigned int s)
-{
-	static const char *unit = "b";
-	T v=(T)s;
-	if(v>(T)1024) {
-		v*=KInv; //v/=1024;
-		unit="Kb";
-	}
-	if(v>(T)1024) {
-		v*=KInv;
-		unit="Mb";
-	}
-	if(v>(T)1024) {
-		v*=KInv;
-		unit="G";
-	}
-	static char ss[10];
-	//if(typeid(T)==typeid(double) || typeid(T)==typeid(float)) //typeof
-		sprintf(ss, "%.2f%s", v, unit);
-	//else
-		//sprintf(ss, "%d%s", v, unit);
-	return ss;
-}
-
-//extern int isBigEndian();
-//extern int isLittleEndian();
-extern void swap_endian(char* buf,int type_bytes);
-
-extern bool checkHexData(unsigned int magic,unsigned char* data,size_t offset=0);
-
-extern const char* reverse_string(const char *string);
+#include <stddef.h>
 
 //template<typename T> T reverse(T src,int len)
 template<typename T> T* reverse(T* src,int len)
@@ -79,11 +40,17 @@ template<typename T> T* reverse(T* src,int len)
 	return ret;
 }
 
+
+//extern int isBigEndian();
+//extern int isLittleEndian();
+extern void swap_endian(char* buf,int type_bytes);
+extern bool checkHexData(unsigned int magic,unsigned char* data,size_t offset=0);
+
+
 extern const char* getFileName(const char* path);
 extern const char* getFileDir(const char* path);
 
 extern int parseOct(const char *p, size_t n);
-
 
 inline unsigned int readUInt(const unsigned char *data)
 {
@@ -124,9 +91,4 @@ inline void copyUShort(unsigned char *dest, const unsigned char *src)
 	dest[1] = src[1];
 }
 
-namespace UTIL {
-	//sleep和usleep都已经obsolete，建议使用nanosleep代替
-	void qSleep(int ms);
-	void qWait(int ms);
-} //nameespace UTIL
 #endif // UTIL_H

@@ -29,7 +29,8 @@
 #include <qtextstream.h>
 #endif //QT_NO_TEXTSTREAM
 
-#include "util.h"
+#include "utils/util.h"
+#include "utils/convert.h"
 #include "msgdef.h"
 
 QOutParser* getParser(const QString& type)

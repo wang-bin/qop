@@ -11,7 +11,6 @@ HEADERS		+= src/QOutParser.h \
 		src/gui/ezprogressdialog.h \
 		src/gui/ezprogressdialog_p.h \
 		src/qcounterthread.h \
-		src/util.h \
 		src/qarchive/arcreader.h \
 		src/option.h \
 		src/Types.h \
@@ -27,21 +26,28 @@ HEADERS		+= src/QOutParser.h \
 		src/version.h \
 		src/qarchive/qarchive_p.h \
 		src/msgdef.h \
-		src/qtcompat.h
+		src/qtcompat.h \
+                src/utils/util.h \
+                src/utils/strutil.h \
+                src/utils/convert.h \
+                src/utils/qt_util.h
 
 SOURCES		+= src/QOutParser.cpp \
 		src/gui/ezprogressdialog.cpp \
 		src/main.cpp \
 		src/qcounterthread.cpp \
 		src/qarchive/arcreader.cpp \
-		src/util.cpp \
 		src/option.cpp \
 		src/qarchive/qarchive.cpp \
 		src/qarchive/tar/qtar.cpp \
 		src/qarchive/zip/ZipHeader.cpp \
 		src/qarchive/gzip/GzipItem.cpp \
 		src/qop.cpp \
-		src/commandparser.cpp
+		src/commandparser.cpp \
+                src/utils/util.cpp \
+                src/utils/strutil.cpp \
+                src/utils/convert.cpp \
+                src/utils/qt_util.cpp
 
 !*g++* {
 	HEADERS += src/getopt.h
@@ -72,7 +78,7 @@ OTHER_FILES	+= \
 		qtc_packaging/debian_harmattan/control \
 		qtc_packaging/debian_harmattan/compat \
 		qtc_packaging/debian_harmattan/changelog \
-		README
+                README
 
 unix:!symbian {
 	maemo* {
@@ -132,3 +138,9 @@ unix:!symbian:!maemo5 {
     target.path = /opt/qop/bin
     INSTALLS += target
 }
+
+
+
+
+
+

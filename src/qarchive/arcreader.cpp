@@ -18,7 +18,7 @@
 	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 ******************************************************************************/
 #include "../qarchive/arcreader.h"
-#include "../util.h"
+#include "utils/util.h"
 #include "qtcompat.h"
 #include <stdio.h>
 #include <qfile.h>
