@@ -263,7 +263,11 @@ void QOutParser::start() {
 	Q_D(QOutParser);
 	initTimer();
 #ifndef QT_NO_TEXTSTREAM
-	QTextStream stream(stdin);
+#if CONFIG_QT4
+	QTextStream stream(stdin, QIODevice::ReadOnly);
+#else
+	QTextStream stream(stdin, IO_ReadOnly);
+#endif //CONFIG_QT4
 	do {
 		d->line = stream.readLine();
 		d->res_tmp = d->res;
