@@ -108,12 +108,19 @@
 #if QT_VERSION >= 0x040000
 #	define CONFIG_QT4 1
 #	if CONFIG_EZX
+#		undef CONFIG_EZX
 #		define CONFIG_EZX 0
 #	endif
-#	define EZQT 1
 #elif QT_VERSION >= 0x030000
+#	define CONFIG_QT4 0
 #	define CONFIG_QT3 1
+#	if CONFIG_EZX
+#		undef CONFIG_EZX
+#		define CONFIG_EZX 0
+#	endif
 #elif QT_VERSION >= 235
+#	define CONFIG_QT4 0
+#	define CONFIG_QT3 0
 #	define CONFIG_QT2 1
 #   ifndef CONFIG_EZX
 #	define CONFIG_EZX 1
@@ -223,11 +230,18 @@ typedef int Alignment;
 #endif //CONFIG_DEBUG
 
 
+#if CONFIG_QT2
+#define ENDSWITH(str, substr) (str.right(QString(substr).length())==substr)
+#else
+#define ENDSWITH(str, substr) str.endsWith(substr)
+#endif //CONFIG_QT2
+
 #if !CONFIG_QT4
 
 //speed of string comparing with const char* str: QLatin1String(str) > str > QString(str) //str: possibly hidden malloc, QString(str): temp QString
 #define QLatin1String(str) (str)
 typedef QString QLatin1String;
+#define indexOf(s) find(s)
 
 //#define qPrintable(qstr) qstr.local8Bit().data()
 inline const char* qPrintable(const QString& qstr)
