@@ -2,10 +2,43 @@
 #include "qtcompat.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <errno.h>
+#include <math.h> //HUGE_VAL
+#include <string>
 
-#include <qstring.h>
+inline bool str_starts_with(const std::string& str, const std::string& substr)
+{
+	size_t pos = str.find(substr);
+	if (pos==std::string::npos || pos!=0)
+		return false;
+	return true;
+}
+
+inline bool str_ends_with(const std::string& str, const std::string& substr)
+{
+	size_t pos = str.find(substr);
+	if (pos==std::string::npos)
+		return false;
+	return str.compare(pos, str.size()-pos, substr)==0;
+}
+
+inline bool cstr_starts_with(const char* str, const char* substr)
+{
+	const char * pos = strstr(str, substr);
+	if (pos==NULL || pos!=str)
+		return false;
+	return true;
+}
+
+inline bool cstr_ends_with(const char* str, const char* substr)
+{
+	const char * pos = strstr(str, substr);
+	if (pos==NULL)
+		return false;
+	return strcmp(pos, substr)==0;
+}
+
+
 
 void printHelp();
 
@@ -62,24 +95,26 @@ opts_t opts_parse(int argc, char **argv)
 			case 'a': opts->all_msg = true; break;
 			case 'i': {
 				//QRegExp exp("(\\d+)(s|sec|secs|seconds)"); //qt2 is much different
-				QString t(optarg);
+				std::string t(optarg);
 				bool ok = false;
-				if (t.endsWith("msec") || t.endsWith("msecs")) {
-					t.remove(t.indexOf("msec"), 5);
-					int msec = t.toInt(&ok);
+				if (str_ends_with(t, "msec") || str_ends_with(t, "msecs")) {
+					t.erase(t.find("msec"), 5);
+					int msec = atoi(t.c_str());
+					ok = (msec!=INT_MAX && msec!=INT_MIN && msec!=0);
 					if (ok)
 						opts->interval = msec;
-				} else if (t.endsWith("s") || t.endsWith("sec") || t.endsWith("secs") || t.endsWith("seconds")) {
-					t.remove(t.indexOf("s"), 7);
-					float s = t.toFloat(&ok);
+				} else if (str_ends_with(t, "s") || str_ends_with(t, "sec") || str_ends_with(t, "secs") || str_ends_with(t, "seconds")) {
+					t.erase(t.find("s"), 7);
+					double s = atof(t.c_str());
+					ok = (s!=HUGE_VAL && s!=0.0);
 					if (ok)
 						opts->interval = s*1000;
 				} else {
-					int msec = t.toInt(&ok);
+					int msec = atoi(t.c_str());
+					ok = (msec!=INT_MAX && msec!=INT_MIN && msec!=0);
 					if (ok)
 						opts->interval = msec;
 				}
-				qDebug("interval=%s", qPrintable(t));
 				if (!ok)
 					fprintf(stderr, "Wrong time format!\nUse Ns, Nsec, Nsecs, Nseconds, Nmsec, Nmsecs, N");
 				break;
