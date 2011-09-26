@@ -28,16 +28,29 @@
 #include <qthread.h>
 
 
-//if no thread support in qt2 and qt3, inherits qobject
+/*
+	if no thread support in qt2 and qt3, inherits qobject
+why the following is wrong in qt2(moc)
+#if !CONFIG_QT4
+	public QObject
+#if defined(QT_THREAD_SUPPORT)
+	, public QThread
+#endif //QT_THREAD_SUPPORT
+#else
+	 public QThread
+#endif //CONFIG_QT4
+*/
+
 class QCounterThread :
 #if !CONFIG_QT4
 		public QObject
 #if defined(QT_THREAD_SUPPORT)
-		, public QThread
+		,
 #endif //QT_THREAD_SUPPORT
-#else
-		public QThread
 #endif //CONFIG_QT4
+#if CONFIG_QT4 || defined(QT_THREAD_SUPPORT)
+		public QThread
+#endif
 {
 	Q_OBJECT
 public:
