@@ -48,7 +48,7 @@ char* size2str(unsigned int);
 
 #define g_ExtraMsg_Simple(speed, elapsed, left) \
 	g_speed_tr + QString::number(speed) + QLatin1String("/s\n") + g_elapsed_remain_tr.arg(elapsed/1000.,0,'f',1).arg(left,0,'f',1)
-//QString("%1%2/s\n%3").arg(g_speed_tr).arg(speed).arg(g_elapsed_remain_tr.arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1))
+//QString("%1%2/s\n%3").arg(g_speed_tr).arg(speed).arg(g_elapsed_remain_tr.arg(elapsed/1000.,0,'f',1).arg(left,0,'f',1))
 
 #define g_BaseMsg_Zip(file, size, ratio, processed, max_str) \
 	file + QLatin1String("\n") + g_size_tr + QLatin1String(size2str(size)) + g_ratio_tr + ratio + QLatin1String("\n") + g_processed_tr + QLatin1String(size2str(processed)) + max_str + QLatin1String("\n")
@@ -73,8 +73,8 @@ char* size2str(unsigned int);
 	QString("%1\n%2%3%4\n").arg(file).arg(g_processed_tr).arg(value).arg(max_str).arg(g_files_tr)
 //	QString("%1\n%2%3%4\n").arg(file, g_processed_tr, QString::number(value), max_str, g_files_tr)
 #define g_ExtraMsg_Simple(speed, elapsed, left) \
-	QString("%1%2/s\n%3").arg(g_speed_tr).arg(speed).arg(g_elapsed_remain_tr.arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1))
-//	QString("%1%2/s\n%3").arg(g_speed_tr, QString::number(speed), g_elapsed_remain_tr.arg(_elapsed/1000.,0,'f',1).arg(_left,0,'f',1))
+	QString("%1%2/s\n%3").arg(g_speed_tr).arg(speed).arg(g_elapsed_remain_tr.arg(elapsed/1000.,0,'f',1).arg(left,0,'f',1))
+//	QString("%1%2/s\n%3").arg(g_speed_tr, QString::number(speed), g_elapsed_remain_tr.arg(elapsed/1000.,0,'f',1).arg(left,0,'f',1))
 
 #define g_BaseMsg_Zip(file, size, ratio, processed, max_str) \
 	QString("%1\n%2%3 %4%5\n%6%7%8\n").arg(file).arg(g_size_tr, g_align_length).arg(size2str(size)).arg(g_ratio_tr).arg(ratio).arg(g_processed_tr, g_align_length).arg(size2str(processed)).arg(max_str)
