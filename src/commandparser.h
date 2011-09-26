@@ -37,6 +37,7 @@
 
 #define COUNTER_THREAD 0
 #include <qstringlist.h>
+#include "qtcompat.h"
 
 class QCounterThread;
 class CommandParserPrivate;
