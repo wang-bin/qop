@@ -7,6 +7,8 @@ FORMS	=
 include(config.pri)
 include(i18n.pri)
 
+ezx: DEFINES += QT_NO_PROCESS
+
 HEADERS		+= src/QOutParser.h \
 		src/gui/ezprogressdialog.h \
 		src/gui/ezprogressdialog_p.h \

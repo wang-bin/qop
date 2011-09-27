@@ -60,8 +60,9 @@ public:
 	for tools in PATH with qop executable. In Qt2.x, copy QProcess
 */
 	QOutParser *parser;
+#ifndef QT_NO_PROCESS
 	QProcess *process;
-
+#endif //QT_NO_PROCESS
 /*!
 	common gui for all
 */

@@ -47,7 +47,7 @@ static IProgressHandler progressHandler = { &DoProgress };
 
 // vv :archiveSize(). v: filesCount()
 Qop::Qop()
-	:archive(0),parser(0),process(0)
+	:archive(0),parser(0)
   #ifndef EZPROGRESS
 	  ,progress(new EZ_ProgressDialog(QObject::tr("Calculating..."),QObject::tr("Cancel"),0,100,0,"UTIL_ProgressDialog",false,FLAG))
   #else
@@ -55,6 +55,9 @@ Qop::Qop()
   #endif //EZPROGRESS
 	,steps(-1),parser_type("tar"),all_msg(false),internal(false),interval(300)
 {
+#ifndef QT_NO_PROCESS
+	process = 0;
+#endif //QT_NO_PROCESS
 	initGui();
 #if !USE_SLOT
 	progressDlg=progress;
@@ -69,10 +72,12 @@ Qop::~Qop()
 		delete archive;
 		archive = 0;
 	}
+#ifndef QT_NO_PROCESS
 	if(process) {
 		delete process;
 		process = 0;
 	}
+#endif //QT_NO_PROCESS
 	if(parser) {
 		delete parser;
 		parser = 0;
@@ -113,7 +118,7 @@ void Qop::execute(const QString &cmd)
 	initParser();
 	initProcess();
 	//progress->setLabelText(QDir::currentPath());//QApplication::applicationDirPath();
-#if CONFIG_QT4 || CONFIG_QT3
+#ifndef QT_NO_PROCESS
 	if(cmdParser.countType()==CommandParser::Num)
 		parser->setCountType(QCounterThread::Num);
 	else
@@ -153,7 +158,7 @@ void Qop::execute(const QString &cmd)
 	} else {
 		ZDEBUG("Normal exit");
 	}
-#endif
+#endif //QT_NO_PROCESS
 }
 
 void Qop::initGui()
@@ -262,7 +267,7 @@ void Qop::initParser()
 
 void Qop::initProcess()
 {
-#if CONFIG_QT4 || CONFIG_QT3
+#ifndef QT_NO_PROCESS
 	process=new QProcess(this);
 	process->setWorkingDirectory(QDir::currentPath());
 	connect(process, SIGNAL(readyReadStandardOutput()), SLOT(readStdOut()));
@@ -271,7 +276,7 @@ void Qop::initProcess()
 	connect(process,SIGNAL(started()),parser,SLOT(initTimer()));  //Maemo5 seems not work
 	connect(process, SIGNAL(finished(int)), parser, SIGNAL(finished()));
 	//connect(process, SIGNAL(finished(int)), parser, SLOT(slotFinished()));
-#endif
+#endif //QT_NO_PROCESS
 }
 
 void Qop::setInternal(bool bi)
@@ -301,19 +306,19 @@ void Qop::readStdOut()
 	QString line = data.constData();
 	ZDEBUG("stdout: %s",line);
 */
-#if CONFIG_QT4 || CONFIG_QT3
+#ifndef QT_NO_PROCESS
 	while(process->canReadLine()) {
 		parser->parseLine(process->readLine().constData());
 		//qDebug("stdout: %s",line);
 	}
-#endif
+#endif //QT_NO_PROCESS
 }
 
 void Qop::readStdErr()
 {
-#if CONFIG_QT4 || CONFIG_QT3
+#ifndef QT_NO_PROCESS
 	const char* all_error_msg = process->readAllStandardError().constData();
 	qDebug("Read from stderr: \n%s",all_error_msg);
 	qDebug("Read form stderr End...");
-#endif
+#endif //QT_NO_PROCESS
 }
