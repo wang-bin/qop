@@ -13,6 +13,7 @@ bug: can't kill 7z in windows.
 Usage: qop [-interval=Nunit] [--all] [-t parserFor] [-n|s] [-chm] [-x archieve|-T totalSteps] [files...]
 
 -a, --all: update all changes. default is update on timer event
+-F, --time-format=fmt: setup time format. utc(iso8601) or normal
 -m, --multi-thread: create a new thread to calculate progress bar's total steps.
 -i, --interval=Nunit: update the progress every N seconds/mseconds. unit can be s, sec[s],seconds(N can be float) or msec[s](N is int)
 -h, --help: help

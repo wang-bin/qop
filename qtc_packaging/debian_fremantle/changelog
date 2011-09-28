@@ -1,9 +1,9 @@
-qop (0.3.4) stable; urgency=low
+qop (0.3.5) stable; urgency=low
   * <Add change description here>
 
  -- Wang Bin <wbsecg1@gmail.com>  周五, 23 九月 2011 19:53:06 +0800
 
-qop (0.3.4) stable; urgency=low
+qop (0.3.5) stable; urgency=low
 
   * Add uncomplete zip, unzip, unrar support for -C option. See help-en_US.txt.
 
