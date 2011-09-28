@@ -350,16 +350,16 @@ void QOutParser::slotFinished()
 	//value*1000/_elapsed is not correct, why?
 	if(d->res == Simple || d->res == End7z) {
 		d->out = tr("Finished: ") + QString("%1").arg(d->value) + d->max_str + tr("files")+QLatin1String("\n");
-		d->extra = tr("Speed: ") + QString::number(d->speed) + QLatin1String("/s\n") + tr("Elapsed time: ") + QString("%1s").arg(d->elapsed/1000.,0,'f',1);
+		d->extra = tr("Speed: ") + QString::number(d->speed) + QLatin1String("/s\n") + tr("Elapsed time: ") + QString("%1s").arg(g_time_convert(d->elapsed));
 	} else if(d->res == Detail) {
 		d->out = tr("Finished: ") + QLatin1String(size2str(d->value)) + d->max_str + QLatin1String("\n");
-		d->extra = tr("Speed: ") + QLatin1String(size2str(d->value/(1+d->elapsed)*1000)) + QLatin1String("/s\n") + tr("Elapsed: %1s Remaining: %2s").arg(d->elapsed/1000.,0,'f',1).arg(d->left,0,'f',1);
+		d->extra = tr("Speed: ") + QLatin1String(size2str(d->value/(1+d->elapsed)*1000)) + QLatin1String("/s\n") + tr("Elapsed: %1s Remaining: %2s").arg(g_time_convert(d->elapsed)).arg(g_time_convert(d->left));
 	} else if(d->res == DetailWithRatio) {
 		d->out = tr("Finished: ") + QLatin1String(size2str(d->value)) + d->max_str + QLatin1String("\n");
-		d->extra = tr("Speed: ") + QLatin1String(size2str(d->value/(1+d->elapsed)*1000)) + QLatin1String("/s\n") + tr("Elapsed: %1s Remaining: %2s").arg(d->elapsed/1000.,0,'f',1).arg(d->left,0,'f',1);
+		d->extra = tr("Speed: ") + QLatin1String(size2str(d->value/(1+d->elapsed)*1000)) + QLatin1String("/s\n") + tr("Elapsed: %1s Remaining: %2s").arg(g_time_convert(d->elapsed)).arg(g_time_convert(d->left));
 	} else if(d->res == EndZip) { //zip
 		d->out = tr("Finished: ") + QLatin1String(size2str(d->value)) + d->max_str + QLatin1String("\n") + tr("Compressed: ") + QLatin1String(size2str(d->compressed)) + QLatin1String("\n") + tr("Compression ratio: ") + d->ratio + QLatin1String("\n");
-		d->extra = tr("Speed: ") + QLatin1String(size2str(d->value/(1+d->elapsed)*1000)) + QLatin1String("/s\n") + tr("Elapsed: %1s Remaining: %2s").arg(d->elapsed/1000.,0,'f',1).arg(d->left,0,'f',1);
+		d->extra = tr("Speed: ") + QLatin1String(size2str(d->value/(1+d->elapsed)*1000)) + QLatin1String("/s\n") + tr("Elapsed: %1s Remaining: %2s").arg(g_time_convert(d->elapsed)).arg(g_time_convert(d->left));
 	} else if(d->res == Error) {
 		d->out = tr("Password Error!");
 		d->extra = "";

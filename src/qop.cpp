@@ -22,6 +22,7 @@
 #include <qdir.h>
 
 #include "commandparser.h"
+#include "utils/convert.h"
 
 #if CONFIG_QT4
 #define FLAG Qt::WindowStaysOnTopHint
@@ -276,6 +277,8 @@ void Qop::initProcess()
 	connect(process,SIGNAL(started()),parser,SLOT(initTimer()));  //Maemo5 seems not work
 	connect(process, SIGNAL(finished(int)), parser, SIGNAL(finished()));
 	//connect(process, SIGNAL(finished(int)), parser, SLOT(slotFinished()));
+	connect(progress, SIGNAL(canceled()), process, SLOT(kill()));
+	connect(progress, SIGNAL(cancelled()), process, SLOT(kill()));
 #endif //QT_NO_PROCESS
 }
 
@@ -292,6 +295,19 @@ void Qop::setInterval(unsigned int interval)
 void Qop::setArchive(const QString& archive_path)
 {
 	arc_path=archive_path;
+}
+
+void Qop::setTimeFormat(const QString &format)
+{
+#if CONFIG_QT4
+	if (format.toUpper() == QLatin1String("UTC") || format.toUpper() == QLatin1String("ISO8601")) {
+#else
+	if (format.upper() == QLatin1String("UTC" || format.upper() == QLatin1String("ISO8601"))) {
+#endif //CONFIG_QT4
+		g_time_convert = msec2str;
+	} else {
+		g_time_convert = msec2secstr;
+	}
 }
 
 /*!

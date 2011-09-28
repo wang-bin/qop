@@ -14,6 +14,7 @@ const struct option long_options[] = {
 		{"number",0,0,'n'},
 		{"auto-close",0,0,'c'},
 		{"cmd",0,0,'C'},
+		{"time-format", 1, 0, 'F'},
 		{"interval", 1, 0, 'i'},
 		{"multi-thread",0,0,'m'},
 		{"extract",1,0,'x'},
@@ -25,7 +26,7 @@ const struct option long_options[] = {
 		{"outdir",0,0,'o'},
 		{"hide",0,0,'H'},
 		{0, 0, 0, 0}
-	};
+};
 
 struct opts_s {
 	int argc;                      /* number of non-option arguments */
@@ -35,6 +36,7 @@ struct opts_s {
 	char* cmd;
 
 	const char* parser_type;
+	const char* time_format;
 	bool all_msg;
 	int interval;
 	int unit;

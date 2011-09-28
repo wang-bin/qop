@@ -22,11 +22,19 @@
 
 #include <cstddef>
 
-char* size2str(size_t size);
+//extern "C" {
+extern char* size2str(size_t size);
 
-char* msec2str(int msec);
-char* sec2str(int sec);
+extern char* msec2str(int msec);
+extern char* msec2secstr(int msec);
+extern char* sec2str(int sec);
 
+typedef char*  (*size_format_converter)(int);
+typedef char*  (*time_format_converter)(int);
+
+extern time_format_converter g_time_convert;
+
+//}
 
 //char* size2str(unsigned int a);
 //to speed up!

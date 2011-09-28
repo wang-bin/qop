@@ -107,6 +107,7 @@ int main(int argc, char *argv[])
 	a.setMainWidget(qop.progress);
 #endif //CONFIG_QT4
 	ZDEBUG("Steps from options: %d",options->steps);
+	qop.setTimeFormat(options->time_format);
 	qop.setInterval(options->interval);
 	qop.setUpdateAllMessage(options->all_msg);
 	if(!options->hide)

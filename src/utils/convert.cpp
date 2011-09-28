@@ -62,14 +62,23 @@ char* size2str(unsigned int a)
 
 char* msec2str(int pMsec)
 {
-	int ms = pMsec%1000;
+	int ms = pMsec%1000/100; //(pMsec%1000)/100 //hh:mm:ss.x
 	pMsec/=1000;
 	int sec = pMsec%60;
 	int min =(pMsec/60)%60;
 	int hour = pMsec/3600;
-	static char time[13];
+	static char time[11];
 	//memset(time, ' ', sizeof(time));
-	snprintf(time, sizeof(time), "%02d:%02d:%02d.%03d", hour, min, sec, ms);
+	snprintf(time, sizeof(time), "%02d:%02d:%02d.%01d", hour, min, sec, ms);
+	return time;
+}
+
+char* msec2secstr(int pMsec)
+{
+	//int ms = pMsec%1000; //(pMsec%1000)/100 //sec.x
+	//pMsec/=1000;
+	static char time[10];
+	snprintf(time, sizeof(time), "%.1f", pMsec/1000.0);
 	return time;
 }
 
@@ -83,3 +92,7 @@ char* sec2str(int pSec)
 	snprintf(time, sizeof(time), "%02d:%02d:%02d", hour, min, sec);
 	return time;
 }
+
+
+time_format_converter g_time_convert = msec2str;
+

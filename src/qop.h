@@ -50,6 +50,7 @@ public:
 	void setInterval(unsigned int interval);
 	void setArchive(const QString& archive_path);
 
+	void setTimeFormat(const QString& format);
 //union!!
 /*!
 	for build-in method

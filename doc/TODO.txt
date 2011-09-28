@@ -1,12 +1,14 @@
 VERSION 0.3 TODO List
 
+
+complete command parser and move option values into 1 class containing those static vars;
+
 QTextBrowser for log viewing intergrated into EZProgressDialog
 
 Add qmake for qt3 and mkspecs etc
 
-class QOutputParserPrivate
+QProcess controller. stop/resume
 Lzma
-sec2str strsec
 add long option only, --time-format, --size --count --unit=size|count
 
 UI:

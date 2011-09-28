@@ -21,7 +21,7 @@ void opts_free(opts_t opts)
 opts_t opts_parse(int argc, char **argv)
 {
 	int option_index = 0;
-	const char *short_options = "ai:t:mnshHT:x:o:cd::C:";
+	const char *short_options = "ai:t:F:mnshHT:x:o:cd::C:";
 	int c;
 	opts_t opts;
 
@@ -35,6 +35,7 @@ opts_t opts_parse(int argc, char **argv)
 	opts->program_name = argv[0];
 	opts->cmd=0;
 	opts->parser_type="tar";
+	opts->time_format = "plain";
 	opts->x_file=NULL;
 	opts->out_dir="./";
 	opts->auto_close=0;
@@ -60,6 +61,7 @@ opts_t opts_parse(int argc, char **argv)
 		if (c < 0) continue;
 			switch (c) {
 			case 'a': opts->all_msg = true; break;
+			case 'F': opts->time_format = optarg; break;
 			case 'i': {
 				//QRegExp exp("(\\d+)(s|sec|secs|seconds)"); //qt2 is much different
 				std::string t(optarg);
