@@ -44,6 +44,7 @@ void printHelp()
 	fprintf(stderr,	APP_NAME " %s\n"
 					"Usage: %s [-interval=Nunit] [--all] [-t parserFor] [-n|s] [-ahmc] [-x archieve|-T totalSteps] [files...] [-C cmd]\n"
 					"  -a, --all            update all changes. default is update on timer event\n"
+					"  -F, --time-format=f  setup time format. utc(iso8601) or normal"
 					"  -i, --interval=Nunit update the progress every N seconds/mseconds. unit can be s, sec[s],seconds(N can be float) or msec[s](N is int)\n"
 					"  -t, --parser[=TYPE]  parser(tar,untar,zip,unzip,unrar,lzip.upx)\n"
 					"  -n, --number         count number of files as total steps\n"

@@ -18,6 +18,7 @@ bug: windows 下取消后7z进程无法结束
 
 usage: qop [-interval=Nunit] [--all] [-t parserFor] [-n|s] [-chm] [-x archieve|-T totalSteps] [files...]
 -a, --all: 立即更新所有压缩解压信息。默认为定时器时间间隔到了更新。
+-F, --time-format=fmt: 设置时间显示格式. utc(iso8601) 或 normal
 -i, --interval=Nunit: 每N(豪)秒更新一次进度. unit可以是 s, sec[s],seconds(N可以为小数)或msec[s](N为整数)
 -m, --multi-thread: 另开一个进程来计算进度条总步长.
 -h, --help: help
