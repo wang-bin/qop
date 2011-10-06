@@ -59,7 +59,7 @@ char* size2str(unsigned int a)
 	return ss;
 }
 
-
+//ISO 8601
 char* msec2str(int pMsec)
 {
 	int ms = pMsec%1000/100; //(pMsec%1000)/100 //hh:mm:ss.x

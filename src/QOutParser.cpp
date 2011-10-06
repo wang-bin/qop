@@ -66,12 +66,16 @@ QOutParser* getParser(const QString& type)
 
 class QOutParserPrivate {
 public:
-	QOutParserPrivate():file(""),size(0),compressed(0),value(0) \
-	  ,out(""),extra(QObject::tr("Calculating...")),elapsed(0),left(0),max_value(0),res(Unknow) \
-	  ,count_type(QCounterThread::Size),multi_thread(false),recount(true),update_msg_on_change(false) {
+	QOutParserPrivate() {
+		file = out = "";
+		extra = QObject::tr("Calculating...");
+		size = compressed = value = elapsed = left = max_value = 0;
 		interval = 300;
 		max_value = std::numeric_limits<uint>::max();
-		res_tmp = res;
+		res_tmp = res = Unknow;
+		count_type = QCounterThread::Size;
+		multi_thread =  update_msg_on_change = false;
+		recount = true;
 
 		//time.start();
 	}
@@ -80,8 +84,7 @@ public:
 
 	//use QLatin1String
 	QString file; //file just compressed/extracted
-	QString line;
-	//char line[LINE_LENGTH_MAX]; //add char name[256], ratio[4], int s? they are frequently used in parse
+	QString line; //char line[LINE_LENGTH_MAX]; //add char name[256], ratio[4], int s? they are frequently used in parse
 	uint size, compressed, value; //outSize numbers-->value
 	QString ratio; //ratio: zip
 	QTime time;

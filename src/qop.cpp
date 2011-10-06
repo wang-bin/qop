@@ -300,9 +300,9 @@ void Qop::setArchive(const QString& archive_path)
 void Qop::setTimeFormat(const QString &format)
 {
 #if CONFIG_QT4
-	if (format.toUpper() == QLatin1String("UTC") || format.toUpper() == QLatin1String("ISO8601")) {
+	if (format.toUpper() == QLatin1String("UTC") || format.toUpper() == QLatin1String("ISO")) {
 #else
-	if (format.upper() == QLatin1String("UTC" || format.upper() == QLatin1String("ISO8601"))) {
+	if (format.upper() == QLatin1String("UTC" || format.upper() == QLatin1String("ISO"))) {
 #endif //CONFIG_QT4
 		g_time_convert = msec2str;
 	} else {

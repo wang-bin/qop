@@ -79,7 +79,14 @@ int main(int argc, char *argv[])
 	opts_t options=opts_parse(argc,argv);
 
 	ZApplication a(argc, argv, QApplication::GuiClient);
-#if QT_VERSION >= 0x040000
+#if CONFIG_QT4
+	QApplication::setApplicationName(APP_NAME);
+	QApplication::setApplicationVersion(APP_VERSION_STR);
+	QApplication::setOrganizationName("Wang Bin");
+
+#endif
+
+#if CONFIG_QT4
 	QString dirname=QCoreApplication::applicationDirPath();
 #else
 	QString dirname=QFileInfo(argv[0]).dirPath();

@@ -9,7 +9,7 @@ Homepage: <https://sourceforge.net/projects/qop/>
 Package: qop
 Architecture: any
 Depends:
-Description: A compression/extraction progress indicator for tar, zip etc
+Description: A compression/extraction progress indicator
  A compression/extraction progress indicator for tar, zip, unzip, unrar, 7z by parsing their output message. It has a simple
  built-in method to unpack tar files.
  Support platforms: windows(Qt4), Linux(Qt4, tested on ubuntu 10.10), motorola ezx(Qt2, tested on ROKR E6) and Maemo5 etc.
