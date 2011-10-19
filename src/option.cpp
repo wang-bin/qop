@@ -97,7 +97,7 @@ opts_t opts_parse(int argc, char **argv)
 			case 'H': opts->hide=1; break;
 			case 'c': opts->auto_close=1; break;
 			case 'C': {
-				opts->x_file=0;
+				//opts->x_file=0;
 				opts->optind=optind;
 				//std::string s;
 				opts->cmd=new char[256];
@@ -122,7 +122,6 @@ opts_t opts_parse(int argc, char **argv)
 		} while (c != -1);
 
 	opts->optind=optind;
-
 	if(opts->x_file!=NULL && strcmp("tar",opts->parser_type)==0) opts->parser_type="untar";
 
 	return opts;
