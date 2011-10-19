@@ -124,8 +124,11 @@ int main(int argc, char *argv[])
 	//qop.parser_type=options->parser_type;
 	qop.setArchive(options->x_file);
 
-	if(options->diy || argc<2) //internal method
+	//internal method
+	if(options->diy || argc<2)  {
 		qop.extract(options->x_file,options->out_dir);
+		//qDebug("%s", options->x_file);
+	}
 	else if(!options->cmd==0)
 		qop.execute(QString::fromLocal8Bit(options->cmd));
 	else {

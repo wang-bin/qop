@@ -189,6 +189,7 @@ void QOutParser::parseLine(const QString& line)
 		qApp->processEvents();
 
 	if(d->res == Detail) {
+		//qDebug("%s==%s", size2str(d->size), size2str(d->value));
 		d->out = g_BaseMsg_Detail(d->file, d->size, d->value, d->max_str);
 		d->extra = g_ExtraMsg_Detail(d->speed, d->elapsed, d->left);
 	} else if(d->res == Simple) {
