@@ -38,7 +38,7 @@ const unsigned int iShift[] = { 0, 10, 20, 30, 40};
 	q = an, r = a-an*1024^n
 	rr = (a&iMask[n])/(1024^n)*1000 == (a&iMask[n])/(1024^(n-1))*(1000/1024) ==(a&iMask[n])>>iShift[n-1]*K2Ki;
 */
-
+//#include <stdlib.h>
 #if !__GNUC__
 #undef snprintf
 #define snprintf _snprintf
@@ -54,7 +54,9 @@ char* size2str(unsigned int a)
 	while (a>>iShift[++i]); --i;//q>>=iShift[--i];
 #endif
 	unsigned int r = ((a&iMask[i])>>iShift[i-1])*K2Ki; //(unsigned int)((a&iMask[i])*K2Ki)>>iShift[i-1];
+	//char *ss = (char*)malloc(11);
 	static char ss[11];
+	//memset(ss, 0, sizeof(ss));
 	snprintf(ss, 11, "%d.%03d%-2s", a>>iShift[i], r, unit[i]);
 	return ss;
 }
