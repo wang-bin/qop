@@ -111,6 +111,9 @@ EZProgressDialog::EZProgressDialog(QWidget *parent,Qt::WFlags f) :
 		,d_ptr(new EZProgressDialogPrivate)
 #endif
 {
+#if CONFIG_QT4
+	setWindowFlags(Qt::Dialog);
+#endif //CONFIG_QT4
 	Q_D(EZProgressDialog);
 	d->setupUi(this);
 	retranslateUi();

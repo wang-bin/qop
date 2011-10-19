@@ -188,7 +188,7 @@ typedef int Alignment;
 //#   define addLayout(layout,fr,fc,rspan,cspan,align...) addMultiCellLayout(layout,fr,fr+rspan-1,fc,fc+cspan-1,## align)
 #else
 #   define ZApplication QApplication
-#   define ZBaseDialog QWidget
+#   define ZBaseDialog QDialog
 #   define UTIL_Dialog QDialog
 #   define MyQListViewItem Q3ListViewItem
 #   define UTIL_ProgressBar QProgressBar
