@@ -97,7 +97,9 @@ public:
 	int tid, interval;
 
 	QCounterThread counter;
-
+#if CONFIG_QT4
+	//QThread paserThread;
+#endif //CONFIG_QT4
 	QCounterThread::CountType count_type;
 	bool multi_thread;
 	static int detail_freq, simple_freq, detail_ratio_freq;
@@ -139,9 +141,16 @@ QOutParser::QOutParser()
 	initTranslations();
 
 	Q_D(QOutParser);
-
+#if CONFIG_QT4
+	//moveToThread(&d->paserThread);
+	//d->paserThread.start();
+#endif //CONFIG_QT4
 	connect(this, SIGNAL(finished()), SLOT(slotFinished()));
+#if CONFIG_QT4
+	connect(&d->counter, SIGNAL(maximumChanged(int)), SLOT(setTotalSize(int)), Qt::DirectConnection);
+#else
 	connect(&d->counter, SIGNAL(maximumChanged(int)), SLOT(setTotalSize(int)));
+#endif //CONFIG_QT4
 	connect(this, SIGNAL(unitChanged()), SLOT(slotResetUnit()));
 #if !NO_SOCKET
 	//QSocketNotifier *stdin_notifier=new QSocketNotifier(STDIN_FILENO,QSocketNotifier::Read,this);
