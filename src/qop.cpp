@@ -35,8 +35,8 @@
 static EZProgressDialog *progressDlg;
 void DoProgress(const QString& _current_fileName, size_t current_size, size_t processed, size_t total_size, int speed, int time_elapsed, int time_remain)
 {
-	QString _out_msg=_current_fileName+"\n"+QObject::tr("Size: ")+size2Str<double>(current_size)+"\n"+QObject::tr("Processed: ")+size2Str<double>(processed)+" / "+size2Str<double>(total_size)+"\n";
-	QString _extra_msg=QObject::tr("Speed: ")+size2Str<double>(speed)+"/s\n"+QObject::tr("Elapsed: %1s Remaining: %2s").arg(time_elapsed/1000.,0,'f',1).arg(time_remain,0,'f',1);
+	QString _out_msg=_current_fileName+"\n"+QObject::tr("Size: ")+size2Str<qreal>(current_size)+"\n"+QObject::tr("Processed: ")+size2Str<qreal>(processed)+" / "+size2Str<qreal>(total_size)+"\n";
+	QString _extra_msg=QObject::tr("Speed: ")+size2Str<qreal>(speed)+"/s\n"+QObject::tr("Elapsed: %1s Remaining: %2s").arg(time_elapsed/1000.,0,'f',1).arg(time_remain,0,'f',1);
 	progressDlg->setValue(processed);
 	progressDlg->setLabelText(_out_msg+_extra_msg);
 	//qApp->processEvents();

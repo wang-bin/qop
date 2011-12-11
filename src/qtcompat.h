@@ -159,18 +159,60 @@ using Qt::Alignment;
 #define ezDebug(s) qDebug(s)
 #define qMax(a,b) QMAX(a,b)
 #define qMin(a,b) QMIN(a,b)
-#if !CONFIG_EZX
+# if !CONFIG_EZX
 #	include <qprogressdialog.h>
-#define timerInformation(parent,pix_title,text,time,ok) information(parent,"",text)
+#	define timerInformation(parent,pix_title,text,time,ok) information(parent,"",text)
 # else
 #	include <UTIL_ProgressDialog.h>
 #	include <ZApplication.h>
 #	include <ZMessageBox.h>
+#	define QT_ARCH_ARM
 # endif //CONFIG_EZX
 #define EZ_ProgressDialog(labeltext,cancelbutton,min,max,parent,name,modal,flag) UTIL_ProgressDialog(labeltext,cancelbutton,max,parent,name,modal,flag)
 //#define setValue(v) setProgress(v)
 typedef int Alignment;
 #define setWindowTitle(s) setCaption(s)
+
+
+#if defined(QT_ARCH_ARM) || defined(QT_ARCH_ARMV6) || defined(QT_ARCH_AVR32) || (defined(QT_ARCH_MIPS) && (defined(Q_WS_QWS) || defined(Q_OS_WINCE))) || defined(QT_ARCH_SH) || defined(QT_ARCH_SH4A)
+#define QT_NO_FPU
+#endif
+
+// This logic must match the one in qmetatype.h
+#if defined(QT_COORD_TYPE)
+typedef QT_COORD_TYPE qreal;
+#elif defined(QT_NO_FPU) || defined(QT_ARCH_ARM) || defined(QT_ARCH_WINDOWSCE) || defined(QT_ARCH_SYMBIAN)
+typedef float qreal;
+#else
+typedef double qreal;
+#endif
+
+/*
+   Utility macros and inline functions
+*/
+
+template <typename T>
+inline T qAbs(const T &t) { return t >= 0 ? t : -t; }
+
+inline int qRound(qreal d)
+{ return d >= 0.0 ? int(d + 0.5) : int(d - int(d-1) + 0.5) + int(d-1); }
+
+#if defined(QT_NO_FPU) || defined(QT_ARCH_ARM) || defined(QT_ARCH_WINDOWSCE) || defined(QT_ARCH_SYMBIAN)
+inline qint64 qRound64(double d)
+{ return d >= 0.0 ? qint64(d + 0.5) : qint64(d - qreal(qint64(d-1)) + 0.5) + qint64(d-1); }
+#else
+inline qint64 qRound64(qreal d)
+{ return d >= 0.0 ? qint64(d + 0.5) : qint64(d - qreal(qint64(d-1)) + 0.5) + qint64(d-1); }
+#endif
+
+template <typename T>
+inline const T &qMin(const T &a, const T &b) { if (a < b) return a; return b; }
+template <typename T>
+inline const T &qMax(const T &a, const T &b) { if (a < b) return b; return a; }
+template <typename T>
+inline const T &qBound(const T &min, const T &val, const T &max)
+{ return qMax(min, qMin(max, val)); }
+
 #endif //CONFIG_QT4
 
 
