@@ -88,7 +88,6 @@ public:
 
 	virtual uint unpackedSize();
 
-	void estimate();
 	void updateMessage();
 	void finishMessage();
 	//since the gui will be blocked while writng files, we must call forceShowMessage() to show text every interval ms.

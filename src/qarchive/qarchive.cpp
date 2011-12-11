@@ -137,17 +137,6 @@ void QArchive::timerEvent(QTimerEvent *)
 	checkTryPause();
 }
 
-void QArchive::estimate()
-{
-	Q_D(QArchive);
-	if(!d->pause) d->elapsed = d->last_elapsed+d->time.elapsed();
-	d->speed = d->processedSize/(1+d->elapsed)*1000; //>0
-	d->left = (d->totalSize-d->processedSize)/(1+d->speed);
-#ifndef NO_EZX
-	qApp->processEvents();
-#endif //NO_EZX
-}
-
 void QArchive::terminate()
 {
 	ZDEBUG("terminated!");
@@ -167,7 +156,7 @@ void QArchive::pauseOrContinue()
 void QArchive::updateMessage()
 {
 	Q_D(QArchive);
-	estimate();
+	d->estimate();
 	d->out_msg = g_BaseMsg_Detail(d->current_fileName, d->size, d->processedSize, d->max_str);
 	d->extra_msg = g_ExtraMsg_Detail(d->speed, d->elapsed, d->left);
 	emit textChanged(d->out_msg+d->extra_msg);
@@ -176,8 +165,8 @@ void QArchive::updateMessage()
 
 void QArchive::finishMessage()
 {
-	estimate();
 	Q_D(QArchive);
+	d->estimate();
 	d->out_msg=QObject::tr("Finished: ") + QString::number(d->numFiles)+ QLatin1String(" ") +QObject::tr("files") + QLatin1String("\n") + QString(size2str(d->processedSize))+d->max_str + QLatin1String("\n");
 	d->extra_msg=QObject::tr("Speed: ") + QString(size2str(d->processedSize/(1+d->elapsed)*1000)) + QLatin1String("/s\n") + QObject::tr("Elapsed: %1s Remaining: %2s").arg(g_time_convert(d->elapsed)).arg(g_time_convert(d->left));
 	killTimer(d->tid);

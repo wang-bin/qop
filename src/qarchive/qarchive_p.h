@@ -3,6 +3,7 @@
 
 #include <qobject.h>
 #include <qfile.h>
+#include <qapplication.h>
 
 namespace Archive {
 
@@ -20,6 +21,15 @@ public:
 			outFile.close();
 	}
 
+	void estimate() {
+		if(!pause) elapsed = last_elapsed+time.elapsed();
+		speed = processedSize/(1+elapsed)*1000; //>0
+		left = (qreal)(totalSize-processedSize)/(qreal)(1+speed);
+#ifndef NO_EZX
+		qApp->processEvents();
+#endif //NO_EZX
+	}
+
 	QString outDir;
 	QFile outFile;
 	uint totalSize, processedSize;
@@ -32,7 +42,7 @@ public:
 	int time_passed;
 	volatile bool pause;
 	int numFiles;
-	double left;
+	qreal left;
 
 	int tid;
 	QTime time;
