@@ -90,7 +90,7 @@ public:
 	QTime time;
 	QString out, extra;
 	uint elapsed, speed; //ms
-	double left;
+	qreal left;
 	volatile uint max_value;
 	QString max_str;
 	Format res, res_tmp;
@@ -112,7 +112,7 @@ int QOutParserPrivate::simple_freq=0;
 int QOutParserPrivate::detail_ratio_freq=0;
 
 
-const double KInvMath=1./1000; //to speed up
+const qreal KInvMath=1./1000; //to speed up
 void QOutParserPrivate::estimate()
 {
 	/*
@@ -123,10 +123,10 @@ void QOutParserPrivate::estimate()
 	*/
 	elapsed=time.elapsed();
 	speed=value/(elapsed*KInvMath+1);
-	left= (max_value-value)/(1+speed);
+	left= (qreal)(max_value-value)/(qreal)(1+speed);
 	/*
 	printf("t=%d, v=%d\n",_elapsed,_speed);
-	_left= (max_value-value)*_elapsed/(value*1000+1); //a/b ~ a/(b+1)
+	_left= (qreal)(max_value-value)*_elapsed/(qreal)(value*1000+1); //a/b ~ a/(b+1)
 	fflush(stdout);*/
 #ifndef NO_EZX
 	qApp->processEvents();
@@ -205,8 +205,8 @@ void QOutParser::parseLine(const QString& line)
 		d->out = g_BaseMsg_Simple(d->file, ++d->value, d->max_str);
 		d->extra = g_ExtraMsg_Simple(d->speed, d->elapsed, d->left);
 	} else if(d->res == DetailWithRatio) {
-		d->out = g_BaseMsg_Zip(d->file, d->size, d->ratio, d->value, d->max_str);
-		d->extra = g_ExtraMsg_Zip(d->speed, d->elapsed, d->left);
+		d->out = g_BaseMsg_Ratio(d->file, d->size, d->ratio, d->value, d->max_str);
+		d->extra = g_ExtraMsg_Ratio(d->speed, d->elapsed, d->left);
 	} else if(d->res == Unknow) {
 		qDebug("%s", qPrintable(line));
 		return;
@@ -641,7 +641,7 @@ Format QZipOutParser::parse(const QString& line)
 		d->value = QString(in_s).toInt();
 		d->compressed = QString(out_s).toInt();
 		d->ratio = QString(r) + "%";
-		//ratio=QString().sprintf("%.2f",(double)compressed/(double)value*100.)+"%";
+		//ratio=QString().sprintf("%.2f",(qreal)compressed/(qreal)value*100.)+"%";
 		return EndZip;
 	} else if(line.contains("Archive is current")) {
 		return All;
