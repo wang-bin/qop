@@ -1,0 +1,12 @@
+Makefile*
+*.pro.user*
+*.[oa]
+*.so*
+*.dll
+
+#dirs
+.moc
+.obj
+/bin
+/lib
+
