@@ -29,10 +29,11 @@ HEADERS		+= src/QOutParser.h \
 		src/qarchive/qarchive_p.h \
 		src/msgdef.h \
 		src/qtcompat.h \
-                src/utils/util.h \
-                src/utils/strutil.h \
-                src/utils/convert.h \
-                src/utils/qt_util.h
+		src/utils/util.h \
+		src/utils/strutil.h \
+		src/utils/convert.h \
+		src/utils/qt_util.h \
+		src/zprocess.h
 
 SOURCES		+= src/QOutParser.cpp \
 		src/gui/ezprogressdialog.cpp \
@@ -46,10 +47,11 @@ SOURCES		+= src/QOutParser.cpp \
 		src/qarchive/gzip/GzipItem.cpp \
 		src/qop.cpp \
 		src/commandparser.cpp \
-                src/utils/util.cpp \
-                src/utils/strutil.cpp \
-                src/utils/convert.cpp \
-                src/utils/qt_util.cpp
+		src/utils/util.cpp \
+		src/utils/strutil.cpp \
+		src/utils/convert.cpp \
+		src/utils/qt_util.cpp \
+		src/zprocess.cpp
 
 !*g++* {
 	HEADERS += src/getopt.h
@@ -80,12 +82,12 @@ OTHER_FILES	+= \
 		qtc_packaging/debian_harmattan/control \
 		qtc_packaging/debian_harmattan/compat \
 		qtc_packaging/debian_harmattan/changelog \
-                README
+				README
 
 unix:!symbian {
 	maemo* {
 		target.path = /opt/usr/bin
-		DEFINES         += CONFIG_MAEMO
+		DEFINES		 += CONFIG_MAEMO
 	} else {
 		target.path = /usr/local/bin
 	}
@@ -137,12 +139,8 @@ unix:maemo* {
 DISTFILES = $${HEADERS} $${SOURCES} $${TRANSLATIONS} $${OTHER_FILES}
 
 unix:!symbian:!maemo5 {
-    target.path = /opt/qop/bin
-    INSTALLS += target
+	target.path = /opt/qop/bin
+	INSTALLS += target
 }
-
-
-
-
 
 

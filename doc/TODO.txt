@@ -1,6 +1,24 @@
 branch 0.4:
-libqop
+struct:
+doc
+common/qtcompat.h, version.h, msgdef.h
+libqop/gui/
+	  /core/
+	  /archive/
+src/main.cpp, qop.{h,cpp}, getopt.{h.cpp}, commandparser.{h,cpp}
+utils/
+test/
+i18n
+screenshot
+progress interperation
 
+move qtar from qop to another project (qpackage, qarchive, with qlzma).
+progress dialog to widget. system model on maemo
+read output in another thread?
+plugin
+setProcess(QProcess *proc); //can be qprocess and zprocess
+libqop
+copyright 2010-2012
 
 VERSION 0.3 TODO List
 
