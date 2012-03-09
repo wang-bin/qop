@@ -1,0 +1,9 @@
+*.o
+Makefile*
+*.user
+*.pro.*
+
+#dirs
+.moc
+.obj
+bin
