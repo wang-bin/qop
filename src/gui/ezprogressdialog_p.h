@@ -56,7 +56,7 @@ typedef QListIterator<QLabel> LabelIterator;
 #endif
 
 class EZProgressDialogPrivate
-#if (QT_VERSION >= 0x040000) && INHERIT_PRIVATE
+#if (QT_VERSION >= 0x040000) && !defined(QT_NO_QOBJECT) && INHERIT_PRIVATE
 	:public QDialogPrivate
 #endif
 {

@@ -1,8 +1,9 @@
 Makefile*
-*.pro.user*
 *.[oa]
 *.so*
 *.dll
+*.pro.*
+*.user
 
 #vc files
 *.ncb
