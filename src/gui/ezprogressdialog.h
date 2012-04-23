@@ -57,12 +57,13 @@ class EZProgressDialog : public ZBaseDialog {
 	//Q_PROPERTY(int minimumDuration READ minimumDuration WRITE setMinimumDuration)
 	//Q_PROPERTY(QString labelText READ labelText WRITE setLabelText)
 public:
-	explicit EZProgressDialog(QWidget *parent = 0,Qt::WFlags f=0);
-	EZProgressDialog(const QString& labelText,const QString& cancelButtonText="Cancel",int value=0,int max=100,QWidget* parent=0,Qt::WFlags f=0);
+	explicit EZProgressDialog(QWidget *parent = 0, Qt::WFlags f=0);
+	EZProgressDialog(const QString& labelText, const QString& cancelButtonText="Cancel", int value = 0, int max = 100
+			, QWidget* parent = 0, Qt::WFlags f = 0);
 	~EZProgressDialog();
 
-	void addButton(ZPushButton *button,int index=-1,int stretch=0,Alignment align=0);	//index<0, insert at the tail
-	void addButton(const QString& text=0,int index=-1,int stretch=0,Alignment align=0); //addButton(,Align)
+	void addButton(ZPushButton *button, int index = -1, int stretch = 0, Alignment align = 0);	//index<0, insert at the tail
+	void addButton(const QString& text = 0, int index = -1, int stretch = 0, Alignment align = 0); //addButton(,Align)
 	void setButtonText(int index,const QString& text);
 	//#include <ZPushButton.h> first. connecting signals to slots etc. index<0, return the last index of abs(index)
 	//Don't only write ZPushButton* button(...); Thus the ZPushButton can't convert to QPushButton in connections
@@ -70,12 +71,12 @@ public:
 	ZPushButton *button(int index=0) const;
 	int buttonsCount() const;
 
-	void addLabel(QLabel* label,int index=-1,int stretch=0,Alignment align=0);
-	void addLabel(const QString& text=0,int index=-1,int stretch=0,Alignment align=0);
-	void setLabelText(int index,const QString& text);
-	QLabel *label(int index=0) const;
+	void addLabel(QLabel* label, int index = -1, int stretch = 0, Alignment align = 0);
+	void addLabel(const QString& text = QString(), int index = -1, int stretch = 0, Alignment align = 0);
+	void setLabelText(int index, const QString& text);
+	QLabel *label(int index = 0) const;
 	int labelsCount() const;
-	void setLabelFont(int index,const QFont& font);
+	void setLabelFont(int index, const QFont& font);
 
 	void setAutoClose(bool);
 	void setAutoReset(bool);
@@ -104,8 +105,8 @@ public slots:
 	void setValue(int);
 	void setProgress(int p) {setValue(p);}
 
-	void removeButton(int index=-1);
-	void removeLabel(int index=-1);
+	void removeButton(int index = -1);
+	void removeLabel(int index = -1);
 
 protected:
 	virtual void closeEvent(QCloseEvent *);
@@ -118,7 +119,7 @@ private slots:
 private:
 	void resizeButtons();
 
-#if !INHERIT_PRIVATE || (QT_VERSION < 0x040000)
+#if !CONFIG_QT4
 	EZProgressDialogPrivate *d_ptr;
 #endif
 };

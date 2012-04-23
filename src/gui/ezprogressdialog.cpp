@@ -38,13 +38,61 @@
 	How to deal with QList
 
 */
+
+#if CONFIG_QT4
+typedef QListIterator<ZPushButton*> ButtonIterator;
+typedef QListIterator<QLabel*> LabelIterator;
+#else
+typedef QListIterator<ZPushButton> ButtonIterator;
+typedef QListIterator<QLabel> LabelIterator;
+#endif
+
+EZProgressDialogPrivate::EZProgressDialogPrivate()
+	:labelLayout(0),content(0),bar(0)
+	,buttonLayout(0),autoReset(true),autoClose(false)
+{
+#if CONFIG_EZX
+	value = 0;
+#endif
+}
+
+EZProgressDialogPrivate::~EZProgressDialogPrivate()
+{
+	//ButtonIterator it(buttons);
+#if CONFIG_QT4
+	//for(it.toFront();it.hasNext();) {
+		//delete it.next(); //
+	qDeleteAll(buttons.begin(), buttons.end());
+	//for(it_l.toFront();it_l.hasNext();) {
+	//	delete it_l.next(); //
+	qDeleteAll(labels.begin(), labels.end());
+#else
+	ButtonIterator it(buttons);
+	for (it.toFirst(); it.current(); ++it) //{
+		delete *it; //
+	LabelIterator it_l(labels);
+	for (it_l.toFirst(); it_l.current(); ++it_l) //{
+		delete *it_l; //
+#endif
+	buttons.clear();
+	labels.clear();
+	delete labelLayout;
+	delete buttonLayout;
+	delete bar;
+	//delete q_ptr; //Memory error!
+}
+
+
 void EZProgressDialogPrivate::setupUi(EZProgressDialog *dialog)
 {
-	q_ptr=dialog;
+	Q_UNUSED(dialog)
+#if !CONFIG_QT4 || defined(QT_NO_QOBJECT)
+	q_ptr = dialog;
+#endif
 	//buttons.setAutoDelete(true);  //not exists in Qt4
 	Q_Q(EZProgressDialog);
 #if CONFIG_QT4
-	q->setMaximumWidth(qApp->desktop()->width()*4/5);
+	q->setMaximumWidth(qApp->desktop()->width() * 4 / 5);
 #else
 	q->setMaximumWidth(qApp->desktop()->width());
 #endif
@@ -55,13 +103,13 @@ void EZProgressDialogPrivate::setupUi(EZProgressDialog *dialog)
 	content->setAlignment(Qt::AlignLeft|Qt::AlignTop);
 	content->setMargin(8);
 #if CONFIG_EZX
-	ZApplication::setMouseMode(content,1);
-	content->setFixedWidth(qApp->desktop()->width()-24);
+	ZApplication::setMouseMode(content, 1);
+	content->setFixedWidth(qApp->desktop()->width() - 24);
 #else
 	//content->setMaximumWidth(qApp->desktop()->width()/2);
 #endif //NO_EZX
 	labelLayout->addWidget(content);
-	labels.insert(0,content);
+	labels.insert(0, content);
 
 	bar = new UTIL_ProgressBar(q);
 #if CONFIG_QT4
@@ -73,7 +121,7 @@ void EZProgressDialogPrivate::setupUi(EZProgressDialog *dialog)
 
 	buttonLayout = new QHBoxLayout();
 	buttonLayout->setSpacing(0);
-	QVBoxLayout* contentLayout=new QVBoxLayout(q);//static_cast<QVBoxLayout*>(q->layout());
+	QVBoxLayout* contentLayout = new QVBoxLayout(q);//static_cast<QVBoxLayout*>(q->layout());
 	contentLayout->setSpacing(8);
 	contentLayout->setMargin(2);
 	contentLayout->addLayout(labelLayout);
@@ -95,7 +143,7 @@ void EZProgressDialogPrivate::init(const QString &labelText, int value, int max)
 	bar->setProgress(value);
 #endif //CONFIG_QT4
 #if CONFIG_EZX
-	this->value=value;
+	this->value = value;
 	//ZDEBUG("%d,%d",max,bar->QProgressBar::totalSteps());
 #endif
 }
@@ -105,10 +153,12 @@ void EZProgressDialogPrivate::init(const QString &labelText, int value, int max)
 */
 
 
-EZProgressDialog::EZProgressDialog(QWidget *parent,Qt::WFlags f) :
-		EZ_BaseDialog(parent,"EZProgressDialog",ZBaseDialog::NO_MODAL,f)
-#if QT_VERSION < 0x040000 || !INHERIT_PRIVATE
-		,d_ptr(new EZProgressDialogPrivate)
+EZProgressDialog::EZProgressDialog(QWidget *parent,Qt::WFlags f)
+#if CONFIG_QT4 && !defined(QT_NO_QOBJECT)
+		:QDialog(*new EZProgressDialogPrivate(), parent, f)
+#else
+		:EZ_BaseDialog(parent, "EZProgressDialog", ZBaseDialog::NO_MODAL, f)
+		,d_ptr(new EZProgressDialogPrivate())
 #endif
 {
 #if CONFIG_QT4
@@ -120,22 +170,24 @@ EZProgressDialog::EZProgressDialog(QWidget *parent,Qt::WFlags f) :
 }
 
 EZProgressDialog::EZProgressDialog(const QString &labelText,const QString &cancelButtonText,int value,int max,QWidget* parent,Qt::WFlags f)
-	: EZ_BaseDialog(parent,"EZProgressDialog",ZBaseDialog::NO_MODAL,f)
-#if QT_VERSION < 0x040000 || !INHERIT_PRIVATE
-	,d_ptr(new EZProgressDialogPrivate)
+#if CONFIG_QT4 && !defined(QT_NO_QOBJECT)
+		:QDialog(*new EZProgressDialogPrivate(), parent, f)
+#else
+		:EZ_BaseDialog(parent, "EZProgressDialog", ZBaseDialog::NO_MODAL, f)
+		,d_ptr(new EZProgressDialogPrivate())
 #endif
 {
 #if CONFIG_EZX
-	setMaximumWidth(qApp->desktop()->width()-24);
+	setMaximumWidth(qApp->desktop()->width() - 24);
 #endif //NO_EZX
 	Q_D(EZProgressDialog);
 	d->setupUi(this);
-	d->init(labelText,value,max);
+	d->init(labelText, value, max);
 
 	retranslateUi();
 
 	addButton(cancelButtonText);
-	ZPushButton *b=button(0);
+	ZPushButton *b = button(0);
 #if CONFIG_QT4
 	b->setObjectName("CancelButton");
 	b->setCheckable(true);
@@ -147,10 +199,10 @@ EZProgressDialog::EZProgressDialog(const QString &labelText,const QString &cance
 	b->setDefault(true);  //Press Enter or Space to cancel
 #endif
 	//connect(b,SIGNAL(clicked()),SLOT(reject()));
-	connect(b,SIGNAL(clicked()),this,SIGNAL(canceled()));
-	connect(b,SIGNAL(clicked()),this,SIGNAL(cancelled()));
+	connect(b, SIGNAL(clicked()), SIGNAL(canceled()));
+	connect(b, SIGNAL(clicked()), SIGNAL(cancelled()));
 //#if CONFIG_EZX
-	connect(b,SIGNAL(clicked()),qApp,SLOT(quit())); //EZX needs this
+	connect(b, SIGNAL(clicked()), qApp, SLOT(quit())); //EZX needs this
 //#endif
 	startTimer(1000);
 }
@@ -158,7 +210,7 @@ EZProgressDialog::EZProgressDialog(const QString &labelText,const QString &cance
 EZProgressDialog::~EZProgressDialog()
 {
 	qDebug("EZProgressDialog::~EZProgressDialog()");
-#if QT_VERSION < 0x040000
+#if !CONFIG_QT4
 	delete d_ptr;
 #endif
 }
@@ -170,13 +222,14 @@ void EZProgressDialog::retranslateUi()
 
 void EZProgressDialog::addButton(ZPushButton *btn,int index,int stretc,Alignment align)
 {
-	connect(btn,SIGNAL(clicked()),SLOT(slotButtonClicked()));
-	int idx=index;
+	connect(btn, SIGNAL(clicked()), SLOT(slotButtonClicked()));
+	int idx = index;
 
 	Q_D(EZProgressDialog);
-	if(index>(int)d->buttons.count()) idx=-1;
-	idx=index<0 ? d->buttons.count() : index;
-	d->buttonLayout->insertWidget(idx,btn,stretc,align);
+	if (index > (int)d->buttons.count())
+		idx = -1;
+	idx = index<0 ? d->buttons.count() : index;
+	d->buttonLayout->insertWidget(idx, btn, stretc, align);
 	d->buttons.insert(idx,btn);
 #if CONFIG_EZX
 	QSizePolicy sizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed); //
@@ -189,18 +242,22 @@ void EZProgressDialog::addButton(ZPushButton *btn,int index,int stretc,Alignment
 
 void EZProgressDialog::addButton(const QString &text, int index,int stretc,Alignment align)
 {
-	addButton(new EZ_PushButton("",text,this),index,stretc,align);
+	addButton(new EZ_PushButton("", text, this), index, stretc, align);
 }
 void EZProgressDialog::setButtonText(int index, const QString &text)
 {
-	if(buttonsCount()<=index) return;
+	if	(buttonsCount() <= index)
+		return;
 	button(index)->setText(text);
 }
 
 ZPushButton* EZProgressDialog::button(int index) const
 {
-	//Q_D(const EZProgressDialog);  //Failed in qt2
-	EZProgressDialogPrivate *d=d_ptr;
+#if CONFIG_QT4
+	Q_D(const EZProgressDialog);  //Failed in qt2
+#else
+	EZProgressDialogPrivate *d = d_ptr;
+#endif
 	//if(index>=(int)d->buttons.count()) index=-1;
 	return d->buttons.at(index % d->buttons.count());//index<0 ? d->buttons.count()+index : index); //index%d->buttons.count()
 }
@@ -214,31 +271,35 @@ int EZProgressDialog::buttonsCount() const
 void EZProgressDialog::addLabel(QLabel *label,int index,int stretc,Alignment align)
 {
 	Q_D(EZProgressDialog);
-	int idx=index;
-	if(index>(int)d->buttons.count()) idx=-1;
-	idx=index<0 ? d->buttons.count() : index;
-	d->labelLayout->insertWidget(idx,label,stretc,align);
+	int idx = index;
+	if	(index>(int)d->buttons.count())
+		idx = -1;
+	idx = index<0 ? d->buttons.count() : index;
+	d->labelLayout->insertWidget(idx, label, stretc, align);
 	label->show();
 
 	d->labels.insert(idx,label);
 }
 
-void EZProgressDialog::addLabel(const QString &text,int index,int stretc,Alignment align)
+void EZProgressDialog::addLabel(const QString &text, int index, int stretc, Alignment align)
 {
-	addLabel(new QLabel(text,this),index,stretc,align);
+	addLabel(new QLabel(text, this), index, stretc, align);
 }
 
 void EZProgressDialog::setLabelText(int index, const QString &text)
 {
-	if(labelsCount()<=index) return;
+	if(labelsCount() <= index) return;
 	label(index)->setText(text);
 	//qApp->processEvents(); //slow down
 }
 
 QLabel* EZProgressDialog::label(int index) const
 {
-	//Q_D(const EZProgressDialog); //Failed in qt2
-	EZProgressDialogPrivate *d=d_ptr;
+#if CONFIG_QT4
+	Q_D(const EZProgressDialog);  //Failed in qt2
+#else
+	EZProgressDialogPrivate *d = d_ptr;
+#endif
 	//if(index>=(int)d->buttons.count()) index=-1;
 	return d->labels.at(index % d->buttons.count());//index<0 ? d->buttons.count()+index : index);
 }
@@ -252,13 +313,13 @@ int EZProgressDialog::labelsCount() const
 void EZProgressDialog::setAutoClose(bool ac)
 {
 	Q_D(EZProgressDialog);
-	d->autoClose=ac;
+	d->autoClose = ac;
 }
 
 void EZProgressDialog::setAutoReset(bool ar)
 {
 	Q_D(EZProgressDialog);
-	d->autoReset=ar;
+	d->autoReset = ar;
 }
 
 bool EZProgressDialog::autoClose() const
@@ -275,7 +336,8 @@ bool EZProgressDialog::autoReset() const
 
 void EZProgressDialog::setBar(UTIL_ProgressBar *bar)
 {
-	if (!bar) return;
+	if (!bar)
+		return;
 
 	Q_D(EZProgressDialog);
 	delete d->bar;
@@ -284,13 +346,14 @@ void EZProgressDialog::setBar(UTIL_ProgressBar *bar)
 
 void EZProgressDialog::setLabel(QLabel *label)
 {
-	if(!label) return;
+	if (!label)
+		return;
 
 	Q_D(EZProgressDialog);
 	delete d->content;
 	d->content = label;
 	if (label) {
-		if (label->parentWidget()!= this) {
+		if (label->parentWidget() != this) {
 #if CONFIG_QT4
 			label->setParent(this, 0);
 #else
@@ -300,7 +363,7 @@ void EZProgressDialog::setLabel(QLabel *label)
 	}
 }
 
-void EZProgressDialog::setLabelFont(int index,const QFont &f)
+void EZProgressDialog::setLabelFont(int index, const QFont &f)
 {
 	label(index)->setFont(f);
 }
@@ -364,7 +427,7 @@ void EZProgressDialog::setLabelText(const QString &text)
 {
 	Q_D(EZProgressDialog);
 	d->content->setText(text);
-	if(isHidden()) {
+	if (isHidden()) {
 		QString str(text);
 		str.replace(QRegExp("\n"),"  \r");
 		fprintf(stdout, "\r%s", qPrintable(str));
@@ -372,8 +435,9 @@ void EZProgressDialog::setLabelText(const QString &text)
 		return;
 	}
 #if CONFIG_EZX
-	if(!isHidden()) adjustSize(); //for Qt2.x
-	move(pos()+qApp->desktop()->rect().center()-mapToGlobal(rect().center()));
+	if (!isHidden())
+		adjustSize(); //for Qt2.x
+	move(pos() + qApp->desktop()->rect().center() - mapToGlobal(rect().center()));
 #endif
 }
 
@@ -381,24 +445,25 @@ void EZProgressDialog::setValue(int progress)
 {
 	Q_D(EZProgressDialog);
 #if CONFIG_EZX
-	d->value=progress;
-	//ZDEBUG("%d,%d",d->value,d->bar->totalSteps());
+	d->value = progress;
+	//ZDEBUG("%d, %d", d->value, d->bar->totalSteps());
 #endif
 #if CONFIG_QT4
 	d->bar->setValue(progress);
-	int max=d->bar->maximum();
+	int max = d->bar->maximum();
 #else
 	d->bar->setProgress(progress);
-	int max=d->bar->totalSteps();
+	int max = d->bar->totalSteps();
 #endif //CONFIG_QT4
 	if (progress > max) {
-		if(d->autoClose) hide(); //? why not close?
-		if(d->autoReset) {
-			int r = progress%max;
+		if (d->autoClose)
+			hide(); //? why not close?
+		if (d->autoReset) {
+			int r = progress % max;
 #if CONFIG_QT4
-			d->bar->setValue(r==0?max:r);
+			d->bar->setValue(r == 0 ? max : r);
 #else
-			d->bar->setProgress(r==0?max:r);
+			d->bar->setProgress(r == 0 ? max : r);
 #endif //CONFIG_QT4
 		}
 	}
@@ -463,13 +528,13 @@ UTIL_ProgressBar* EZProgressDialog::bar()
 */
 void EZProgressDialog::slotButtonClicked()
 {
-	ZPushButton* btn=(ZPushButton*)sender();
+	ZPushButton* btn = (ZPushButton*)sender();
 
 	Q_D(EZProgressDialog); //Q_D(const EZProgressDialog)
 #if CONFIG_QT4
-	int index=d->buttons.indexOf(btn);
+	int index = d->buttons.indexOf(btn);
 #else
-	int index=d->buttons.find(btn);
+	int index = d->buttons.find(btn);
 #endif //CONFIG_QT4
 	emit buttonClicked(index);
 }
@@ -481,19 +546,21 @@ void EZProgressDialog::slotButtonClicked()
 void EZProgressDialog::resizeButtons()
 {
 	Q_D(const EZProgressDialog);
-	int btns=d->buttons.count();
-	int w=qMax(qApp->desktop()->width(),width());
+	int btns = d->buttons.count();
+	int w = qMax(qApp->desktop()->width(),width());
 
-	if(btns<=2) w-=30;
-	else w-=20;
-	w/=btns;
+	if (btns <= 2)
+		w -= 30;
+	else
+		w -= 20;
+	w /= btns;
 	ButtonIterator it(d->buttons);
 #if CONFIG_QT4
-	for(it.toFront();it.hasNext();) {
+	for (it.toFront(); it.hasNext();) {
 		it.next()->setFixedWidth(w); //
 	}
 #else
-	for(it.toFirst();it.current();++it) {
+	for (it.toFirst(); it.current(); ++it) {
 		(*it)->setFixedWidth(w); //
 		qDebug((*it)->text());
 	}

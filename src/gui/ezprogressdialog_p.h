@@ -20,18 +20,14 @@
 #ifndef EZPROGRESSDIALOG_P_H
 #define EZPROGRESSDIALOG_P_H
 #include "qtcompat.h"
-#define INHERIT_PRIVATE 0
 
 #include <qdatetime.h>
+#include <qlabel.h>
+#include <qlayout.h>
 #if CONFIG_QT4
-#include <QLabel>
-#include <QPushButton>
-#	if INHERIT_PRIVATE
+#include <QtGui/QPushButton>
 #include <private/qdialog_p.h>
-#	endif
 #else
-#define INHERIT_PRIVATE 0
-class QLabel;
 #endif
 #if CONFIG_EZX
 #include <UTIL_ProgressBar.h>
@@ -39,62 +35,19 @@ class QLabel;
 #else
 #include <qprogressbar.h>
 #endif
-#include <qlayout.h>
 
 class EZProgressDialog;
 class QString;
-//class QHBoxLayout;
-//class QVBoxLayout;
-//class UTIL_ProgressBar;
-
-#if CONFIG_QT4
-typedef QListIterator<ZPushButton*> ButtonIterator;
-typedef QListIterator<QLabel*> LabelIterator;
-#else
-typedef QListIterator<ZPushButton> ButtonIterator;
-typedef QListIterator<QLabel> LabelIterator;
-#endif
 
 class EZProgressDialogPrivate
-#if (QT_VERSION >= 0x040000) && !defined(QT_NO_QOBJECT) && INHERIT_PRIVATE
+#if CONFIG_QT4 && !defined(QT_NO_QOBJECT)
 	:public QDialogPrivate
 #endif
 {
 	Q_DECLARE_PUBLIC(EZProgressDialog)
 public:
-	EZProgressDialogPrivate():labelLayout(0),content(0),bar(0)
-			,buttonLayout(0),autoReset(true),autoClose(false)
-	{
-#if CONFIG_EZX
-		value=0;
-#endif
-	}
-
-	~EZProgressDialogPrivate() {
-		//ButtonIterator it(buttons);
-	#if CONFIG_QT4
-		//for(it.toFront();it.hasNext();) {
-			//delete it.next(); //
-		qDeleteAll(buttons.begin(),buttons.end());
-		//for(it_l.toFront();it_l.hasNext();) {
-		//	delete it_l.next(); //
-		qDeleteAll(labels.begin(),labels.end());
-	#else
-		ButtonIterator it(buttons);
-		for(it.toFirst();it.current();++it) //{
-			delete *it; //
-		LabelIterator it_l(labels);
-		for(it_l.toFirst();it_l.current();++it_l) //{
-			delete *it_l; //
-	#endif
-		buttons.clear();
-		labels.clear();
-		delete labelLayout;
-		delete buttonLayout;
-		delete bar;
-		//delete q_ptr; //Memory error!
-	}
-
+	EZProgressDialogPrivate();
+	~EZProgressDialogPrivate();
 
 	void setupUi(EZProgressDialog* dialog);
 	void init(const QString &labelText, int value, int max);
@@ -103,7 +56,7 @@ public:
 	QLabel *content;
 	UTIL_ProgressBar *bar;
 	QHBoxLayout *buttonLayout;
-#if QT_VERSION >= 0x040000
+#if CONFIG_QT4
 	QList<QLabel*> labels;
 	QList<ZPushButton*> buttons;
 #else
@@ -112,7 +65,7 @@ public:
 #endif //CONFIG_QT4
 	QTime time;
 
-#if !INHERIT_PRIVATE || (QT_VERSION < 0x040000)
+#if !CONFIG_QT4 || defined(QT_NO_QOBJECT)
 	EZProgressDialog *q_ptr;
 #endif
 	bool autoReset, autoClose;
