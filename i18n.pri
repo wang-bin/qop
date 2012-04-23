@@ -4,6 +4,7 @@ isEmpty(QMAKE_LUPDATE) {
 	unix {
 		QMAKE_LUPDATE = $$[QT_INSTALL_BINS]/lupdate
 		!exists($$QMAKE_LUPDATE) { QMAKE_LUPDATE = lupdate-qt4 }
+		!exists($$QMAKE_LUPDATE) { QMAKE_LUPDATE = lupdate }
 	} else {
 		!exists($$QMAKE_LUPDATE) { QMAKE_LUPDATE = lupdate }
 	}
@@ -22,8 +23,8 @@ isEmpty(QMAKE_LRELEASE) {
 	unix {
 		QMAKE_LRELEASE = lrelease-qt3
 		!exists($$QMAKE_LRELEASE) { QMAKE_LRELEASE = $$[QT_INSTALL_BINS]/lrelease }
-		!exists($$QMAKE_LRELEASE) { QMAKE_LRELEASE = lrelease }
 		!exists($$QMAKE_LRELEASE) { QMAKE_LRELEASE = lrelease-qt4 }
+		!exists($$QMAKE_LRELEASE) { QMAKE_LRELEASE = lrelease }
 	} else {
 		!exists($$QMAKE_LRELEASE) { QMAKE_LRELEASE = lrelease }
 	}

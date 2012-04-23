@@ -122,9 +122,9 @@
 #	define CONFIG_QT4 0
 #	define CONFIG_QT3 0
 #	define CONFIG_QT2 1
-#   ifndef CONFIG_EZX
-#	define CONFIG_EZX 1
-#   endif
+//#   ifndef CONFIG_EZX
+//#	define CONFIG_EZX 1 //defined in qmake.conf or pro
+//#   endif
 #else
 #	error Qt 2, Qt 3 or Qt 4 is required!
 #endif
@@ -157,8 +157,6 @@ using Qt::Alignment;
 //#define WindowFlags WFlags
 #include <qapplication.h>
 #define ezDebug(s) qDebug(s)
-#define qMax(a,b) QMAX(a,b)
-#define qMin(a,b) QMIN(a,b)
 # if !CONFIG_EZX
 #	include <qprogressdialog.h>
 #	define timerInformation(parent,pix_title,text,time,ok) information(parent,"",text)
@@ -172,6 +170,30 @@ using Qt::Alignment;
 //#define setValue(v) setProgress(v)
 typedef int Alignment;
 #define setWindowTitle(s) setCaption(s)
+
+
+/*
+   Size-dependent types (architechture-dependent byte order)
+
+   Make sure to update QMetaType when changing these typedefs
+*/
+
+typedef signed char qint8;         /* 8 bit signed */
+typedef unsigned char quint8;      /* 8 bit unsigned */
+typedef short qint16;              /* 16 bit signed */
+typedef unsigned short quint16;    /* 16 bit unsigned */
+typedef int qint32;                /* 32 bit signed */
+typedef unsigned int quint32;      /* 32 bit unsigned */
+#define Q_INT64_C(c) static_cast<long long>(c ## LL)     /* signed 64 bit constant */
+#define Q_UINT64_C(c) static_cast<unsigned long long>(c ## ULL) /* unsigned 64 bit constant */
+typedef long long qint64;           /* 64 bit signed */
+typedef unsigned long long quint64; /* 64 bit unsigned */
+
+typedef qint64 qlonglong;
+typedef quint64 qulonglong;
+
+
+typedef int QNoImplicitBoolCast;
 
 
 #if defined(QT_ARCH_ARM) || defined(QT_ARCH_ARMV6) || defined(QT_ARCH_AVR32) || (defined(QT_ARCH_MIPS) && (defined(Q_WS_QWS) || defined(Q_OS_WINCE))) || defined(QT_ARCH_SH) || defined(QT_ARCH_SH4A)

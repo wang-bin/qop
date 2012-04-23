@@ -7,8 +7,6 @@ FORMS	=
 include(config.pri)
 include(i18n.pri)
 
-ezx: DEFINES += QT_NO_PROCESS
-
 HEADERS		+= src/QOutParser.h \
 		src/gui/ezprogressdialog.h \
 		src/gui/ezprogressdialog_p.h \
@@ -32,8 +30,7 @@ HEADERS		+= src/QOutParser.h \
 		src/utils/util.h \
 		src/utils/strutil.h \
 		src/utils/convert.h \
-		src/utils/qt_util.h \
-		src/zprocess.h
+		src/utils/qt_util.h
 
 SOURCES		+= src/QOutParser.cpp \
 		src/gui/ezprogressdialog.cpp \
@@ -50,8 +47,15 @@ SOURCES		+= src/QOutParser.cpp \
 		src/utils/util.cpp \
 		src/utils/strutil.cpp \
 		src/utils/convert.cpp \
-		src/utils/qt_util.cpp \
-		src/zprocess.cpp
+		src/utils/qt_util.cpp
+
+
+greaterThan(QT_MAJOR_VERSION, 3) {
+	HEADERS += src/zprocess.h src/zprocess_p.h
+	SOURCES += src/zprocess.cpp
+} else {
+	#DEFINES += QT_NO_PROCESS
+}
 
 !*g++* {
 	HEADERS += src/getopt.h

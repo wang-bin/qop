@@ -21,7 +21,6 @@
 #ifndef QOP_H
 #define QOP_H
 
-#include <qprocess.h>
 #include "QOutParser.h"
 #include "qarchive/arcreader.h"
 #include "qarchive/qarchive.h"
@@ -32,6 +31,10 @@
 #ifdef EZPROGRESS
 #include "gui/ezprogressdialog.h"
 #endif
+#include <qfeatures.h>
+#ifndef QT_NO_PROCESS
+#include <qprocess.h>
+#endif //QT_NO_PROCESS
 
 class Qop :public QObject
 {

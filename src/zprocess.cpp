@@ -18,14 +18,69 @@
 ******************************************************************************/
 
 
+#include <qfeatures.h>
+
+#ifndef QT_NO_PROCESS
+#include "zprocess_p.h"
 #include "zprocess.h"
 
-ZProcess::ZProcess(QObject *parent) :
-    QProcess(parent)
+ZProcessPrivate::ZProcessPrivate()
+	:options(pack_options)
+{
+	pack_options.insert(ZProcess::Tar, "tar cvvf %out_pat% %in%");
+	pack_options.insert(ZProcess::TGz, "tar zcvvf  %out_pat% %in%");
+
+}
+
+ZProcess::ZProcess(QObject *parent)
+	:QProcess(parent),d_ptr(new ZProcessPrivate)
 {
 }
 
+bool ZProcess::setArchiveTool(ArchiveTool tool)
+{
+	if (!toolAvailable(tool))
+		return false;
+	archive_tool = tool;
+	return true;
+}
 
+void ZProcess::setFiles(const QStringList &files)
+{
+	Q_D(ZProcess);
+	d->filelist = files;
+}
+
+void ZProcess::setOutputPath(const QString &path)
+{
+	Q_D(ZProcess);
+	d->out_path = path;
+}
+
+void ZProcess::setPassword(const QString &pwd)
+{
+	Q_D(ZProcess);
+	d->password = pwd;
+}
+
+void ZProcess::setLevel(int level)
+{
+	Q_D(ZProcess);
+	d->level = level;
+}
+
+
+void ZProcess::pack()
+{
+	//replace %keywords%, split to stringlist, startDetached()
+}
+
+void ZProcess::unpack()
+{
+
+}
+
+//Process control
 void ZProcess::resume()
 {
 
@@ -35,3 +90,13 @@ void ZProcess::pause()
 {
 
 }
+
+
+
+bool ZProcess::toolAvailable(ArchiveTool tool) const
+{
+	//PATH
+	return true;
+}
+
+#endif //QT_NO_PROCESS

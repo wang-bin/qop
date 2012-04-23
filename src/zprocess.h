@@ -21,9 +21,9 @@
 #ifndef ZPROCESS_H
 #define ZPROCESS_H
 
+#include <qfeatures.h>
+#ifndef QT_NO_PROCESS
 #include <qprocess.h>
-#include "gui/ezprogressdialog.h"
-
 /*!
  * \brief The ZProcess class
  * Used by Qop.
@@ -33,9 +33,10 @@
 	remove Qop::readStdOut(), Qop::readStdErr(), Qop::initProcess() and implement Qop::execute()
 	with ZProcess.
 */
+class ZProcessPrivate;
 class ZProcess : public QProcess
 {
-	Q_OBJECT
+	Q_OBJECT //move to another class? moc sucks
 public:
 	enum ArchiveTool {
 		Zip, Unzip, Tar, Rar, Unrar, Gzip, Bzip2, SevenZip, Lzip, Upx
@@ -43,6 +44,7 @@ public:
 	};
 
 	explicit ZProcess(QObject *parent = 0);
+	//void setCommand(const QString& cmd);
 	/*
 		If not setted, guess among availabeArchiveTools() before pack() or unpack().
 		Return wether the tool is available.
@@ -51,7 +53,7 @@ public:
 	//compress into one or many(gz, lz), or extract some
 	void setFiles(const QStringList& files);
 	//can be dir
-	void setOutputPath();
+	void setOutputPath(const QString& path);
 	void setPassword(const QString& pwd);
 	void setLevel(int level);
 	void addOptions(const QStringList& opts);
@@ -67,11 +69,13 @@ public slots:
 	void pause(); //connecte to the progress
 	
 private:
-	EZProgressDialog *progress;
-	//ProcessControl *control;
+	bool toolAvailable(ArchiveTool tool) const;
 
-	QString password, out_path;
-	QStringList optionlist, filelist;
+	Q_DECLARE_PRIVATE(ZProcess);
+	ZProcessPrivate *d_ptr;
+
+	ArchiveTool archive_tool;
 };
 
+#endif //QT_NO_PROCESS
 #endif // ZPROCESS_H
