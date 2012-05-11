@@ -22,12 +22,19 @@
 
 #include <cstddef>
 
+/*!
+  TODO: optimize size2str. now template is called on x64
+*/
 //extern "C" {
-extern char* size2str(size_t size);
-
-extern char* msec2str(int msec);
-extern char* msec2secstr(int msec);
-extern char* sec2str(int sec);
+#if 0
+template<typename IntT>
+extern char* size2str(IntT size);
+#else
+char* size2str(size_t size);
+#endif
+char* msec2str(int msec);
+char* msec2secstr(int msec);
+char* sec2str(int sec);
 
 typedef char*  (*size_format_converter)(int);
 typedef char*  (*time_format_converter)(int);
@@ -35,15 +42,16 @@ typedef char*  (*time_format_converter)(int);
 extern time_format_converter g_time_convert;
 
 //}
-
+#if 0
 //char* size2str(unsigned int a);
 //to speed up!
 #define KInv 1./1024
 //const float KInv=1./1024;
-template<typename T>
+template<typename T, typename U>
 inline
-char* size2str(unsigned int s)
+char* size2str(U s)
 {
+    char a[-1];
 	static const char *unit = "b";
 	T v=(T)s;
 	if(v>(T)1024) {
@@ -65,6 +73,6 @@ char* size2str(unsigned int s)
 		//sprintf(ss, "%d%s", v, unit);
 	return ss;
 }
-
+#endif
 
 #endif // CONVERT_H

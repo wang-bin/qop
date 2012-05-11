@@ -43,21 +43,26 @@ const unsigned int iShift[] = { 0, 10, 20, 30, 40};
 #undef snprintf
 #define snprintf _snprintf
 #endif
-char* size2str(unsigned int a)
+#if 0
+export template<typename IntT>
+char* size2str(IntT a)
+#else
+char* size2str(size_t a)
+#endif
 {
 	int i=0;
 #if 1
 	//unsigned int q=a;
 	//for(;q&KiMask;q>>=10,++i); //for(;q>=1024;q>>=10,++i);
-	while (a&kMask[++i]) ; --i;
+	while (a&kMask[++i]) {} --i;
 #else
-	while (a>>iShift[++i]); --i;//q>>=iShift[--i];
+	while (a>>iShift[++i]) {} --i;//q>>=iShift[--i];
 #endif
 	unsigned int r = ((a&iMask[i])>>iShift[i-1])*K2Ki; //(unsigned int)((a&iMask[i])*K2Ki)>>iShift[i-1];
 	//char *ss = (char*)malloc(11);
 	static char ss[11];
 	//memset(ss, 0, sizeof(ss));
-	snprintf(ss, 11, "%d.%03d%-2s", a>>iShift[i], r, unit[i]);
+	snprintf(ss, 11, "%ld.%03d%-2s", a>>iShift[i], r, unit[i]);
 	return ss;
 }
 
