@@ -179,7 +179,7 @@ public:
 	Format formatByMagic();
 	Format formatByName();
 
-	uint uncompressedSize();
+	size_t uncompressedSize();
 
 private:
 	FormatMap format_map;
