@@ -36,8 +36,31 @@
 #include <qprogressbar.h>
 #endif
 
+/*!
+  TODO: std::list
+*/
+
 class EZProgressDialog;
 class QString;
+
+template<bool flag, typename T, typename U>
+struct Select
+{
+	typedef T Result;
+};
+
+template <typename T, typename U>
+struct Select<false, T, U>
+{
+	typedef U Result;
+};
+
+template<typename T, bool flag>
+struct Selector
+{
+	typedef typename Select<flag, T*, T>::Result ValueType;
+};
+
 
 class EZProgressDialogPrivate
 #if CONFIG_QT4 && !defined(QT_NO_QOBJECT)
@@ -45,7 +68,7 @@ class EZProgressDialogPrivate
 #endif
 {
 	Q_DECLARE_PUBLIC(EZProgressDialog)
-public:
+//public:
 	EZProgressDialogPrivate();
 	~EZProgressDialogPrivate();
 
@@ -56,6 +79,7 @@ public:
 	QLabel *content;
 	UTIL_ProgressBar *bar;
 	QHBoxLayout *buttonLayout;
+/*
 #if CONFIG_QT4
 	QList<QLabel*> labels;
 	QList<ZPushButton*> buttons;
@@ -63,6 +87,9 @@ public:
 	QList<QLabel> labels;
 	QList<ZPushButton> buttons;
 #endif //CONFIG_QT4
+*/
+	QList<Selector<QLabel, CONFIG_QT4>::ValueType> labels;
+	QList<Selector<ZPushButton, CONFIG_QT4>::ValueType> buttons;
 	QTime time;
 
 #if !CONFIG_QT4 || defined(QT_NO_QOBJECT)
