@@ -36,6 +36,7 @@ class ZProcessPrivate
 	//Q_DECLARE_PUBLIC(ZProcess)
 public:
 	ZProcessPrivate();
+    bool overwrite;
 	char level;
 	EZProgressDialog *progress;
 	//ProcessControl *control;

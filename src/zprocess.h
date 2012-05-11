@@ -39,8 +39,9 @@ class ZProcess : public QProcess
 	Q_OBJECT //move to another class? moc sucks
 public:
 	enum ArchiveTool {
-		Zip, Unzip, Tar, Rar, Unrar, Gzip, Bzip2, SevenZip, Lzip, Upx
-		, TGz = Tar | Gzip, TBz2 = Tar | Bzip2, T7z = Tar | SevenZip, TLz = Tar | Lzip
+        Zip, Unzip, Tar, Rar, Unrar, Gzip, Bzip2, SevenZip, Xz, Lzma, Lzip, Lzop, Upx
+        , TGz = Tar | Gzip, TBz2 = Tar | Bzip2, T7z = Tar | SevenZip, Txz = Tar | Xz
+        , TLzma = Tar | Lzma, TLzo = Tar | Lzop, TLz = Tar | Lzip
 	};
 
 	explicit ZProcess(QObject *parent = 0);
@@ -60,6 +61,8 @@ public:
 	void setOptions(const QStringList& opts);
 	QStringList options() const;
 
+    ArchiveTool archiveTool() const;
+
 	void pack();
 	void unpack();
 signals:
@@ -71,7 +74,7 @@ public slots:
 private:
 	bool toolAvailable(ArchiveTool tool) const;
 
-	Q_DECLARE_PRIVATE(ZProcess);
+    Q_DECLARE_PRIVATE(ZProcess)
 	ZProcessPrivate *d_ptr;
 
 	ArchiveTool archive_tool;
