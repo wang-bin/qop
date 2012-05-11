@@ -4,9 +4,15 @@ Makefile*
 *.so*
 *.dll
 
+#vc files
+*.ncb
+*.pdb
+*.layout
+*.suo
+
 #dirs
 .moc
 .obj
-/bin
-/lib
+/bin*
+/lib*
 
