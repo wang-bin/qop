@@ -35,10 +35,10 @@
 static EZProgressDialog *progressDlg;
 void DoProgress(const QString& _current_fileName, size_t current_size, size_t processed, size_t total_size, int speed, int time_elapsed, int time_remain)
 {
-	QString _out_msg=_current_fileName+"\n"+QObject::tr("Size: ")+size2Str<qreal>(current_size)+"\n"+QObject::tr("Processed: ")+size2Str<qreal>(processed)+" / "+size2Str<qreal>(total_size)+"\n";
-	QString _extra_msg=QObject::tr("Speed: ")+size2Str<qreal>(speed)+"/s\n"+QObject::tr("Elapsed: %1s Remaining: %2s").arg(time_elapsed/1000.,0,'f',1).arg(time_remain,0,'f',1);
+	QString _out_msg = _current_fileName + "\n" + QObject::tr("Size: ") + size2Str<qreal>(current_size) + "\n" + QObject::tr("Processed: ") + size2Str<qreal>(processed) + " / " + size2Str<qreal>(total_size) + "\n";
+	QString _extra_msg = QObject::tr("Speed: ") + size2Str<qreal>(speed) + "/s\n" + QObject::tr("Elapsed: %1s Remaining: %2s").arg(time_elapsed/1000., 0, 'f', 1).arg(time_remain, 0, 'f', 1);
 	progressDlg->setValue(processed);
-	progressDlg->setLabelText(_out_msg+_extra_msg);
+	progressDlg->setLabelText(_out_msg + _extra_msg);
 	//qApp->processEvents();
 }
 
@@ -50,9 +50,9 @@ static IProgressHandler progressHandler = { &DoProgress };
 Qop::Qop()
 	:archive(0),parser(0)
   #ifndef EZPROGRESS
-	  ,progress(new EZ_ProgressDialog(QObject::tr("Calculating..."),QObject::tr("Cancel"),0,100,0,"UTIL_ProgressDialog",false,FLAG))
+	  ,progress(new EZ_ProgressDialog(QObject::tr("Calculating..."), QObject::tr("Cancel"), 0, 100, 0, "UTIL_ProgressDialog", false, FLAG))
   #else
-	  ,progress(new EZProgressDialog(QObject::tr("Calculating..."),QObject::tr("Cancel"),0,100,0,FLAG))
+	  ,progress(new EZProgressDialog(QObject::tr("Calculating..."), QObject::tr("Cancel"), 0, 100, 0, FLAG))
   #endif //EZPROGRESS
 	,steps(-1),parser_type("tar"),all_msg(false),internal(false),interval(300)
 {
@@ -61,7 +61,7 @@ Qop::Qop()
 #endif //QT_NO_PROCESS
 	initGui();
 #if !USE_SLOT
-	progressDlg=progress;
+	progressDlg = progress;
 #endif
 }
 
@@ -69,17 +69,17 @@ Qop::~Qop()
 {
 	delete progress;
 	progress = 0;
-	if(archive) {
+	if (archive) {
 		delete archive;
 		archive = 0;
 	}
 #ifndef QT_NO_PROCESS
-	if(process) {
+	if (process) {
 		delete process;
 		process = 0;
 	}
 #endif //QT_NO_PROCESS
-	if(parser) {
+	if (parser) {
 		delete parser;
 		parser = 0;
 	}
@@ -107,36 +107,36 @@ void Qop::extract(const QString& arc, const QString& outDir)
 void Qop::execute(const QString &cmd)
 {
 	CommandParser cmdParser(cmd);
-	if(cmdParser.program()==QLatin1String("tar") && !cmdParser.isCompressMode())
-		parser_type="untar";
-	else if(cmdParser.program()==QLatin1String("zip"))
-		parser_type="zip";
-	else if(cmdParser.program()==QLatin1String("unzip"))
-		parser_type="unzip";
-	else if(cmdParser.program()==QLatin1String("unrar"))
-		parser_type="unrar";
+	if (cmdParser.program() == QLatin1String("tar") && !cmdParser.isCompressMode())
+		parser_type = "untar";
+	else if (cmdParser.program() == QLatin1String("zip"))
+		parser_type = "zip";
+	else if (cmdParser.program() == QLatin1String("unzip"))
+		parser_type = "unzip";
+	else if (cmdParser.program() == QLatin1String("unrar"))
+		parser_type = "unrar";
 
 	initParser();
 	initProcess();
 	//progress->setLabelText(QDir::currentPath());//QApplication::applicationDirPath();
 #ifndef QT_NO_PROCESS
-	if(cmdParser.countType()==CommandParser::Num)
+	if (cmdParser.countType() == CommandParser::Num)
 		parser->setCountType(QCounterThread::Num);
 	else
 		parser->setCountType(QCounterThread::Size);
 #if COUNTER_THREAD
 	if(cmdParser.isCompressMode()) {
-		connect(cmdParser.counterThread(),SIGNAL(maximumChanged(int)),progress,SLOT(setMaximum(int)));
-		connect(cmdParser.counterThread(),SIGNAL(maximumChanged(int)),parser,SLOT(setTotalSize(int)));
+		connect(cmdParser.counterThread(), SIGNAL(maximumChanged(int)), progress, SLOT(setMaximum(int)));
+		connect(cmdParser.counterThread(), SIGNAL(maximumChanged(int)), parser, SLOT(setTotalSize(int)));
 		cmdParser.counterThread()->start();
 	} else {
 		progress->setMaximum(cmdParser.archiveUnpackSize());
 	}
 #else
-	if(!cmdParser.isCompressMode()) {
+	if (!cmdParser.isCompressMode()) {
 		progress->setMaximum(cmdParser.archiveUnpackSize());
 	} else {
-		if(cmdParser.countType()==CommandParser::Size)
+		if (cmdParser.countType() == CommandParser::Size)
 			progress->setMaximum(cmdParser.filesSize());
 		else
 			progress->setMaximum(cmdParser.filesCount());
@@ -147,14 +147,15 @@ void Qop::execute(const QString &cmd)
 	}
 	process->setWorkingDirectory(QDir::currentPath());
 	process->start(cmd);
-	while(!process->waitForFinished(1000)) {
-		if(process->state()==QProcess::Starting) qDebug("Starting process...Program has not yet been invoked");
+	while (!process->waitForFinished(1000)) {
+		if (process->state() == QProcess::Starting)
+			qDebug("Starting process...Program has not yet been invoked");
 		//if(process->state()==QProcess::NotRunning) qDebug("Not running!"); //true in linux, why?
 		qApp->processEvents();
 	}
-	if(process->exitCode()!=0) {
+	if (process->exitCode() != 0) {
 		ZDEBUG("Run error!");
-	} else if(process->exitStatus()==QProcess::CrashExit) {
+	} else if (process->exitStatus() == QProcess::CrashExit) {
 		ZDEBUG("Crashed exit!");
 	} else {
 		ZDEBUG("Normal exit");
@@ -164,8 +165,8 @@ void Qop::execute(const QString &cmd)
 
 void Qop::initGui()
 {
-	progress->addButton(QObject::tr("Hide"),0,1,Qt::AlignRight);
-	QObject::connect(progress->button(0),SIGNAL(clicked()),progress,SLOT(hide())); //Hide the widget will be faster. not showMinimum
+	progress->addButton(QObject::tr("Hide"), 0, 1, Qt::AlignRight);
+	QObject::connect(progress->button(0), SIGNAL(clicked()), progress, SLOT(hide())); //Hide the widget will be faster. not showMinimum
 	progress->setAutoClose(false);
 	progress->setAutoReset(false);
 #if CONFIG_EZX
@@ -186,15 +187,15 @@ void Qop::initGui()
 
 void Qop::initArchive()
 {
-	if(archive!=0) {
+	if (archive != 0) {
 		delete archive;
-		archive=0;
+		archive = 0;
 	}
-	archive=new Archive::Tar::QTar(arc_path);
+	archive = new Archive::Tar::QTar(arc_path);
 #if !USE_SLOT
 	archive->setProgressHandler(&progressHandler);
 #endif
-	ZDEBUG("archive: %s",qPrintable(arc_path));
+	ZDEBUG("archive: %s", qPrintable(arc_path));
 	progress->setMaximum(archive->unpackedSize());
 	progress->addButton(QObject::tr("Pause"),1);
 #if CONFIG_QT4
@@ -202,13 +203,13 @@ void Qop::initArchive()
 #else
 	progress->button(1)->setToggleButton(true);
 #endif
-	QObject::connect(progress->button(1),SIGNAL(clicked()),archive,SLOT(pauseOrContinue()));
+	QObject::connect(progress->button(1), SIGNAL(clicked()), archive, SLOT(pauseOrContinue()));
 #if USE_SLOT
-	QObject::connect(archive,SIGNAL(byteProcessed(int)),progress,SLOT(setValue(int)));
-	QObject::connect(archive,SIGNAL(textChanged(const QString&)),progress,SLOT(setLabelText(const QString&)));
+	QObject::connect(archive,SIGNAL(byteProcessed(int)), progress, SLOT(setValue(int)));
+	QObject::connect(archive,SIGNAL(textChanged(const QString&)), progress, SLOT(setLabelText(const QString&)));
 #endif
-	QObject::connect(progress,SIGNAL(canceled()),archive,SLOT(terminate()));
-	QObject::connect(archive,SIGNAL(finished()),progress,SLOT(showNormal()));
+	QObject::connect(progress, SIGNAL(canceled()), archive, SLOT(terminate()));
+	QObject::connect(archive, SIGNAL(finished()), progress, SLOT(showNormal()));
 
 #if CONFIG_EZX
 	//progress->exec(); //NO_MODAL
@@ -233,10 +234,10 @@ void Qop::initParser()
 		case Archive::Format7zip:	parser_type="7z";		break;
 		default:					parser_type="untar";	break;
 		}
-		steps=ar.uncompressedSize();
+		steps = ar.uncompressedSize();
 	}//omit -T
 
-	parser=getParser(parser_type);
+	parser = getParser(parser_type);
 	parser->setInterval(interval);
 	parser->setUpdateMsgOnChange(all_msg);
 	if(!arc_path.isEmpty()) {
@@ -269,12 +270,12 @@ void Qop::initParser()
 void Qop::initProcess()
 {
 #ifndef QT_NO_PROCESS
-	process=new QProcess(this);
+	process = new QProcess(this);
 	process->setWorkingDirectory(QDir::currentPath());
 	connect(process, SIGNAL(readyReadStandardOutput()), SLOT(readStdOut()));
-	connect(process,SIGNAL(readyReadStandardError()),SLOT(readStdErr()));
+	connect(process, SIGNAL(readyReadStandardError()), SLOT(readStdErr()));
 	//connect(process, SIGNAL(finished(int,QProcess::ExitStatus)), SIGNAL(finished(int,QProcess::ExitStatus)));
-	connect(process,SIGNAL(started()),parser,SLOT(initTimer()));  //Maemo5 seems not work
+	connect(process, SIGNAL(started()), parser, SLOT(initTimer()));  //Maemo5 seems not work
 	connect(process, SIGNAL(finished(int)), parser, SIGNAL(finished()));
 	//connect(process, SIGNAL(finished(int)), parser, SLOT(slotFinished()));
 	connect(progress, SIGNAL(canceled()), process, SLOT(kill()));
@@ -294,7 +295,7 @@ void Qop::setInterval(unsigned int interval)
 
 void Qop::setArchive(const QString& archive_path)
 {
-	arc_path=archive_path;
+	arc_path = archive_path;
 }
 
 void Qop::setTimeFormat(const QString &format)

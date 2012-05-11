@@ -11,7 +11,7 @@
 
 //namespace Archive {
 /*
-#if (QT_VERSION >= 0x040000)
+#if CONFIG_QT4
 QFile::Permissions modeToPermissions(unsigned int mode)
 {
 	QFile::Permissions ret;
@@ -77,7 +77,7 @@ unsigned int permissionsToMode(QFile::Permissions perms)
 namespace Archive {
 
 QArchive::QArchive(const QString &archive)
-:d_ptr(new QArchivePrivate)
+	:d_ptr(new QArchivePrivate())
 #if !USE_SLOT
 	progressHandler(new IProgressHandler)
 #endif
@@ -219,7 +219,7 @@ void QArchive::setArchive(const QString &name)
 	//QFileInfo(name).absoluteFilePath();
 	if(isOpen())
 		close();
-#if (QT_VERSION >= 0x040000)
+#if CONFIG_QT4
 		setFileName(name);
 #else
 		this->QFile::setName(name);

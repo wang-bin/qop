@@ -8,7 +8,7 @@
 #include <qobject.h>
 #include <qdatetime.h>
 
-#if QT_VERSION >= 0x040000
+#if CONFIG_QT4
 #	define ARCREADER_QT4 1
 #else
 #	define ARCREADER_QT4 0
@@ -45,7 +45,7 @@
 #  define S_IXOTH 0001
 #endif
 
-#if QT_VERSION >= 0x040000
+#if CONFIG_QT4
 extern unsigned int permissionsToMode(QFile::Permissions perms);
 extern QFile::Permissions modeToPermissions(unsigned int mode);
 #endif
@@ -66,14 +66,14 @@ namespace Archive {
 
 class QArchivePrivate;
 class QArchive :
-#if !(QT_VERSION >= 0x040000)
+#if !CONFIG_QT4
 	public QObject,
 #endif
 	public QFile
 {
 	Q_OBJECT
 public:
-	QArchive(const QString& file="");
+	QArchive(const QString& file = QString());
 	virtual ~QArchive()=0;
 
 	void setProgressHandler(IProgressHandler* ph);
@@ -107,12 +107,10 @@ public slots:
 	void terminate();
 
 protected:
-	Q_DECLARE_PRIVATE(QArchive)
-#if !INHERIT_PRIVATE || (QT_VERSION < 0x040000)
-	QArchivePrivate* d_ptr;
-#endif
 	virtual void timerEvent(QTimerEvent *);
 
+	Q_DECLARE_PRIVATE(QArchive)
+	QArchivePrivate* d_ptr;
 	IProgressHandler *progressHandler;
 };
 
