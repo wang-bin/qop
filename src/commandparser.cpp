@@ -41,7 +41,7 @@ public:
 	{
 		parse();
 	}
-	~CommandParserPrivate() {
+	virtual ~CommandParserPrivate() {
 		if(counter) {
 			delete counter;
 			counter=0;
