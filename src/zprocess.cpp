@@ -25,6 +25,10 @@
 #include "zprocess.h"
 
 
+/*!
+ * TODO: auto suffix and package name
+ */
+
 static const QString key_password("%password%");
 static const QString key_overwrite("%overwrite%");
 static const QString key_level("%level%");
