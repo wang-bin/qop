@@ -44,9 +44,9 @@ struct version {
 
 #undef APP_VERSION //0x000300
 
-#define MAJOR 0	//((APP_VERSION&0xff0000)>>16)
-#define MINOR 3	//((APP_VERSION&0xff00)>>8)
-#define PATCH 8	//(APP_VERSION&0xff)
+#define MAJOR 1	//((APP_VERSION&0xff0000)>>16)
+#define MINOR 0	//((APP_VERSION&0xff00)>>8)
+#define PATCH 0	//(APP_VERSION&0xff)
 
 #define VERSION_CHK(major, minor, patch) \
 	(((major&0xff)<<16) | ((minor&0xff)<<8) | (patch&0xff))
