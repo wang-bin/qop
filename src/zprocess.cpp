@@ -36,32 +36,32 @@ ZProcessPrivate::ZProcessPrivate()
     overwrite = false;
     level = 7;
     progress = 0;
-	pack_options.insert(ZProcess::Tar, "tar cvvf %out_pat% %in%");
-	pack_options.insert(ZProcess::TGz, "tar zcvvf  %out_pat% %in%");
-    pack_options.insert(ZProcess::TBz2, "tar jcvvf  %out_pat% %in%");
-    pack_options.insert(ZProcess::T7z, "tar --use=7z -cvvf  %out_pat% %in%");
-    pack_options.insert(ZProcess::TXz, "tar --use=xz -cvvf  %out_pat% %in%");
-    pack_options.insert(ZProcess::TLzma, "tar --use=lzma -cvvf  %out_pat% %in%");
-    pack_options.insert(ZProcess::TLz, "tar --use=lzip -cvvf  %out_pat% %in%");
-    pack_options.insert(ZProcess::TLzo, "tar --use=lzop -cvvf  %out_pat% %in%");
+    pack_options.insert(ZProcess::Tar, "tar cvvf " + key_out + " " + key_in);
+    pack_options.insert(ZProcess::TGz, "tar zcvvf " + key_out + " " + key_in);
+    pack_options.insert(ZProcess::TBz2, "tar jcvvf " + key_out + " " + key_in);
+    pack_options.insert(ZProcess::T7z, "tar --use=7z -cvvf " + key_out + " " + key_in);
+    pack_options.insert(ZProcess::TXz, "tar --use=xz -cvvf " + key_out + " " + key_in);
+    pack_options.insert(ZProcess::TLzma, "tar --use=lzma -cvvf " + key_out + " " + key_in);
+    pack_options.insert(ZProcess::TLz, "tar --use=lzip -cvvf " + key_out + " " + key_in);
+    pack_options.insert(ZProcess::TLzo, "tar --use=lzop -cvvf " + key_out + " " + key_in);
     //-P %password%
-    pack_options.insert(ZProcess::Zip, "zip -ryv -FS -%level% %password%  %out_pat% %in%");
-    pack_options.insert(ZProcess::Upx, "upx -9kvf --ultra-brute  %out_pat% %in%");
+    pack_options.insert(ZProcess::Zip, "zip -ryv -FS " + key_level +" " + key_password + " " + key_out + " " + key_in);
+    pack_options.insert(ZProcess::Upx, "upx -9kvf --ultra-brute " + key_out + " " + key_in);
 
 
-    unpack_options.insert(ZProcess::Tar, "tar xvvf %in% -C %out_pat%");
-    unpack_options.insert(ZProcess::TGz, "gzip -d <%in% |tar xvvf - -C %out_pat%");
-    unpack_options.insert(ZProcess::TBz2, "bzip2 -d <%in% |tar xvvf - -C %out_pat%");
-    unpack_options.insert(ZProcess::T7z, "7z -d <%in% |tar xvvf - -C %out_pat%");
-    unpack_options.insert(ZProcess::TXz, "xz -d <%in% |tar xvvf - -C %out_pat%");
-    unpack_options.insert(ZProcess::TLzma, "lzma -d <%in% |tar xvvf - -C %out_pat%");
-    unpack_options.insert(ZProcess::TLz, "lzip -d <%in% |tar xvvf - -C %out_pat%");
-    unpack_options.insert(ZProcess::TLzo, "lzop -d <%in% |tar xvvf - -C %out_pat%");
+    unpack_options.insert(ZProcess::Tar, "tar xvvf " + key_in + " -C " + key_out);
+    unpack_options.insert(ZProcess::TGz, "gzip -d <" + key_in + " |tar xvvf - -C " + key_out);
+    unpack_options.insert(ZProcess::TBz2, "bzip2 -d <" + key_in + " |tar xvvf - -C " + key_out);
+    unpack_options.insert(ZProcess::T7z, "7z -d <" + key_in + " |tar xvvf - -C " + key_out);
+    unpack_options.insert(ZProcess::TXz, "xz -d <" + key_in + " |tar xvvf - -C " + key_out);
+    unpack_options.insert(ZProcess::TLzma, "lzma -d <" + key_in + " |tar xvvf - -C " + key_out);
+    unpack_options.insert(ZProcess::TLz, "lzip -d <" + key_in + " |tar xvvf - -C " + key_out);
+    unpack_options.insert(ZProcess::TLzo, "lzop -d <" + key_in + " |tar xvvf - -C " + key_out);
     //-P %password%, overwrite: -o(-n not)
-    unpack_options.insert(ZProcess::Zip, "unzip %overwrite% %password% %in% -d %out_pat%");
-    unpack_options.insert(ZProcess::Unzip, "unzip %overwrite% %password% %in% -d %out_pat%");
+    unpack_options.insert(ZProcess::Zip, "unzip " + key_overwrite + " " + key_password + " " + key_in + " -d " + key_out);
+    unpack_options.insert(ZProcess::Unzip, "unzip " + key_overwrite + " " + key_password + " " + key_in + " -d " + key_out);
     //overwrite: -o+(-o- not), password: -ppwd
-    unpack_options.insert(ZProcess::Unrar, "unrar %overwrite% -y %in% %out_pat%");
+    unpack_options.insert(ZProcess::Unrar, "unrar " + key_overwrite + " -y " + key_in + " " + key_out);
 
 }
 
@@ -101,7 +101,7 @@ void ZProcess::setFiles(const QStringList &files)
 void ZProcess::setOutputPath(const QString &path)
 {
 	Q_D(ZProcess);
-	d->out_path = path;
+    d->out_path = path;
 }
 
 void ZProcess::setPassword(const QString &pwd)
@@ -152,8 +152,10 @@ QString ZProcess::packCommand() const
     if (!d->out_path.isEmpty())
         d->cmd.replace(key_out, d->out_path);
     if (archive_tool == ZProcess::Zip) {
+        if (d->level != -1)
+            d->cmd.replace(key_level, QString("-%1").arg(d->level));
         if (!d->password.isEmpty())
-            d->cmd.replace("%password%", "-P " + d->password);
+            d->cmd.replace(key_password, "-P " + d->password);
     } else if (archive_tool == ZProcess::SevenZip) {
 
     }
@@ -172,18 +174,18 @@ QString ZProcess::unpackCommand() const
         d->cmd.replace(key_out, d->out_path);
     if (archive_tool == ZProcess::Zip) {
         if (!d->password.isEmpty())
-            d->cmd.replace("%password%", "-P " + d->password);
+            d->cmd.replace(key_password, "-P " + d->password);
         if (d->overwrite)
-            d->cmd.replace("%overwrite%", "-o");
+            d->cmd.replace(key_overwrite, "-o");
         else
-            d->cmd.replace("%overwrite%", "-n");
+            d->cmd.replace(key_overwrite, "-n");
     } else if (archive_tool == ZProcess::Unrar) {
         if (!d->password.isEmpty())
-            d->cmd.replace("%password%", "-p" + d->password);
+            d->cmd.replace(key_password, "-p" + d->password);
         if (d->overwrite)
-            d->cmd.replace("%overwrite%", "-o+");
+            d->cmd.replace(key_overwrite, "-o+");
         else
-            d->cmd.replace("%overwrite%", "-o-");
+            d->cmd.replace(key_overwrite, "-o-");
     } else if (archive_tool == ZProcess::SevenZip) {
 
     }
