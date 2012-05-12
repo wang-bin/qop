@@ -39,9 +39,11 @@ class ZProcess : public QProcess
 	Q_OBJECT //move to another class? moc sucks
 public:
 	enum ArchiveTool {
-        Zip, Unzip, Tar, Rar, Unrar, Gzip, Bzip2, SevenZip, Xz, Lzma, Lzip, Lzop, Upx
-        , TGz = Tar | Gzip, TBz2 = Tar | Bzip2, T7z = Tar | SevenZip, Txz = Tar | Xz
+        Tar = 0x1, Gzip = 0x2, Bzip2 = 0x4, SevenZip = 0x6, Xz = 0x8
+        , Lzma = 0x10, Lzip = 0x12, Lzop = 0x14
+        , TGz = Tar | Gzip, TBz2 = Tar | Bzip2, T7z = Tar | SevenZip, TXz = Tar | Xz
         , TLzma = Tar | Lzma, TLzo = Tar | Lzop, TLz = Tar | Lzip
+        , Zip, Unzip, Rar, Unrar, Upx
 	};
 
 	explicit ZProcess(QObject *parent = 0);
@@ -57,14 +59,18 @@ public:
 	void setOutputPath(const QString& path);
 	void setPassword(const QString& pwd);
 	void setLevel(int level);
-	void addOptions(const QStringList& opts);
-	void setOptions(const QStringList& opts);
+    //void addOptions(const QStringList& opts);
+    //void setOptions(const QStringList& opts);
 	QStringList options() const;
 
     ArchiveTool archiveTool() const;
 
 	void pack();
 	void unpack();
+
+    QString packCommand() const;
+    QString unpackCommand() const;
+
 signals:
 	
 public slots:
@@ -75,7 +81,7 @@ private:
 	bool toolAvailable(ArchiveTool tool) const;
 
     Q_DECLARE_PRIVATE(ZProcess)
-	ZProcessPrivate *d_ptr;
+    ZProcessPrivate * d_ptr;
 
 	ArchiveTool archive_tool;
 };

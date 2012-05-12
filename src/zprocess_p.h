@@ -44,8 +44,9 @@ public:
 	QStringList filelist;
 	typedef QMap<int, QString> ToolOptionMap;
 	ToolOptionMap pack_options, unpack_options;
-	ToolOptionMap &options; //to pack or unpack. split
 	//ZProcess *q_ptr;
+
+    QString cmd;
 };
 
 #endif //QT_NO_PROCESS
