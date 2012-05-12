@@ -5,6 +5,7 @@ int main(int argc, char** argv)
 {
     QCoreApplication app(argc, argv);
     ZProcess z;
+    QObject::connect(&z, SIGNAL(finished(int)), qApp, SLOT(quit()));
     z.setArchiveTool(ZProcess::Tar);
     z.packCommand();
     z.unpackCommand();
@@ -31,9 +32,13 @@ int main(int argc, char** argv)
     z.packCommand();
     z.unpackCommand();
     z.setArchiveTool(ZProcess::Upx);
-
     z.packCommand();
     z.unpackCommand();
 
-    return 0;
+    z.setArchiveTool(ZProcess::TGz);
+    z.setOutputPath("../test/test.tgz");
+    z.setFiles(QStringList() << "../src");
+    z.pack();
+
+    return app.exec();
 }
