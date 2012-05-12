@@ -270,7 +270,7 @@ void Qop::initParser()
 void Qop::initProcess()
 {
 #ifndef QT_NO_PROCESS
-	process = new QProcess(this);
+    process = new ZProcess(this);
 	process->setWorkingDirectory(QDir::currentPath());
 	connect(process, SIGNAL(readyReadStandardOutput()), SLOT(readStdOut()));
 	connect(process, SIGNAL(readyReadStandardError()), SLOT(readStdErr()));

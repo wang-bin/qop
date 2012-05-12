@@ -68,13 +68,20 @@ ZProcessPrivate::ZProcessPrivate()
 ZProcess::ZProcess(QObject *parent)
 	:QProcess(parent),d_ptr(new ZProcessPrivate)
 {
+    /*
     QProcessEnvironment env(processEnvironment());
     QString env_separator(":");
 #ifdef Q_OS_WIN
     env_separator = ";";
 #endif
+    QStringList envs(QProcess::systemEnvironment());
+    foreach(QString e, envs)
+        qDebug("%s", qPrintable(e));
+    qDebug("env: %s", qPrintable(env.value("PATH")));
     env.insert("PATH", qApp->applicationDirPath().append("/bin") + env_separator + env.value("PATH"));
-    setProcessEnvironment(env);
+    //setProcessEnvironment(env);
+    qDebug("env: %s", qPrintable(env.value("PATH")));
+    */
 }
 
 bool ZProcess::setArchiveTool(ArchiveTool tool)

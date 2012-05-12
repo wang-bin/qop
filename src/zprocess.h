@@ -61,7 +61,7 @@ public:
 	void setLevel(int level);
     //void addOptions(const QStringList& opts);
     //void setOptions(const QStringList& opts);
-	QStringList options() const;
+    //QStringList options() const;
 
     ArchiveTool archiveTool() const;
 
