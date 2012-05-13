@@ -1,6 +1,7 @@
 TEMPLATE = subdirs
 CONFIG += ordered
-SUBDIRS = libqop qop tst_zprocess
+SUBDIRS = libqop qop tst_zprocess \
+    test/tst_zprocess_gui
 
 libqop.file = src/libqop.pro
 qop.file = src/qop.pro
