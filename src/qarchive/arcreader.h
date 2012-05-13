@@ -20,6 +20,7 @@
 #ifndef ARCREADER_H
 #define ARCREADER_H
 
+#include "config.h"
 //default is Qt
 //#define ARCREADER_QT
 //#define ARCREADER_STL
@@ -138,7 +139,7 @@ const Magic magics[]={
 #ifdef ARCREADER_STL
 typedef std::map<std::string,Format> FormatMap;
 
-class ArcReader
+class Q_EXPORT ArcReader
 {
 public:
 	ArcReader(const std::string& file=0);
@@ -169,7 +170,7 @@ typedef ArcReader QArcReader;
 };*/
 typedef QMap<QString,Format> FormatMap;
 
-class QArcReader
+class Q_EXPORT QArcReader
 {
 public:
 	QArcReader(const QString& file=0);

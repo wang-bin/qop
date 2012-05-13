@@ -65,7 +65,7 @@ namespace Archive {
 	};
 
 class QArchivePrivate;
-class QArchive :
+class Q_EXPORT QArchive :
 #if !CONFIG_QT4
 	public QObject,
 #endif

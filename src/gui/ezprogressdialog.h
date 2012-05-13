@@ -46,7 +46,7 @@ class UTIL_ProgressBar;
 class ZPushButton; //need by addButton(ZPushButton*,...) in Qt4, include <qpushbutton.h> is not enough. why?
 class EZProgressDialogPrivate;
 
-class EZProgressDialog : public ZBaseDialog {
+class Q_EXPORT EZProgressDialog : public ZBaseDialog {
 	Q_OBJECT
 	Q_DECLARE_PRIVATE(EZProgressDialog)
 	//Q_PROPERTY(bool wasCanceled READ wasCanceled)

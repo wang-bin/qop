@@ -21,6 +21,7 @@
 #ifndef ZPROCESS_H
 #define ZPROCESS_H
 
+#include "config.h"
 #include <qfeatures.h>
 #ifndef QT_NO_PROCESS
 #include <qprocess.h>
@@ -34,7 +35,7 @@
 	with ZProcess.
 */
 class ZProcessPrivate;
-class ZProcess : public QProcess
+class Q_EXPORT ZProcess : public QProcess
 {
 	Q_OBJECT //move to another class? moc sucks
 public:
