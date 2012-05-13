@@ -41,34 +41,34 @@ static const char *appName=(char*)malloc(64);
 
 void printHelp()
 {
-	fprintf(stderr,	APP_NAME " %s\n"
-					"Usage: %s [-interval=Nunit] [--all] [-t parserFor] [-n|s] [-ahmc] [-x archieve|-T totalSteps] [files...] [-C cmd]\n"
-					"  -a, --all            update all changes. default is update on timer event\n"
-					"  -F, --time-format=f  setup time format. utc(iso8601) or normal"
-					"  -i, --interval=Nunit update the progress every N seconds/mseconds. unit can be s, sec[s],seconds(N can be float) or msec[s](N is int)\n"
-					"  -t, --parser[=TYPE]  parser(tar,untar,zip,unzip,unrar,lzip.upx)\n"
-					"  -n, --number         count number of files as total steps\n"
-					"  -s, --size           count size of files as total steps\n"
-					"  -T, --steps=STEPS    specify total steps.\n"
-					"  -h, --help           help. print me\n"
-					"  -m, --multi-thread   multi-thread counting steps while (de)compressing\n"
-					"  -c, --auto-close     auto close when finished\n"
-					"  -C, --cmd=command    execute command. e.g. -C tar cvvf test.tar test\n"
-					"  -x, --extract=FILE   indicates extracting progress\n"
-					"  -o, --outdir=dir     set the output dir when using internal extract method\n"
+    fprintf(stderr,	APP_NAME " %s\n"
+                    "Usage: %s [-interval=Nunit] [--all] [-t parserFor] [-n|s] [-ahmc] [-x archieve|-T totalSteps] [files...] [-C cmd]\n"
+                    "  -a, --all            update all changes. default is update on timer event\n"
+                    "  -F, --time-format=f  setup time format. utc(iso8601) or normal"
+                    "  -i, --interval=Nunit update the progress every N seconds/mseconds. unit can be s, sec[s],seconds(N can be float) or msec[s](N is int)\n"
+                    "  -t, --parser[=TYPE]  parser(tar,untar,zip,unzip,unrar,lzip.upx)\n"
+                    "  -n, --number         count number of files as total steps\n"
+                    "  -s, --size           count size of files as total steps\n"
+                    "  -T, --steps=STEPS    specify total steps.\n"
+                    "  -h, --help           help. print me\n"
+                    "  -m, --multi-thread   multi-thread counting steps while (de)compressing\n"
+                    "  -c, --auto-close     auto close when finished\n"
+                    "  -C, --cmd=command    execute command. e.g. -C tar cvvf test.tar test\n"
+                    "  -x, --extract=FILE   indicates extracting progress\n"
+                    "  -o, --outdir=dir     set the output dir when using internal extract method\n"
 
-					"\nCopyright (C) 2010 Wangbin(nukin CCMOVE, aka novesky in motorolafans)\n"
-					"This program comes with ABSOLUTELY NO WARRANTY, to the extent permitted by low.\n"
-					"This is free software, and you are welcome to redistribute it "
-					"under the terms of the GNU General Public Licence version 2\n<http://www.gnu.org/licenses/gpl-2.0.html>.\n"
-					"\n"
-					"Project:\n"
-					"    https://github.com/wang-bin/qop\n"
-					"    http://sourceforge.net/projects/qop/files\n"
-					"    http://qt-apps.org/content/show.php/qop?content=132430\n"
-					"Send bugreports to <wbsecg1@gmail.com>\n\n"
-					, APP_VERSION_STR, appName);
-	fflush(NULL);
+                    "\nCopyright (C) 2010 Wangbin(nukin CCMOVE, aka novesky in motorolafans)\n"
+                    "This program comes with ABSOLUTELY NO WARRANTY, to the extent permitted by low.\n"
+                    "This is free software, and you are welcome to redistribute it "
+                    "under the terms of the GNU General Public Licence version 2\n<http://www.gnu.org/licenses/gpl-2.0.html>.\n"
+                    "\n"
+                    "Project:\n"
+                    "    https://github.com/wang-bin/qop\n"
+                    "    http://sourceforge.net/projects/qop/files\n"
+                    "    http://qt-apps.org/content/show.php/qop?content=132430\n"
+                    "Send bugreports to <wbsecg1@gmail.com>\n\n"
+                    , APP_VERSION_STR, appName);
+    fflush(NULL);
 }
 
 int main(int argc, char *argv[])
@@ -77,8 +77,7 @@ int main(int argc, char *argv[])
 	qDebug("%s %s\nQt %s\n", APP_NAME, APP_VERSION_STR, qVersion());
 
 	opts_t options=opts_parse(argc,argv);
-
-	ZApplication a(argc, argv, QApplication::GuiClient);
+    ZApplication a(argc, argv, QApplication::GuiClient);
 #if CONFIG_QT4
 	QApplication::setApplicationName(APP_NAME);
 	QApplication::setApplicationVersion(APP_VERSION_STR);
