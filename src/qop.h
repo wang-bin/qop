@@ -36,7 +36,7 @@
 #include "zprocess.h"
 #endif //QT_NO_PROCESS
 
-class Qop :public QObject
+class Q_EXPORT Qop :public QObject
 {
 	Q_OBJECT
 public:
@@ -65,7 +65,8 @@ public:
 */
 	QOutParser *parser;
 #ifndef QT_NO_PROCESS
-    ZProcess *process; //for predefined cmd, call pack() or unpack. otherwise, treat it as QProcess
+    ZProcess *process();
+    ZProcess *zprocess; //for predefined cmd, call pack() or unpack. otherwise, treat it as QProcess
 #endif //QT_NO_PROCESS
 /*!
 	common gui for all

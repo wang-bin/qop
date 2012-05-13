@@ -57,7 +57,7 @@ Qop::Qop()
 	,steps(-1),parser_type("tar"),all_msg(false),internal(false),interval(300)
 {
 #ifndef QT_NO_PROCESS
-	process = 0;
+    zprocess = 0;
 #endif //QT_NO_PROCESS
 	initGui();
 #if !USE_SLOT
@@ -74,9 +74,9 @@ Qop::~Qop()
 		archive = 0;
 	}
 #ifndef QT_NO_PROCESS
-	if (process) {
-		delete process;
-		process = 0;
+    if (zprocess) {
+        delete zprocess;
+        zprocess = 0;
 	}
 #endif //QT_NO_PROCESS
 	if (parser) {
@@ -118,6 +118,7 @@ void Qop::execute(const QString &cmd)
 
 	initParser();
 	initProcess();
+    //parser->setUpdateMsgOnChange(true)''
 	//progress->setLabelText(QDir::currentPath());//QApplication::applicationDirPath();
 #ifndef QT_NO_PROCESS
 	if (cmdParser.countType() == CommandParser::Num)
@@ -145,17 +146,17 @@ void Qop::execute(const QString &cmd)
 	if(progress->maximum()) {
 		parser->setTotalSize(progress->maximum());
 	}
-	process->setWorkingDirectory(QDir::currentPath());
-	process->start(cmd);
-	while (!process->waitForFinished(1000)) {
-		if (process->state() == QProcess::Starting)
-			qDebug("Starting process...Program has not yet been invoked");
-		//if(process->state()==QProcess::NotRunning) qDebug("Not running!"); //true in linux, why?
+    zprocess->setWorkingDirectory(QDir::currentPath());
+    zprocess->start(cmd);
+    while (!zprocess->waitForFinished(1000)) {
+        if (zprocess->state() == QProcess::Starting)
+            qDebug("Starting zprocess...Program has not yet been invoked");
+        //if(zprocess->state()==QProcess::NotRunning) qDebug("Not running!"); //true in linux, why?
 		qApp->processEvents();
 	}
-	if (process->exitCode() != 0) {
+    if (zprocess->exitCode() != 0) {
 		ZDEBUG("Run error!");
-	} else if (process->exitStatus() == QProcess::CrashExit) {
+    } else if (zprocess->exitStatus() == QProcess::CrashExit) {
 		ZDEBUG("Crashed exit!");
 	} else {
 		ZDEBUG("Normal exit");
@@ -183,6 +184,13 @@ void Qop::initGui()
 	progress->setCaption("qop "+QObject::tr("Compression/Extraction progress dialog"));
 	progress->setName("EZProgressDialog");
 #endif //CONFIG_QT4
+}
+
+ZProcess* Qop::process()
+{
+    if (!zprocess)
+        initProcess();
+    return zprocess;
 }
 
 void Qop::initArchive()
@@ -270,16 +278,16 @@ void Qop::initParser()
 void Qop::initProcess()
 {
 #ifndef QT_NO_PROCESS
-    process = new ZProcess(this);
-	process->setWorkingDirectory(QDir::currentPath());
-	connect(process, SIGNAL(readyReadStandardOutput()), SLOT(readStdOut()));
-	connect(process, SIGNAL(readyReadStandardError()), SLOT(readStdErr()));
-	//connect(process, SIGNAL(finished(int,QProcess::ExitStatus)), SIGNAL(finished(int,QProcess::ExitStatus)));
-	connect(process, SIGNAL(started()), parser, SLOT(initTimer()));  //Maemo5 seems not work
-	connect(process, SIGNAL(finished(int)), parser, SIGNAL(finished()));
-	//connect(process, SIGNAL(finished(int)), parser, SLOT(slotFinished()));
-	connect(progress, SIGNAL(canceled()), process, SLOT(kill()));
-	connect(progress, SIGNAL(cancelled()), process, SLOT(kill()));
+    zprocess = new ZProcess(this);
+    zprocess->setWorkingDirectory(QDir::currentPath());
+    connect(zprocess, SIGNAL(readyReadStandardOutput()), SLOT(readStdOut()));
+    connect(zprocess, SIGNAL(readyReadStandardError()), SLOT(readStdErr()));
+    //connect(zprocess, SIGNAL(finished(int,QProcess::ExitStatus)), SIGNAL(finished(int,QProcess::ExitStatus)));
+    connect(zprocess, SIGNAL(started()), parser, SLOT(initTimer()));  //Maemo5 seems not work
+    connect(zprocess, SIGNAL(finished(int)), parser, SIGNAL(finished()));
+    //connect(zprocess, SIGNAL(finished(int)), parser, SLOT(slotFinished()));
+    connect(progress, SIGNAL(canceled()), zprocess, SLOT(kill()));
+    connect(progress, SIGNAL(cancelled()), zprocess, SLOT(kill()));
 #endif //QT_NO_PROCESS
 }
 
@@ -318,14 +326,14 @@ void Qop::setTimeFormat(const QString &format)
  */
 void Qop::readStdOut()
 {/*
-	char* line = process->readAllStandardOutput();
+    char* line = zprocess->readAllStandardOutput();
 	parser->parseLine(line);
 	QString line = data.constData();
 	ZDEBUG("stdout: %s",line);
 */
 #ifndef QT_NO_PROCESS
-	while(process->canReadLine()) {
-		parser->parseLine(process->readLine().constData());
+    while(zprocess->canReadLine()) {
+        parser->parseLine(zprocess->readLine().constData());
 		//qDebug("stdout: %s",line);
 	}
 #endif //QT_NO_PROCESS
@@ -334,7 +342,7 @@ void Qop::readStdOut()
 void Qop::readStdErr()
 {
 #ifndef QT_NO_PROCESS
-	const char* all_error_msg = process->readAllStandardError().constData();
+    const char* all_error_msg = zprocess->readAllStandardError().constData();
 	qDebug("Read from stderr: \n%s",all_error_msg);
 	qDebug("Read form stderr End...");
 #endif //QT_NO_PROCESS
