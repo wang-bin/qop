@@ -24,7 +24,7 @@ greaterThan(QT_MAJOR_VERSION, 3) {
 }
 
 
-HEADERS		+= qop_global.h QOutParser.h \
+HEADERS		+= QOutParser.h \
                 gui/ezprogressdialog.h \
                 gui/ezprogressdialog_p.h \
                 qcounterthread.h \
@@ -46,7 +46,8 @@ HEADERS		+= qop_global.h QOutParser.h \
                 utils/util.h \
                 utils/strutil.h \
                 utils/convert.h \
-                utils/qt_util.h
+                utils/qt_util.h \
+    config.h
 
 SOURCES		+= QOutParser.cpp \
                 gui/ezprogressdialog.cpp \

@@ -52,6 +52,7 @@ struct version {
 	(((major&0xff)<<16) | ((minor&0xff)<<8) | (patch&0xff))
 
 #define APP_VERSION VERSION_CHK(MAJOR, MINOR, PATCH)
+#define LIB_VERSION VERSION_CHK(MAJOR, MINOR, PATCH)
 
 //#define APP_VERSION_STR version_str<MAJOR, MINOR, PATCH>()
 //#define APP_VERSION_STR version<APP_VERSION>::string
@@ -62,8 +63,10 @@ struct version {
 /*! Stringify \a x, perform macro expansion. */
 #define TOSTR(x)  _TOSTR(x)
 
-const char* const version_string = TOSTR(MAJOR)"."TOSTR(MINOR)"."TOSTR(PATCH)"(" \
+static const char* const version_string = TOSTR(MAJOR)"."TOSTR(MINOR)"."TOSTR(PATCH)"(" \
 		__DATE__", "__TIME__")";
+#define LIB_VERSION_STR			TOSTR(MAJOR)"."TOSTR(MINOR)"."TOSTR(PATCH)
+#define LIB_VERSION_STR_LONG	LIB_VERSION_STR"(" __DATE__", "__TIME__")"
 
 #define APP_VERSION_STR version_string
 

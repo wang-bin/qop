@@ -21,28 +21,6 @@
 #define QOP_GLOBAL_H
 
 
-#undef LIB_VERSION
-
-#define MAJOR 1	//((LIB_VERSION&0xff0000)>>16)
-#define MINOR 0	//((LIB_VERSION&0xff00)>>8)
-#define PATCH 0	//(LIB_VERSION&0xff)
-
-#define VERSION_CHK(major, minor, patch) \
-    (((major&0xff)<<16) | ((minor&0xff)<<8) | (patch&0xff))
-
-#define LIB_VERSION VERSION_CHK(MAJOR, MINOR, PATCH)
-
-/*! Stringify \a x. */
-#define _TOSTR(x)   #x
-/*! Stringify \a x, perform macro expansion. */
-#define TOSTR(x)  _TOSTR(x)
-
-static const char* const version_string = TOSTR(MAJOR)"."TOSTR(MINOR)"."TOSTR(PATCH)"(" __DATE__", "__TIME__")";
-#define LIB_VERSION_STR			TOSTR(MAJOR)"."TOSTR(MINOR)"."TOSTR(PATCH)
-#define LIB_VERSION_STR_LONG	LIB_VERSION_STR"(" __DATE__", "__TIME__")"
-
-
-
 #if defined(__ARMCC__) || defined(__CC_ARM)
 #  define Q_CC_RVCT
 #endif
