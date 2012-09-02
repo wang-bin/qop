@@ -1,9 +1,19 @@
-*.o
 Makefile*
-*.user
+*.[oa]
+*.so*
+*.dll
 *.pro.*
+*.user
+
+#vc files
+*.ncb
+*.pdb
+*.layout
+*.suo
 
 #dirs
 .moc
 .obj
-bin
+/bin*
+/lib*
+
