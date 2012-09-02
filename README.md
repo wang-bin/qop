@@ -34,6 +34,7 @@ If you want to extract a .tar or .tar.xxx file and set size as total steps, use 
 -d, --diy[=TARFILE]: using built-in method to extract an archive
 
 examples:
+
 	qop -C zip -ryv -9 test.zip test
 	qop -C zip -ry -9 test.zip test
 	qop -C unzip -o test.zip -d exdir
@@ -66,6 +67,7 @@ How To Compile:
 -------
 
 1.Desktop and Maemo: Just use QtCreator.
+
 2.EZX: Use tmake. Or use my configure script. Type
 ./configure
 make
