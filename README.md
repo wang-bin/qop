@@ -1,7 +1,7 @@
-![Alt text](https://github.com/wang-bin/qop/blob/master/screenshots/qop-maemo5.png  "maemo5")
-![Alt text](https://github.com/wang-bin/qop/blob/master/screenshots/qop-ubuntu.png  "Ubuntu")
-![Alt text](https://github.com/wang-bin/qop/blob/master/screenshots/qop-win.png     "Win7")
-
+![Alt text](https://github.com/wang-bin/qop/raw/master/screenshots/qop-maemo5.png  "maemo5")
+![Alt text](https://github.com/wang-bin/qop/raw/master/screenshots/qop-ubuntu.png  "Ubuntu")
+![Alt text](https://github.com/wang-bin/qop/raw/master/screenshots/qop-win.png     "Win7")
+![Alt text](https://github.com/wang-bin/qop/raw/master/screenshots/qop-ezx.png    "EZX")
 
 Auther: Wang Bin (aka nukin in ccomve & novesky in motorolafans)
 Shanghai university, China
