@@ -23,6 +23,8 @@
 #if CONFIG_EZX
 #include <ZApplication.h>
 #include <ZLanguage.h>
+#else
+#include <qlocale.h>
 #endif //CONFIG_EZX
 
 #include <qdir.h>
@@ -81,7 +83,9 @@ int main(int argc, char *argv[])
 	ZApplication a(argc, argv, QApplication::GuiClient);
 #if CONFIG_QT4
 	QApplication::setApplicationName(APP_NAME);
+#if QT_VERSION >= QT_VERSION_CHECK(4, 4, 0)
 	QApplication::setApplicationVersion(APP_VERSION_STR);
+#endif
 	QApplication::setOrganizationName("Wang Bin");
 
 #endif
