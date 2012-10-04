@@ -21,6 +21,7 @@ if [ -n "`uname -a |grep -E 'MINGW|CYGWIN'`" ];then
   [ $? -ne 0 ] && qop="qop_win32.exe";
 elif [ -n "`uname -a |grep 'Linux'`" ];then
   qop="qop"
+  type -p $qop 2>/dev/null
   [ $? -ne 0 ] && qop="qop_linux"
   type -p $qop 2>/dev/null
   [ $? -ne 0 ] && qop="qop_linux_llvm"
