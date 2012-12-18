@@ -9,6 +9,6 @@ fi
 
 [ ! -f $_7zfile ] && echo "$_7zfile is not a file" && exit
 
-ehco "7z x -y $_7zfile |$qop -n -t7z -T $((`7z l $_7zfile |sed -n '$s/\(.*\), \(.*\)folders/\2/p'`+`7z l $_7zfile |sed -n '$s/\(.*\)  \(.*\)files.*/\2/p'`))"
+echo "7z x -y $_7zfile |$qop -n -t7z -T $((`7z l $_7zfile |sed -n '$s/\(.*\), \(.*\)folders/\2/p'`+`7z l $_7zfile |sed -n '$s/\(.*\)  \(.*\)files.*/\2/p'`))"
 
 7z x -y -o/tmp $_7zfile |$qop -n -t7z -T $((`7z l $_7zfile |sed -n '$s/\(.*\), \(.*\)folders/\2/p'`+`7z l $_7zfile |sed -n '$s/\(.*\)  \(.*\)files.*/\2/p'`))
