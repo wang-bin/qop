@@ -43,7 +43,7 @@ const unsigned int iShift[] = { 0, 10, 20, 30, 40};
 #undef snprintf
 #define snprintf _snprintf
 #endif
-char* size2str(unsigned int a)
+char* size2str(size_t a)
 {
 	int i=0;
 #if 1
